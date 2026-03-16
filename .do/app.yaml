@@ -1,0 +1,53 @@
+name: fyf-tickets
+region: nyc
+
+services:
+  - name: web
+    github:
+      repo: juanmanuelrot/fyf-tickets
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    run_command: npm run start
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+    http_port: 3000
+    envs:
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: JWT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: QR_SIGNING_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: MP_ACCESS_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: MP_PUBLIC_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: MP_WEBHOOK_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: RESEND_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: EMAIL_FROM
+        scope: RUN_AND_BUILD_TIME
+        value: "FYF Tickets <tickets@yourdomain.com>"
+      - key: NEXT_PUBLIC_APP_URL
+        scope: RUN_AND_BUILD_TIME
+        value: "${APP_URL}"
+      - key: NODE_ENV
+        scope: RUN_AND_BUILD_TIME
+        value: production
+
+databases:
+  - name: fyf-db
+    engine: PG
+    version: "16"
+    size: db-s-dev-database
+    num_nodes: 1
