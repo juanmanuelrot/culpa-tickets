@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "npx tsx prisma/seed.ts",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio --browser none"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.5.0",
