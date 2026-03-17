@@ -145,7 +145,7 @@ export default function AdminWhitelistDetailPage() {
                   >
                     {tt.name}
                     {tt.price > 0 &&
-                      ` ($${(tt.price / 100).toFixed(0)})`}
+                      ` (${new Intl.NumberFormat("es-UY", { style: "currency", currency: tt.currency, minimumFractionDigits: 0 }).format(tt.price / 100)})`}
                   </button>
                 ))}
                 {event.ticketTypes.length === 0 && (

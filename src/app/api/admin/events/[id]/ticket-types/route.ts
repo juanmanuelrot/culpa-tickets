@@ -24,7 +24,7 @@ export async function POST(
       eventId,
       name,
       price: Math.round(price),
-      currency: currency || "ARS",
+      currency: currency || "UYU",
       capacity: capacity || null,
       sortOrder: sortOrder || 0,
     },

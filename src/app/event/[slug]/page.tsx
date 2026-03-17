@@ -95,7 +95,7 @@ export default function EventPage() {
 
   function formatPrice(cents: number, currency: string) {
     if (cents === 0) return "FREE";
-    return new Intl.NumberFormat("es-AR", {
+    return new Intl.NumberFormat("es-UY", {
       style: "currency",
       currency,
       minimumFractionDigits: 0,

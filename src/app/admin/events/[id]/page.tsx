@@ -31,7 +31,7 @@ export default function AdminEventDetailPage() {
   const id = params.id as string;
 
   const [event, setEvent] = useState<Event | null>(null);
-  const [ttForm, setTtForm] = useState({ name: "", price: "", capacity: "" });
+  const [ttForm, setTtForm] = useState({ name: "", price: "", currency: "UYU", capacity: "" });
   const [showTtForm, setShowTtForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -73,10 +73,11 @@ export default function AdminEventDetailPage() {
       body: JSON.stringify({
         name: ttForm.name,
         price: Math.round(parseFloat(ttForm.price) * 100),
+        currency: ttForm.currency,
         capacity: ttForm.capacity ? parseInt(ttForm.capacity) : null,
       }),
     });
-    setTtForm({ name: "", price: "", capacity: "" });
+    setTtForm({ name: "", price: "", currency: "UYU", capacity: "" });
     setShowTtForm(false);
     setLoading(false);
     loadEvent();
@@ -180,7 +181,7 @@ export default function AdminEventDetailPage() {
 
         {showTtForm && (
           <form onSubmit={handleAddTicketType} className="bg-white/5 border border-white/10 p-4 mb-4 space-y-3">
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-4 gap-3">
               <div>
                 <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Name</label>
                 <input
@@ -193,7 +194,7 @@ export default function AdminEventDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Price (ARS)</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Price</label>
                 <input
                   type="number"
                   step="0.01"
@@ -204,6 +205,17 @@ export default function AdminEventDetailPage() {
                   className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Currency</label>
+                <select
+                  value={ttForm.currency}
+                  onChange={(e) => setTtForm({ ...ttForm, currency: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
+                >
+                  <option value="UYU">UYU</option>
+                  <option value="USD">USD</option>
+                </select>
               </div>
               <div>
                 <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Capacity</label>
@@ -240,7 +252,7 @@ export default function AdminEventDetailPage() {
                 <span className="text-white/50 ml-4">
                   {tt.price === 0
                     ? "FREE"
-                    : new Intl.NumberFormat("es-AR", {
+                    : new Intl.NumberFormat("es-UY", {
                         style: "currency",
                         currency: tt.currency,
                         minimumFractionDigits: 0,

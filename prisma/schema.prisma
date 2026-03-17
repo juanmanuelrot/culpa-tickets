@@ -71,7 +71,7 @@ model TicketType {
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   name      String
   price     Int      // Price in cents (0 for free)
-  currency  String   @default("ARS")
+  currency  String   @default("UYU")
   capacity  Int?     // null = unlimited
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
