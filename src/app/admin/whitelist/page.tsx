@@ -3,6 +3,14 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 
+interface TicketTypeOption {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  event: { id: string; name: string };
+}
+
 interface WhitelistedPerson {
   id: string;
   govIdNumber: string;
@@ -25,6 +33,8 @@ export default function AdminWhitelistPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [ticketTypes, setTicketTypes] = useState<TicketTypeOption[]>([]);
+  const [selectedTicketTypeIds, setSelectedTicketTypeIds] = useState<string[]>([]);
 
   const loadPeople = useCallback(async () => {
     const res = await fetch(`/api/admin/whitelist?search=${encodeURIComponent(search)}`);
@@ -32,6 +42,15 @@ export default function AdminWhitelistPage() {
     setPeople(data.people || []);
     setTotal(data.total || 0);
   }, [search]);
+
+  const loadTicketTypes = useCallback(async () => {
+    const res = await fetch("/api/admin/whitelist/ticket-type-options");
+    if (res.ok) {
+      const data = await res.json();
+      setTicketTypes(data);
+      setSelectedTicketTypeIds(data.map((tt: TicketTypeOption) => tt.id));
+    }
+  }, []);
 
   useEffect(() => {
     loadPeople();
@@ -45,7 +64,7 @@ export default function AdminWhitelistPage() {
     const res = await fetch("/api/admin/whitelist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ ...formData, ticketTypeIds: selectedTicketTypeIds }),
     });
 
     if (!res.ok) {
@@ -56,6 +75,7 @@ export default function AdminWhitelistPage() {
     }
 
     setFormData({ govIdNumber: "", name: "", email: "", instagramHandle: "" });
+    setSelectedTicketTypeIds([]);
     setShowForm(false);
     setLoading(false);
     loadPeople();
@@ -71,7 +91,10 @@ export default function AdminWhitelistPage() {
           <p className="text-white/40 text-sm mt-1">{total} people</p>
         </div>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            if (!showForm) loadTicketTypes();
+            setShowForm(!showForm);
+          }}
           className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors"
         >
           {showForm ? "Cancel" : "+ Add Person"}
@@ -121,6 +144,52 @@ export default function AdminWhitelistPage() {
               />
             </div>
           </div>
+          {ticketTypes.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-white/60 text-xs uppercase tracking-widest">Ticket Access</label>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSelectedTicketTypeIds(
+                      selectedTicketTypeIds.length === ticketTypes.length
+                        ? []
+                        : ticketTypes.map((tt) => tt.id)
+                    )
+                  }
+                  className="text-fyf-red text-xs uppercase tracking-wider hover:text-fyf-red-dark"
+                >
+                  {selectedTicketTypeIds.length === ticketTypes.length ? "Deselect All" : "Select All"}
+                </button>
+              </div>
+              <div className="space-y-2">
+                {ticketTypes.map((tt) => (
+                  <label key={tt.id} className="flex items-center gap-2 text-white/70 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedTicketTypeIds.includes(tt.id)}
+                      onChange={(e) =>
+                        setSelectedTicketTypeIds(
+                          e.target.checked
+                            ? [...selectedTicketTypeIds, tt.id]
+                            : selectedTicketTypeIds.filter((id) => id !== tt.id)
+                        )
+                      }
+                      className="accent-fyf-red w-4 h-4"
+                    />
+                    <span className="text-white font-bold">{tt.event.name}</span>
+                    <span className="text-white/50">—</span>
+                    <span>{tt.name}</span>
+                    <span className="text-white/40">
+                      {tt.price === 0
+                        ? "(Free)"
+                        : `(${new Intl.NumberFormat("es-UY", { style: "currency", currency: tt.currency, minimumFractionDigits: 0 }).format(tt.price / 100)})`}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <button
             type="submit"

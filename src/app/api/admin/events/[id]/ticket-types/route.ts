@@ -10,7 +10,7 @@ export async function POST(
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id: eventId } = await params;
-  const { name, price, currency, capacity, sortOrder } = await request.json();
+  const { name, price, currency, capacity, sortOrder, autoApproveWhitelist } = await request.json();
 
   if (!name || price === undefined) {
     return NextResponse.json(
@@ -29,6 +29,21 @@ export async function POST(
       sortOrder: sortOrder || 0,
     },
   });
+
+  if (autoApproveWhitelist) {
+    const allWhitelisted = await prisma.whitelistedPerson.findMany({
+      select: { id: true },
+    });
+
+    if (allWhitelisted.length > 0) {
+      await prisma.whitelistedPersonTicketType.createMany({
+        data: allWhitelisted.map((person) => ({
+          whitelistedPersonId: person.id,
+          ticketTypeId: ticketType.id,
+        })),
+      });
+    }
+  }
 
   return NextResponse.json(ticketType, { status: 201 });
 }

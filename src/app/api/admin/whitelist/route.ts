@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
-    const { govIdNumber, name, email, instagramHandle } = await request.json();
+    const { govIdNumber, name, email, instagramHandle, ticketTypeIds } = await request.json();
 
     if (!govIdNumber || !name || !email) {
       return NextResponse.json(
@@ -74,6 +74,15 @@ export async function POST(request: NextRequest) {
         instagramHandle: instagramHandle?.trim() || null,
       },
     });
+
+    if (Array.isArray(ticketTypeIds) && ticketTypeIds.length > 0) {
+      await prisma.whitelistedPersonTicketType.createMany({
+        data: ticketTypeIds.map((ticketTypeId: string) => ({
+          whitelistedPersonId: person.id,
+          ticketTypeId,
+        })),
+      });
+    }
 
     return NextResponse.json(person, { status: 201 });
   } catch {

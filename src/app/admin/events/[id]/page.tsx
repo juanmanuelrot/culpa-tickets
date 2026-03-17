@@ -31,9 +31,10 @@ export default function AdminEventDetailPage() {
   const id = params.id as string;
 
   const [event, setEvent] = useState<Event | null>(null);
-  const [ttForm, setTtForm] = useState({ name: "", price: "", currency: "UYU", capacity: "" });
+  const [ttForm, setTtForm] = useState({ name: "", price: "", currency: "UYU", capacity: "", autoApproveWhitelist: true });
   const [showTtForm, setShowTtForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
 
   const loadEvent = useCallback(async () => {
     const res = await fetch(`/api/admin/events/${id}`);
@@ -75,9 +76,10 @@ export default function AdminEventDetailPage() {
         price: Math.round(parseFloat(ttForm.price) * 100),
         currency: ttForm.currency,
         capacity: ttForm.capacity ? parseInt(ttForm.capacity) : null,
+        autoApproveWhitelist: ttForm.autoApproveWhitelist,
       }),
     });
-    setTtForm({ name: "", price: "", currency: "UYU", capacity: "" });
+    setTtForm({ name: "", price: "", currency: "UYU", capacity: "", autoApproveWhitelist: true });
     setShowTtForm(false);
     setLoading(false);
     loadEvent();
@@ -89,6 +91,18 @@ export default function AdminEventDetailPage() {
       method: "DELETE",
     });
     loadEvent();
+  }
+
+  async function handleApproveAll(ticketTypeId: string) {
+    setApprovingId(ticketTypeId);
+    const res = await fetch(`/api/admin/events/${id}/ticket-types/${ticketTypeId}/approve-all`, {
+      method: "POST",
+    });
+    if (res.ok) {
+      const { approved } = await res.json();
+      alert(`Granted access to ${approved} whitelisted ${approved === 1 ? "person" : "people"}.`);
+    }
+    setApprovingId(null);
   }
 
   async function handleDeleteEvent() {
@@ -229,6 +243,15 @@ export default function AdminEventDetailPage() {
                 />
               </div>
             </div>
+            <label className="flex items-center gap-2 text-white/70 text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={ttForm.autoApproveWhitelist}
+                onChange={(e) => setTtForm({ ...ttForm, autoApproveWhitelist: e.target.checked })}
+                className="accent-fyf-red w-4 h-4"
+              />
+              Grant access to all whitelisted people
+            </label>
             <button
               type="submit"
               disabled={loading}
@@ -268,6 +291,13 @@ export default function AdminEventDetailPage() {
                 <span className="text-white/40 text-sm">
                   {tt._count.tickets} sold
                 </span>
+                <button
+                  onClick={() => handleApproveAll(tt.id)}
+                  disabled={approvingId === tt.id}
+                  className="text-green-400 text-xs uppercase tracking-wider hover:text-green-300 disabled:opacity-50"
+                >
+                  {approvingId === tt.id ? "Granting..." : "Grant All"}
+                </button>
                 <button
                   onClick={() => handleDeleteTicketType(tt.id)}
                   className="text-red-400 text-xs uppercase tracking-wider hover:text-red-300"
