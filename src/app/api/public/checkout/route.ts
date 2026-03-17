@@ -155,6 +155,7 @@ export async function POST(request: NextRequest) {
       currency: ticketType.currency,
       payerEmail: person.email,
       payerName: person.name,
+      eventSlug: ticketType.event.slug,
     });
 
     return NextResponse.json({

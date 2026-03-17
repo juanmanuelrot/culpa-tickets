@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       qrDataUrl,
     });
 
-    return NextResponse.json({ success: true, ticketId: ticket.id });
+    return NextResponse.json({ success: true, ticketId: ticket.id, eventSlug: event.slug });
   } catch (error) {
     console.error("Free invite error:", error);
     return NextResponse.json(

@@ -33,7 +33,7 @@ export default function InvitePage() {
         return;
       }
 
-      router.push(`/event/invite/checkout/success?ticketId=${data.ticketId}&free=true`);
+      router.push(`/event/${data.eventSlug}/checkout/success?ticketId=${data.ticketId}&free=true`);
     } catch {
       setError("Something went wrong");
     } finally {

@@ -14,6 +14,7 @@ export async function createCheckoutPreference(params: {
   currency: string;
   payerEmail: string;
   payerName: string;
+  eventSlug: string;
 }) {
   const preference = await preferenceClient.create({
     body: {
@@ -33,9 +34,9 @@ export async function createCheckoutPreference(params: {
       },
       external_reference: params.ticketId,
       back_urls: {
-        success: `${process.env.NEXT_PUBLIC_APP_URL}/event/checkout/success`,
-        failure: `${process.env.NEXT_PUBLIC_APP_URL}/event/checkout/failure`,
-        pending: `${process.env.NEXT_PUBLIC_APP_URL}/event/checkout/pending`,
+        success: `${process.env.NEXT_PUBLIC_APP_URL}/event/${params.eventSlug}/checkout/success`,
+        failure: `${process.env.NEXT_PUBLIC_APP_URL}/event/${params.eventSlug}/checkout/failure`,
+        pending: `${process.env.NEXT_PUBLIC_APP_URL}/event/${params.eventSlug}/checkout/pending`,
       },
       auto_return: "approved",
       notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/mercadopago`,
