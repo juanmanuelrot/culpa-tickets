@@ -46,20 +46,20 @@ export default function UsersPage() {
       loadUsers();
     } else {
       const data = await res.json();
-      setError(data.error || "Failed to create user");
+      setError(data.error || "Error al crear usuario");
     }
     setSubmitting(false);
   }
 
   async function handleDelete(user: User) {
-    if (!confirm(`Delete user "${user.name}" (${user.email})?`)) return;
+    if (!confirm(`¿Eliminar usuario "${user.name}" (${user.email})?`)) return;
 
     const res = await fetch(`/api/admin/users/${user.id}`, { method: "DELETE" });
     if (res.ok) {
       loadUsers();
     } else {
       const data = await res.json();
-      alert(data.error || "Failed to delete user");
+      alert(data.error || "Error al eliminar usuario");
     }
   }
 
@@ -67,20 +67,20 @@ export default function UsersPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-black uppercase tracking-wider text-white">
-          Users
+          Usuarios
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="bg-fyf-red text-white px-4 py-2 text-sm uppercase tracking-widest font-bold hover:opacity-80 transition-opacity"
         >
-          {showForm ? "Cancel" : "New User"}
+          {showForm ? "Cancelar" : "Nuevo Usuario"}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
           <h2 className="text-lg font-bold text-white uppercase tracking-wider mb-2">
-            Create User
+            Crear Usuario
           </h2>
 
           {error && (
@@ -89,7 +89,7 @@ export default function UsersPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Name</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre</label>
               <input
                 type="text"
                 required
@@ -99,7 +99,7 @@ export default function UsersPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Email</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Correo</label>
               <input
                 type="email"
                 required
@@ -109,7 +109,7 @@ export default function UsersPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Password</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Contraseña</label>
               <input
                 type="password"
                 required
@@ -120,7 +120,7 @@ export default function UsersPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Role</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Rol</label>
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value as "ADMIN" | "VALIDATOR" })}
@@ -137,24 +137,24 @@ export default function UsersPage() {
             disabled={submitting}
             className="bg-fyf-red text-white px-6 py-2 text-sm uppercase tracking-widest font-bold hover:opacity-80 transition-opacity disabled:opacity-50"
           >
-            {submitting ? "Creating..." : "Create User"}
+            {submitting ? "Creando..." : "Crear Usuario"}
           </button>
         </form>
       )}
 
       {loading ? (
-        <p className="text-white/40">Loading...</p>
+        <p className="text-white/40">Cargando...</p>
       ) : users.length === 0 ? (
-        <p className="text-white/40">No users found.</p>
+        <p className="text-white/40">No se encontraron usuarios.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-white/10">
-                <th className="text-white/60 text-xs uppercase tracking-widest py-3 pr-4">Name</th>
-                <th className="text-white/60 text-xs uppercase tracking-widest py-3 pr-4">Email</th>
-                <th className="text-white/60 text-xs uppercase tracking-widest py-3 pr-4">Role</th>
-                <th className="text-white/60 text-xs uppercase tracking-widest py-3 pr-4">Created</th>
+                <th className="text-white/60 text-xs uppercase tracking-widest py-3 pr-4">Nombre</th>
+                <th className="text-white/60 text-xs uppercase tracking-widest py-3 pr-4">Correo</th>
+                <th className="text-white/60 text-xs uppercase tracking-widest py-3 pr-4">Rol</th>
+                <th className="text-white/60 text-xs uppercase tracking-widest py-3 pr-4">Creado</th>
                 <th className="text-white/60 text-xs uppercase tracking-widest py-3"></th>
               </tr>
             </thead>
@@ -182,7 +182,7 @@ export default function UsersPage() {
                       onClick={() => handleDelete(user)}
                       className="text-red-400/60 hover:text-red-400 text-xs uppercase tracking-widest font-bold transition-colors"
                     >
-                      Delete
+                      Eliminar
                     </button>
                   </td>
                 </tr>

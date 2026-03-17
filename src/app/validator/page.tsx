@@ -89,7 +89,7 @@ export default function ValidatorScannerPage() {
       const data = await res.json();
       setScanResult(data);
     } catch {
-      setScanResult({ valid: false, error: "Network error" });
+      setScanResult({ valid: false, error: "Error de red" });
     } finally {
       setProcessing(false);
     }
@@ -104,7 +104,7 @@ export default function ValidatorScannerPage() {
   return (
     <div className="text-center">
       <h1 className="text-2xl font-black uppercase tracking-wider text-white mb-6">
-        Scan Ticket
+        Escanear Ticket
       </h1>
 
       {scanning && !scanResult && (
@@ -116,14 +116,14 @@ export default function ValidatorScannerPage() {
             style={{ width: "100%", maxWidth: "400px" }}
           />
           <p className="text-white/50 text-sm mt-4 uppercase tracking-wider">
-            Point camera at QR code
+            Apuntá la cámara al código QR
           </p>
         </div>
       )}
 
       {processing && (
         <div className="py-20">
-          <p className="text-white/50 text-lg uppercase tracking-wider">Verifying...</p>
+          <p className="text-white/50 text-lg uppercase tracking-wider">Verificando...</p>
         </div>
       )}
 
@@ -144,7 +144,7 @@ export default function ValidatorScannerPage() {
                 scanResult.valid ? "text-green-400" : "text-red-400"
               }`}
             >
-              {scanResult.valid ? "VALID" : "INVALID"}
+              {scanResult.valid ? "VÁLIDO" : "INVÁLIDO"}
             </p>
 
             {scanResult.error && (
@@ -164,13 +164,13 @@ export default function ValidatorScannerPage() {
 
             {scanResult.usedAt && (
               <p className="text-white/40 text-xs mt-2">
-                First scanned: {new Date(scanResult.usedAt).toLocaleString("es-AR")}
+                Primer escaneo: {new Date(scanResult.usedAt).toLocaleString("es-AR")}
               </p>
             )}
 
             {scanResult.expiredAt && (
               <p className="text-yellow-400 text-xs mt-2">
-                Expired at: {new Date(scanResult.expiredAt).toLocaleString("es-AR")}
+                Expiró el: {new Date(scanResult.expiredAt).toLocaleString("es-AR")}
               </p>
             )}
           </div>
@@ -179,7 +179,7 @@ export default function ValidatorScannerPage() {
             onClick={handleScanAgain}
             className="bg-fyf-red text-white font-bold uppercase tracking-wider text-lg px-8 py-4 hover:bg-fyf-red-dark transition-colors w-full"
           >
-            Scan Next
+            Escanear Siguiente
           </button>
         </div>
       )}

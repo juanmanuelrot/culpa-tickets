@@ -45,14 +45,14 @@ export default function InvitePage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to claim invite");
+        setError(data.error || "Error al reclamar la invitación");
         return;
       }
 
       const successUrl = `/event/${data.eventSlug}/checkout/success?ticketId=${data.ticketId}&free=true${data.ticketValidUntil ? `&validUntil=${encodeURIComponent(data.ticketValidUntil)}` : ""}`;
       router.push(successUrl);
     } catch {
-      setError("Something went wrong");
+      setError("Algo salió mal");
     } finally {
       setLoading(false);
     }
@@ -65,8 +65,8 @@ export default function InvitePage() {
         <h1 className="text-5xl md:text-7xl font-black text-white tracking-wider mb-2 text-center">
           F&F
         </h1>
-        <p className="text-lg text-white/80 italic mb-2">You&apos;re Invited!</p>
-        <p className="text-sm text-white/60 mb-4">Enter your details to claim your free ticket</p>
+        <p className="text-lg text-white/80 italic mb-2">¡Estás Invitado/a!</p>
+        <p className="text-sm text-white/60 mb-4">Ingresá tus datos para reclamar tu ticket gratis</p>
 
         {inviteInfo && (
           <div className="w-full max-w-sm mb-6 space-y-2">
@@ -78,7 +78,7 @@ export default function InvitePage() {
             {inviteInfo.ticketValidUntil && (
               <div className="bg-black/20 border border-white/20 px-4 py-3 text-center">
                 <p className="text-yellow-300 text-sm font-bold uppercase tracking-wider">
-                  Valid until {new Date(inviteInfo.ticketValidUntil).toLocaleString("es-AR", {
+                  Válido hasta {new Date(inviteInfo.ticketValidUntil).toLocaleString("es-AR", {
                     weekday: "long",
                     day: "numeric",
                     month: "long",
@@ -86,7 +86,7 @@ export default function InvitePage() {
                     minute: "2-digit",
                   })}
                 </p>
-                <p className="text-white/50 text-xs mt-1">This ticket cannot be used after this time</p>
+                <p className="text-white/50 text-xs mt-1">Este ticket no se puede usar después de esta hora</p>
               </div>
             )}
           </div>
@@ -95,7 +95,7 @@ export default function InvitePage() {
         <form onSubmit={handleClaim} className="w-full max-w-sm space-y-6">
           <div>
             <label className="block text-white/80 text-xs uppercase tracking-widest mb-2">
-              Full Name
+              Nombre Completo
             </label>
             <input
               type="text"
@@ -108,7 +108,7 @@ export default function InvitePage() {
 
           <div>
             <label className="block text-white/80 text-xs uppercase tracking-widest mb-2">
-              Email
+              Correo
             </label>
             <input
               type="email"
@@ -130,7 +130,7 @@ export default function InvitePage() {
             disabled={loading}
             className="w-full bg-white text-fyf-red font-bold text-lg uppercase tracking-widest py-4 hover:bg-fyf-cream transition-colors disabled:opacity-50"
           >
-            {loading ? "..." : "Claim Ticket"}
+            {loading ? "..." : "Reclamar Ticket"}
           </button>
         </form>
       </div>

@@ -83,12 +83,12 @@ export default function AdminWhitelistDetailPage() {
   }
 
   async function handleDelete() {
-    if (!confirm("Remove this person from the whitelist?")) return;
+    if (!confirm("¿Eliminar a esta persona de la lista?")) return;
     await fetch(`/api/admin/whitelist/${id}`, { method: "DELETE" });
     router.push("/admin/whitelist");
   }
 
-  if (!person) return <div className="text-white/50">Loading...</div>;
+  if (!person) return <div className="text-white/50">Cargando...</div>;
 
   return (
     <div>
@@ -103,7 +103,7 @@ export default function AdminWhitelistDetailPage() {
           onClick={handleDelete}
           className="bg-red-900 text-white text-sm uppercase tracking-wider font-bold px-4 py-2 hover:bg-red-800"
         >
-          Remove
+          Eliminar
         </button>
       </div>
 
@@ -111,7 +111,7 @@ export default function AdminWhitelistDetailPage() {
       <div className="bg-white/5 border border-white/10 p-5 mb-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-white/40 text-xs uppercase tracking-widest">Email</p>
+            <p className="text-white/40 text-xs uppercase tracking-widest">Correo</p>
             <p className="text-white mt-1">{person.email}</p>
           </div>
           <div>
@@ -124,7 +124,7 @@ export default function AdminWhitelistDetailPage() {
       {/* Ticket Type Permissions */}
       <div className="mb-8">
         <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4">
-          Allowed Ticket Types
+          Tipos de Ticket Permitidos
         </h2>
         <div className="space-y-4">
           {events.map((event) => (
@@ -149,7 +149,7 @@ export default function AdminWhitelistDetailPage() {
                   </button>
                 ))}
                 {event.ticketTypes.length === 0 && (
-                  <p className="text-white/20 text-xs">No ticket types</p>
+                  <p className="text-white/20 text-xs">Sin tipos de ticket</p>
                 )}
               </div>
             </div>
@@ -160,7 +160,7 @@ export default function AdminWhitelistDetailPage() {
           disabled={saving}
           className="mt-4 bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
         >
-          {saving ? "Saving..." : "Save Permissions"}
+          {saving ? "Guardando..." : "Guardar Permisos"}
         </button>
       </div>
 
@@ -192,7 +192,7 @@ export default function AdminWhitelistDetailPage() {
             </div>
           ))}
           {person.tickets.length === 0 && (
-            <p className="text-white/30 text-center py-4">No tickets yet</p>
+            <p className="text-white/30 text-center py-4">Sin tickets todavía</p>
           )}
         </div>
       </div>

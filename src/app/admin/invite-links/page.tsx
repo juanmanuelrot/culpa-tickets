@@ -64,7 +64,7 @@ export default function AdminInviteLinksPage() {
     });
     if (res.ok) {
       const data = await res.json();
-      alert(`Invite link created!\n\n${data.url}`);
+      alert(`¡Link de invitación creado!\n\n${data.url}`);
     }
     setFormData({ eventId: "", ticketTypeId: "", expiresAt: "", ticketValidUntil: "", maxUses: "1" });
     setShowForm(false);
@@ -73,7 +73,7 @@ export default function AdminInviteLinksPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this invite link?")) return;
+    if (!confirm("¿Eliminar este link de invitación?")) return;
     await fetch(`/api/admin/invite-links/${id}`, { method: "DELETE" });
     loadLinks();
   }
@@ -84,13 +84,13 @@ export default function AdminInviteLinksPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-black uppercase tracking-wider text-white">
-          Invite Links
+          Links de Invitación
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors"
         >
-          {showForm ? "Cancel" : "+ Generate Link"}
+          {showForm ? "Cancelar" : "+ Generar Link"}
         </button>
       </div>
 
@@ -98,21 +98,21 @@ export default function AdminInviteLinksPage() {
         <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Event</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Evento</label>
               <select
                 value={formData.eventId}
                 onChange={(e) => setFormData({ ...formData, eventId: e.target.value, ticketTypeId: "" })}
                 className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
                 required
               >
-                <option value="">Select event</option>
+                <option value="">Seleccionar evento</option>
                 {events.map((ev) => (
                   <option key={ev.id} value={ev.id}>{ev.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket Type</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Tipo de Ticket</label>
               <select
                 value={formData.ticketTypeId}
                 onChange={(e) => setFormData({ ...formData, ticketTypeId: e.target.value })}
@@ -120,14 +120,14 @@ export default function AdminInviteLinksPage() {
                 required
                 disabled={!formData.eventId}
               >
-                <option value="">Select type</option>
+                <option value="">Seleccionar tipo</option>
                 {selectedEvent?.ticketTypes.map((tt) => (
                   <option key={tt.id} value={tt.id}>{tt.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Expires At</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Expira El</label>
               <input
                 type="datetime-local"
                 value={formData.expiresAt}
@@ -137,7 +137,7 @@ export default function AdminInviteLinksPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Max Uses</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Usos Máximos</label>
               <input
                 type="number"
                 min="1"
@@ -148,14 +148,14 @@ export default function AdminInviteLinksPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket Valid Until</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket Válido Hasta</label>
               <input
                 type="datetime-local"
                 value={formData.ticketValidUntil}
                 onChange={(e) => setFormData({ ...formData, ticketValidUntil: e.target.value })}
                 className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
               />
-              <p className="text-white/30 text-xs mt-1">Optional — when tickets expire for scanning</p>
+              <p className="text-white/30 text-xs mt-1">Opcional — cuándo expiran los tickets para el escaneo</p>
             </div>
           </div>
           <button
@@ -163,7 +163,7 @@ export default function AdminInviteLinksPage() {
             disabled={loading}
             className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
           >
-            {loading ? "Generating..." : "Generate Link"}
+            {loading ? "Generando..." : "Generar Link"}
           </button>
         </form>
       )}
@@ -177,10 +177,10 @@ export default function AdminInviteLinksPage() {
                   {appUrl}/invite/{link.token}
                 </p>
                 <p className="text-white/40 text-xs mt-1">
-                  Uses: {link.usedCount}/{link.maxUses} | Link expires:{" "}
+                  Usos: {link.usedCount}/{link.maxUses} | Link expira:{" "}
                   {new Date(link.expiresAt).toLocaleString("es-AR")}
                   {link.ticketValidUntil && (
-                    <span className="text-yellow-400/70"> | Ticket valid until: {new Date(link.ticketValidUntil).toLocaleString("es-AR")}</span>
+                    <span className="text-yellow-400/70"> | Ticket válido hasta: {new Date(link.ticketValidUntil).toLocaleString("es-AR")}</span>
                   )}
                 </p>
               </div>
@@ -189,20 +189,20 @@ export default function AdminInviteLinksPage() {
                   onClick={() => navigator.clipboard.writeText(`${appUrl}/invite/${link.token}`)}
                   className="text-white/50 text-xs uppercase tracking-wider hover:text-white"
                 >
-                  Copy
+                  Copiar
                 </button>
                 <button
                   onClick={() => handleDelete(link.id)}
                   className="text-red-400 text-xs uppercase tracking-wider hover:text-red-300"
                 >
-                  Delete
+                  Eliminar
                 </button>
               </div>
             </div>
           </div>
         ))}
         {links.length === 0 && (
-          <p className="text-white/30 text-center py-8">No invite links yet</p>
+          <p className="text-white/30 text-center py-8">No hay links de invitación todavía</p>
         )}
       </div>
     </div>

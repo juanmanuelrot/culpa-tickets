@@ -5,12 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/events", label: "Events" },
-  { href: "/admin/whitelist", label: "Whitelist" },
-  { href: "/admin/invite-links", label: "Invite Links" },
+  { href: "/admin", label: "Panel" },
+  { href: "/admin/events", label: "Eventos" },
+  { href: "/admin/whitelist", label: "Lista" },
+  { href: "/admin/invite-links", label: "Invitaciones" },
   { href: "/admin/tickets", label: "Tickets" },
-  { href: "/admin/users", label: "Users" },
+  { href: "/admin/users", label: "Usuarios" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               onClick={handleLogout}
               className="text-sm uppercase tracking-widest font-bold text-white/60 hover:text-white transition-colors ml-4"
             >
-              Logout
+              Salir
             </button>
           </div>
 
@@ -83,7 +83,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               onClick={handleLogout}
               className="block text-sm uppercase tracking-widest font-bold text-white/60 py-2"
             >
-              Logout
+              Salir
             </button>
           </div>
         )}

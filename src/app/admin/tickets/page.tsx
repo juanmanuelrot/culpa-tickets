@@ -49,7 +49,7 @@ export default function AdminTicketsPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name, email, or ID..."
+          placeholder="Buscar por nombre, correo o documento..."
           className="flex-1 bg-white/5 border border-white/10 text-white px-4 py-3 focus:outline-none focus:border-fyf-red"
         />
         <select
@@ -57,11 +57,11 @@ export default function AdminTicketsPage() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="bg-white/5 border border-white/10 text-white px-4 py-3 focus:outline-none focus:border-fyf-red"
         >
-          <option value="">All Statuses</option>
-          <option value="PENDING_PAYMENT">Pending</option>
-          <option value="PAID">Paid</option>
-          <option value="USED">Used</option>
-          <option value="CANCELLED">Cancelled</option>
+          <option value="">Todos los Estados</option>
+          <option value="PENDING_PAYMENT">Pendiente</option>
+          <option value="PAID">Pagado</option>
+          <option value="USED">Usado</option>
+          <option value="CANCELLED">Cancelado</option>
         </select>
       </div>
 
@@ -89,7 +89,7 @@ export default function AdminTicketsPage() {
           </div>
         ))}
         {tickets.length === 0 && (
-          <p className="text-white/30 text-center py-8">No tickets found</p>
+          <p className="text-white/30 text-center py-8">No se encontraron tickets</p>
         )}
       </div>
     </div>

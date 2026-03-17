@@ -88,7 +88,7 @@ export default function AdminEventDetailPage() {
   }
 
   async function handleDeleteTicketType(ticketTypeId: string) {
-    if (!confirm("Delete this ticket type?")) return;
+    if (!confirm("¿Eliminar este tipo de ticket?")) return;
     await fetch(`/api/admin/events/${id}/ticket-types/${ticketTypeId}`, {
       method: "DELETE",
     });
@@ -96,25 +96,25 @@ export default function AdminEventDetailPage() {
   }
 
   async function handleApproveAll(ticketTypeId: string) {
-    if (!confirm("Grant access to all whitelisted people for this ticket type?")) return;
+    if (!confirm("¿Dar acceso a todas las personas de la lista para este tipo de ticket?")) return;
     setApprovingId(ticketTypeId);
     const res = await fetch(`/api/admin/events/${id}/ticket-types/${ticketTypeId}/approve-all`, {
       method: "POST",
     });
     if (res.ok) {
       const { approved } = await res.json();
-      alert(`Granted access to ${approved} whitelisted ${approved === 1 ? "person" : "people"}.`);
+      alert(`Se otorgó acceso a ${approved} ${approved === 1 ? "persona" : "personas"} de la lista.`);
     }
     setApprovingId(null);
   }
 
   async function handleDeleteEvent() {
-    if (!confirm("Delete this event? This cannot be undone.")) return;
+    if (!confirm("¿Eliminar este evento? Esta acción no se puede deshacer.")) return;
     await fetch(`/api/admin/events/${id}`, { method: "DELETE" });
     router.push("/admin/events");
   }
 
-  if (!event) return <div className="text-white/50">Loading...</div>;
+  if (!event) return <div className="text-white/50">Cargando...</div>;
 
   const eventUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/event/${event.slug}`;
 
@@ -145,20 +145,20 @@ export default function AdminEventDetailPage() {
                 : "bg-white/10 text-white/50"
             }`}
           >
-            {event.isActive ? "Active" : "Inactive"}
+            {event.isActive ? "Activo" : "Inactivo"}
           </button>
           <button
             onClick={handleDeleteEvent}
             className="bg-red-900 text-white text-sm uppercase tracking-wider font-bold px-4 py-2 hover:bg-red-800"
           >
-            Delete
+            Eliminar
           </button>
         </div>
       </div>
 
       {/* Event Link */}
       <div className="bg-white/5 border border-white/10 p-4 mb-6">
-        <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Event Link</p>
+        <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Link del Evento</p>
         <p className="text-fyf-red font-mono text-sm break-all">{eventUrl}</p>
       </div>
 
@@ -166,7 +166,7 @@ export default function AdminEventDetailPage() {
       {event.location && (
         <div className="bg-white/5 border border-white/10 p-4 mb-6 flex items-center justify-between">
           <div>
-            <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Location</p>
+            <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Ubicación</p>
             <p className="text-white">{event.location}</p>
           </div>
           <button
@@ -177,7 +177,7 @@ export default function AdminEventDetailPage() {
                 : "bg-yellow-700 text-white"
             }`}
           >
-            {event.locationRevealed ? "Revealed" : "Secret"}
+            {event.locationRevealed ? "Revelada" : "Secreta"}
           </button>
         </div>
       )}
@@ -186,13 +186,13 @@ export default function AdminEventDetailPage() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold uppercase tracking-wider text-white">
-            Ticket Types
+            Tipos de Ticket
           </h2>
           <button
             onClick={() => setShowTtForm(!showTtForm)}
             className="bg-fyf-red text-white font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-fyf-red-dark transition-colors"
           >
-            {showTtForm ? "Cancel" : "+ Add Type"}
+            {showTtForm ? "Cancelar" : "+ Agregar Tipo"}
           </button>
         </div>
 
@@ -200,7 +200,7 @@ export default function AdminEventDetailPage() {
           <form onSubmit={handleAddTicketType} className="bg-white/5 border border-white/10 p-4 mb-4 space-y-3">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Name</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre</label>
                 <input
                   type="text"
                   value={ttForm.name}
@@ -211,20 +211,20 @@ export default function AdminEventDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Price</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Precio</label>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   value={ttForm.price}
                   onChange={(e) => setTtForm({ ...ttForm, price: e.target.value })}
-                  placeholder="0 = free"
+                  placeholder="0 = gratis"
                   className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
                   required
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Currency</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Moneda</label>
                 <select
                   value={ttForm.currency}
                   onChange={(e) => setTtForm({ ...ttForm, currency: e.target.value })}
@@ -235,24 +235,24 @@ export default function AdminEventDetailPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Capacity</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Capacidad</label>
                 <input
                   type="number"
                   min="1"
                   value={ttForm.capacity}
                   onChange={(e) => setTtForm({ ...ttForm, capacity: e.target.value })}
-                  placeholder="Empty = unlimited"
+                  placeholder="Vacío = ilimitado"
                   className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Valid Until</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Válido Hasta</label>
                 <input
                   type="datetime-local"
                   value={ttForm.validUntil}
                   onChange={(e) => setTtForm({ ...ttForm, validUntil: e.target.value })}
                   className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
-                  placeholder="No expiry"
+                  placeholder="Sin vencimiento"
                 />
               </div>
             </div>
@@ -263,14 +263,14 @@ export default function AdminEventDetailPage() {
                 onChange={(e) => setTtForm({ ...ttForm, autoApproveWhitelist: e.target.checked })}
                 className="accent-fyf-red w-4 h-4"
               />
-              Grant access to all whitelisted people
+              Dar acceso a todas las personas de la lista
             </label>
             <button
               type="submit"
               disabled={loading}
               className="bg-fyf-red text-white font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-fyf-red-dark disabled:opacity-50"
             >
-              {loading ? "Adding..." : "Add Ticket Type"}
+              {loading ? "Agregando..." : "Agregar Tipo de Ticket"}
             </button>
           </form>
         )}
@@ -287,7 +287,7 @@ export default function AdminEventDetailPage() {
                 </span>
                 <span className="text-white/50 ml-4">
                   {tt.price === 0
-                    ? "FREE"
+                    ? "GRATIS"
                     : new Intl.NumberFormat("es-UY", {
                         style: "currency",
                         currency: tt.currency,
@@ -296,37 +296,37 @@ export default function AdminEventDetailPage() {
                 </span>
                 {tt.capacity && (
                   <span className="text-white/30 ml-4 text-sm">
-                    Cap: {tt.capacity}
+                    Cap.: {tt.capacity}
                   </span>
                 )}
                 {tt.validUntil && (
                   <span className="text-yellow-400/70 ml-4 text-sm">
-                    Expires: {new Date(tt.validUntil).toLocaleString("es-AR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    Vence: {new Date(tt.validUntil).toLocaleString("es-AR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-white/40 text-sm">
-                  {tt._count.tickets} sold
+                  {tt._count.tickets} vendidos
                 </span>
                 <button
                   onClick={() => handleApproveAll(tt.id)}
                   disabled={approvingId === tt.id}
                   className="text-green-400 text-xs uppercase tracking-wider hover:text-green-300 disabled:opacity-50"
                 >
-                  {approvingId === tt.id ? "Granting..." : "Grant All"}
+                  {approvingId === tt.id ? "Otorgando..." : "Otorgar a Todos"}
                 </button>
                 <button
                   onClick={() => handleDeleteTicketType(tt.id)}
                   className="text-red-400 text-xs uppercase tracking-wider hover:text-red-300"
                 >
-                  Delete
+                  Eliminar
                 </button>
               </div>
             </div>
           ))}
           {event.ticketTypes.length === 0 && (
-            <p className="text-white/30 text-center py-4">No ticket types yet</p>
+            <p className="text-white/30 text-center py-4">No hay tipos de ticket todavía</p>
           )}
         </div>
       </div>

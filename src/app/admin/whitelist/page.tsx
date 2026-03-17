@@ -69,7 +69,7 @@ export default function AdminWhitelistPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || "Failed to add");
+      setError(data.error || "Error al agregar");
       setLoading(false);
       return;
     }
@@ -86,9 +86,9 @@ export default function AdminWhitelistPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-black uppercase tracking-wider text-white">
-            Whitelist
+            Lista
           </h1>
-          <p className="text-white/40 text-sm mt-1">{total} people</p>
+          <p className="text-white/40 text-sm mt-1">{total} personas</p>
         </div>
         <button
           onClick={() => {
@@ -97,7 +97,7 @@ export default function AdminWhitelistPage() {
           }}
           className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors"
         >
-          {showForm ? "Cancel" : "+ Add Person"}
+          {showForm ? "Cancelar" : "+ Agregar Persona"}
         </button>
       </div>
 
@@ -105,7 +105,7 @@ export default function AdminWhitelistPage() {
         <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">ID Number</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nro. Documento</label>
               <input
                 type="text"
                 value={formData.govIdNumber}
@@ -115,7 +115,7 @@ export default function AdminWhitelistPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Name</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre</label>
               <input
                 type="text"
                 value={formData.name}
@@ -125,7 +125,7 @@ export default function AdminWhitelistPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Email</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Correo</label>
               <input
                 type="email"
                 value={formData.email}
@@ -135,7 +135,7 @@ export default function AdminWhitelistPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Instagram (optional)</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Instagram (opcional)</label>
               <input
                 type="text"
                 value={formData.instagramHandle}
@@ -147,7 +147,7 @@ export default function AdminWhitelistPage() {
           {ticketTypes.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-white/60 text-xs uppercase tracking-widest">Ticket Access</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest">Acceso a Tickets</label>
                 <button
                   type="button"
                   onClick={() =>
@@ -159,7 +159,7 @@ export default function AdminWhitelistPage() {
                   }
                   className="text-fyf-red text-xs uppercase tracking-wider hover:text-fyf-red-dark"
                 >
-                  {selectedTicketTypeIds.length === ticketTypes.length ? "Deselect All" : "Select All"}
+                  {selectedTicketTypeIds.length === ticketTypes.length ? "Deseleccionar Todo" : "Seleccionar Todo"}
                 </button>
               </div>
               <div className="space-y-2">
@@ -182,7 +182,7 @@ export default function AdminWhitelistPage() {
                     <span>{tt.name}</span>
                     <span className="text-white/40">
                       {tt.price === 0
-                        ? "(Free)"
+                        ? "(Gratis)"
                         : `(${new Intl.NumberFormat("es-UY", { style: "currency", currency: tt.currency, minimumFractionDigits: 0 }).format(tt.price / 100)})`}
                     </span>
                   </label>
@@ -196,7 +196,7 @@ export default function AdminWhitelistPage() {
             disabled={loading}
             className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
           >
-            {loading ? "Adding..." : "Add to Whitelist"}
+            {loading ? "Agregando..." : "Agregar a la Lista"}
           </button>
         </form>
       )}
@@ -206,7 +206,7 @@ export default function AdminWhitelistPage() {
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search by name, ID, email, or Instagram..."
+        placeholder="Buscar por nombre, documento, correo o Instagram..."
         className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 mb-6 focus:outline-none focus:border-fyf-red"
       />
 
@@ -240,7 +240,7 @@ export default function AdminWhitelistPage() {
           </Link>
         ))}
         {people.length === 0 && (
-          <p className="text-white/30 text-center py-8">No one on the whitelist yet</p>
+          <p className="text-white/30 text-center py-8">No hay nadie en la lista todavía</p>
         )}
       </div>
     </div>

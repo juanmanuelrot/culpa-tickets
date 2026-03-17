@@ -26,7 +26,7 @@ export default function ValidatorLayout({ children }: { children: React.ReactNod
                 pathname === "/validator" ? "text-white" : "text-white/60"
               }`}
             >
-              Scanner
+              Escáner
             </Link>
             <Link
               href="/validator/scans"
@@ -34,13 +34,13 @@ export default function ValidatorLayout({ children }: { children: React.ReactNod
                 pathname === "/validator/scans" ? "text-white" : "text-white/60"
               }`}
             >
-              History
+              Historial
             </Link>
             <button
               onClick={handleLogout}
               className="text-sm uppercase tracking-widest font-bold text-white/60 hover:text-white"
             >
-              Exit
+              Salir
             </button>
           </div>
         </div>

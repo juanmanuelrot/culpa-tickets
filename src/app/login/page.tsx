@@ -25,7 +25,7 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Login failed");
+        setError(data.error || "Error al iniciar sesión");
         return;
       }
 
@@ -35,7 +35,7 @@ export default function LoginPage() {
         router.push("/validator");
       }
     } catch {
-      setError("Something went wrong");
+      setError("Algo salió mal");
     } finally {
       setLoading(false);
     }
@@ -48,13 +48,13 @@ export default function LoginPage() {
           F&F
         </h1>
         <p className="text-center text-white/60 uppercase tracking-widest text-sm mb-10">
-          Staff Login
+          Acceso Staff
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-white/70 text-xs uppercase tracking-widest mb-2">
-              Email
+              Correo
             </label>
             <input
               type="email"
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
           <div>
             <label className="block text-white/70 text-xs uppercase tracking-widest mb-2">
-              Password
+              Contraseña
             </label>
             <input
               type="password"
@@ -87,7 +87,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-fyf-red text-white font-bold uppercase tracking-widest py-4 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
           >
-            {loading ? "..." : "Enter"}
+            {loading ? "..." : "Entrar"}
           </button>
         </form>
       </div>

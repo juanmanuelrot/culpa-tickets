@@ -48,13 +48,13 @@ export default function EventPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Lookup failed");
+        setError(data.error || "Error en la búsqueda");
         return;
       }
 
       setLookupResult(data);
     } catch {
-      setError("Something went wrong");
+      setError("Algo salió mal");
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ export default function EventPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Checkout failed");
+        setError(data.error || "Error en el checkout");
         return;
       }
 
@@ -90,14 +90,14 @@ export default function EventPage() {
         window.location.href = data.checkoutUrl;
       }
     } catch {
-      setError("Something went wrong");
+      setError("Algo salió mal");
     } finally {
       setCheckoutLoading(null);
     }
   }
 
   function formatPrice(cents: number, currency: string) {
-    if (cents === 0) return "FREE";
+    if (cents === 0) return "GRATIS";
     return new Intl.NumberFormat("es-UY", {
       style: "currency",
       currency,
@@ -118,13 +118,13 @@ export default function EventPage() {
           <form onSubmit={handleLookup} className="w-full max-w-sm space-y-6">
             <div>
               <label className="block text-white/80 text-xs uppercase tracking-widest mb-2">
-                Enter your ID number
+                Ingresá tu número de documento
               </label>
               <input
                 type="text"
                 value={govId}
                 onChange={(e) => setGovId(e.target.value)}
-                placeholder="Your government ID"
+                placeholder="Tu cédula de identidad"
                 className="w-full bg-white/10 border-2 border-white/30 text-white px-4 py-4 text-lg focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
                 required
               />
@@ -141,7 +141,7 @@ export default function EventPage() {
               disabled={loading}
               className="w-full bg-white text-fyf-red font-bold text-lg uppercase tracking-widest py-4 hover:bg-fyf-cream transition-colors disabled:opacity-50"
             >
-              {loading ? "..." : "Find My Tickets"}
+              {loading ? "..." : "Buscar Mis Tickets"}
             </button>
           </form>
         ) : (
@@ -149,7 +149,7 @@ export default function EventPage() {
             {/* Person Info */}
             <div className="bg-white/10 p-6 border border-white/20">
               <p className="text-white/60 text-xs uppercase tracking-widest mb-1">
-                Welcome
+                Bienvenido/a
               </p>
               <p className="text-white text-2xl font-bold">
                 {lookupResult.person.name}
@@ -182,11 +182,11 @@ export default function EventPage() {
             {/* Ticket Types */}
             <div className="space-y-3">
               <p className="text-white/60 text-xs uppercase tracking-widest">
-                Available Tickets
+                Tickets Disponibles
               </p>
               {lookupResult.availableTicketTypes.length === 0 ? (
                 <p className="text-white/50 text-center py-4">
-                  No tickets available for you at this time
+                  No hay tickets disponibles para vos en este momento
                 </p>
               ) : (
                 lookupResult.availableTicketTypes.map((tt) => (
@@ -203,7 +203,7 @@ export default function EventPage() {
                       </p>
                       {tt.validUntil && (
                         <p className="text-yellow-300/80 text-xs mt-1">
-                          Valid until {new Date(tt.validUntil).toLocaleString("es-AR", {
+                          Válido hasta {new Date(tt.validUntil).toLocaleString("es-AR", {
                             weekday: "long",
                             day: "numeric",
                             month: "short",
@@ -223,16 +223,16 @@ export default function EventPage() {
                       className="bg-white text-fyf-red font-bold uppercase tracking-wider px-6 py-3 text-sm hover:bg-fyf-cream transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       {tt.alreadyPurchased
-                        ? "Purchased"
+                        ? "Comprado"
                         : tt.soldOut
-                        ? "Sold Out"
+                        ? "Agotado"
                         : checkoutLoading === tt.id
                         ? "..."
                         : tt.pendingPayment
-                        ? "Retry Payment"
+                        ? "Reintentar Pago"
                         : tt.price === 0
-                        ? "Claim"
-                        : "Buy"}
+                        ? "Reclamar"
+                        : "Comprar"}
                     </button>
                   </div>
                 ))
@@ -252,7 +252,7 @@ export default function EventPage() {
               }}
               className="text-white/50 text-sm underline block mx-auto"
             >
-              Use a different ID
+              Usar otro documento
             </button>
           </div>
         )}

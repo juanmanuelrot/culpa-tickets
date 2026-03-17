@@ -25,7 +25,7 @@ export default function ValidatorScansPage() {
   return (
     <div>
       <h1 className="text-2xl font-black uppercase tracking-wider text-white mb-6">
-        Recent Scans
+        Escaneos Recientes
       </h1>
 
       <div className="space-y-2">
@@ -53,7 +53,7 @@ export default function ValidatorScansPage() {
                     scan.wasValid ? "text-green-400" : "text-red-400"
                   }`}
                 >
-                  {scan.wasValid ? "Valid" : "Invalid"}
+                  {scan.wasValid ? "Válido" : "Inválido"}
                 </span>
                 <p className="text-white/30 text-xs mt-1">
                   {new Date(scan.scannedAt).toLocaleString("es-AR")}
@@ -63,7 +63,7 @@ export default function ValidatorScansPage() {
           </div>
         ))}
         {scans.length === 0 && (
-          <p className="text-white/30 text-center py-8">No scans yet</p>
+          <p className="text-white/30 text-center py-8">No hay escaneos todavía</p>
         )}
       </div>
     </div>

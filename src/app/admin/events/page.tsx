@@ -46,13 +46,13 @@ export default function AdminEventsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-black uppercase tracking-wider text-white">
-          Events
+          Eventos
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors"
         >
-          {showForm ? "Cancel" : "+ New Event"}
+          {showForm ? "Cancelar" : "+ Nuevo Evento"}
         </button>
       </div>
 
@@ -60,7 +60,7 @@ export default function AdminEventsPage() {
         <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Name</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre</label>
               <input
                 type="text"
                 value={formData.name}
@@ -70,7 +70,7 @@ export default function AdminEventsPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Date</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Fecha</label>
               <input
                 type="datetime-local"
                 value={formData.date}
@@ -80,7 +80,7 @@ export default function AdminEventsPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Location (optional)</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ubicación (opcional)</label>
               <input
                 type="text"
                 value={formData.location}
@@ -89,7 +89,7 @@ export default function AdminEventsPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Description (optional)</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Descripción (opcional)</label>
               <input
                 type="text"
                 value={formData.description}
@@ -103,7 +103,7 @@ export default function AdminEventsPage() {
             disabled={loading}
             className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
           >
-            {loading ? "Creating..." : "Create Event"}
+            {loading ? "Creando..." : "Crear Evento"}
           </button>
         </form>
       )}
@@ -131,7 +131,7 @@ export default function AdminEventsPage() {
               </div>
               <div className="text-right">
                 <span className={`text-xs uppercase tracking-wider font-bold ${event.isActive ? "text-green-400" : "text-white/30"}`}>
-                  {event.isActive ? "Active" : "Inactive"}
+                  {event.isActive ? "Activo" : "Inactivo"}
                 </span>
                 <p className="text-white/50 text-sm mt-1">
                   {event._count.tickets} tickets
@@ -144,7 +144,7 @@ export default function AdminEventsPage() {
           </Link>
         ))}
         {events.length === 0 && (
-          <p className="text-white/30 text-center py-8">No events yet</p>
+          <p className="text-white/30 text-center py-8">No hay eventos todavía</p>
         )}
       </div>
     </div>

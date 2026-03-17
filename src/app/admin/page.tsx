@@ -42,17 +42,17 @@ export default function AdminDashboard() {
   }, []);
 
   const cards = [
-    { label: "Events", value: stats?.events ?? "...", href: "/admin/events", color: "bg-fyf-red" },
-    { label: "Whitelisted", value: stats?.whitelisted ?? "...", href: "/admin/whitelist", color: "bg-fyf-red-dark" },
+    { label: "Eventos", value: stats?.events ?? "...", href: "/admin/events", color: "bg-fyf-red" },
+    { label: "En Lista", value: stats?.whitelisted ?? "...", href: "/admin/whitelist", color: "bg-fyf-red-dark" },
     { label: "Total Tickets", value: stats?.tickets ?? "...", href: "/admin/tickets", color: "bg-fyf-red" },
-    { label: "Paid Tickets", value: stats?.paidTickets ?? "...", href: "/admin/tickets?status=PAID", color: "bg-green-700" },
-    { label: "Used Tickets", value: stats?.usedTickets ?? "...", href: "/admin/tickets?status=USED", color: "bg-blue-700" },
+    { label: "Tickets Pagados", value: stats?.paidTickets ?? "...", href: "/admin/tickets?status=PAID", color: "bg-green-700" },
+    { label: "Tickets Usados", value: stats?.usedTickets ?? "...", href: "/admin/tickets?status=USED", color: "bg-blue-700" },
   ];
 
   return (
     <div>
       <h1 className="text-3xl font-black uppercase tracking-wider text-white mb-8">
-        Dashboard
+        Panel
       </h1>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
