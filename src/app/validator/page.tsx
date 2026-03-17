@@ -19,15 +19,18 @@ export default function ValidatorScannerPage() {
   const [processing, setProcessing] = useState(false);
   const scannerRef = useRef<HTMLDivElement>(null);
   const html5QrScannerRef = useRef<unknown>(null);
+  const processingRef = useRef(false);
 
   useEffect(() => {
     if (!scanning) return;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let scanner: any = null;
+    let unmounted = false;
 
     async function initScanner() {
       const { Html5Qrcode } = await import("html5-qrcode");
+      if (unmounted) return;
       const qrScanner = new Html5Qrcode("qr-reader");
       scanner = qrScanner;
       html5QrScannerRef.current = qrScanner;
@@ -37,9 +40,14 @@ export default function ValidatorScannerPage() {
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 250, height: 250 } },
           async (decodedText: string) => {
-            if (processing) return;
+            if (processingRef.current) return;
+            processingRef.current = true;
             setProcessing(true);
-            await qrScanner.stop();
+            try {
+              await qrScanner.stop();
+            } catch {
+              // Scanner may already be stopped
+            }
             setScanning(false);
             await handleScan(decodedText);
           },
@@ -53,8 +61,17 @@ export default function ValidatorScannerPage() {
     initScanner();
 
     return () => {
+      unmounted = true;
       if (scanner) {
-        scanner.stop?.().catch(() => {});
+        try {
+          const state = scanner.getState?.();
+          // Only stop if scanner is scanning (2) or paused (3)
+          if (state === 2 || state === 3) {
+            scanner.stop().catch(() => {});
+          }
+        } catch {
+          // Ignore cleanup errors
+        }
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,6 +95,7 @@ export default function ValidatorScannerPage() {
   }
 
   function handleScanAgain() {
+    processingRef.current = false;
     setScanResult(null);
     setScanning(true);
   }
