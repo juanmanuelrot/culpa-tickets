@@ -10,6 +10,7 @@ interface TicketTypeInfo {
   price: number;
   currency: string;
   alreadyPurchased: boolean;
+  pendingPayment: boolean;
   soldOut: boolean;
 }
 
@@ -214,6 +215,8 @@ export default function EventPage() {
                         ? "Sold Out"
                         : checkoutLoading === tt.id
                         ? "..."
+                        : tt.pendingPayment
+                        ? "Retry Payment"
                         : tt.price === 0
                         ? "Claim"
                         : "Buy"}

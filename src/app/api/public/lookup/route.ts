@@ -78,8 +78,12 @@ export async function POST(request: NextRequest) {
       allowedTicketTypeIds.includes(tt.id)
     );
 
-    // Check which ticket types the person already purchased
-    const purchasedTicketTypeIds = person.tickets.map((t) => t.ticketTypeId);
+    // Check which ticket types the person already purchased (only confirmed tickets)
+    const paidTickets = person.tickets.filter((t) => t.status === "PAID" || t.status === "USED");
+    const purchasedTicketTypeIds = paidTickets.map((t) => t.ticketTypeId);
+    const pendingTicketTypeIds = person.tickets
+      .filter((t) => t.status === "PENDING_PAYMENT")
+      .map((t) => t.ticketTypeId);
 
     return NextResponse.json({
       person: {
@@ -100,8 +104,9 @@ export async function POST(request: NextRequest) {
         price: tt.price,
         currency: tt.currency,
         alreadyPurchased: purchasedTicketTypeIds.includes(tt.id),
+        pendingPayment: pendingTicketTypeIds.includes(tt.id) && !purchasedTicketTypeIds.includes(tt.id),
         soldOut: tt.capacity !== null
-          ? person.tickets.filter((t) => t.ticketTypeId === tt.id).length >= 1
+          ? paidTickets.filter((t) => t.ticketTypeId === tt.id).length >= 1
           : false,
       })),
     });
