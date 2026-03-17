@@ -4,6 +4,16 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "F&F Tickets",
   description: "Solo para nosotros",
+  openGraph: {
+    title: "F&F Tickets",
+    description: "Solo para nosotros",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "F&F Tickets",
+    description: "Solo para nosotros",
+  },
 };
 
 export default function RootLayout({
