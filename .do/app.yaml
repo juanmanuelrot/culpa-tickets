@@ -15,7 +15,7 @@ services:
     http_port: 3000
     envs:
       - key: DATABASE_URL
-        scope: RUN_AND_BUILD_TIME
+        scope: RUN_TIME
         type: SECRET
       - key: JWT_SECRET
         scope: RUN_AND_BUILD_TIME
