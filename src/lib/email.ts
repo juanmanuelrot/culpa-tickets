@@ -8,7 +8,7 @@ export async function sendTicketEmail(params: {
   ticketType: string;
   date: string;
   purchaserName: string;
-  qrDataUrl: string;
+  qrCodeBuffer: Buffer;
 }) {
   const htmlContent = `
     <!DOCTYPE html>
@@ -27,7 +27,7 @@ export async function sendTicketEmail(params: {
         </p>
 
         <div style="background-color:#ffffff;border-radius:12px;padding:30px;margin:0 0 30px 0;">
-          <img src="${params.qrDataUrl}" alt="QR Code" style="width:250px;height:250px;display:block;margin:0 auto 20px auto;" />
+          <img src="cid:qrcode" alt="QR Code" style="width:250px;height:250px;display:block;margin:0 auto 20px auto;" />
           <p style="color:#333;font-size:12px;margin:0;">
             Present this QR code at the entrance
           </p>
@@ -64,5 +64,16 @@ export async function sendTicketEmail(params: {
     to: params.to,
     subject: `Your ticket for ${params.eventName}`,
     html: htmlContent,
+    attachments: [
+      {
+        filename: "qrcode.png",
+        content: params.qrCodeBuffer,
+        content_type: "image/png",
+        headers: {
+          "Content-ID": "<qrcode>",
+          "Content-Disposition": "inline",
+        },
+      },
+    ],
   });
 }

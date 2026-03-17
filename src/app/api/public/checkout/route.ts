@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createCheckoutPreference } from "@/lib/mercadopago";
 import { v4 as uuidv4 } from "uuid";
-import { createQRSignedToken, generateQRCodeDataURL } from "@/lib/qr";
+import { createQRSignedToken, generateQRCodeBuffer } from "@/lib/qr";
 import { sendTicketEmail } from "@/lib/email";
 import { formatDate } from "@/lib/utils";
 
@@ -128,14 +128,14 @@ export async function POST(request: NextRequest) {
       });
 
       // Send email with QR
-      const qrDataUrl = await generateQRCodeDataURL(finalJwt);
+      const qrCodeBuffer = await generateQRCodeBuffer(finalJwt);
       await sendTicketEmail({
         to: person.email,
         eventName: ticketType.event.name,
         ticketType: ticketType.name,
         date: formatDate(ticketType.event.date),
         purchaserName: person.name,
-        qrDataUrl,
+        qrCodeBuffer,
       });
 
       return NextResponse.json({

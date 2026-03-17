@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
-import { createQRSignedToken, generateQRCodeDataURL } from "@/lib/qr";
+import { createQRSignedToken, generateQRCodeBuffer } from "@/lib/qr";
 import { sendTicketEmail } from "@/lib/email";
 import { formatDate } from "@/lib/utils";
 
@@ -88,14 +88,14 @@ export async function POST(request: NextRequest) {
     });
 
     // Send email
-    const qrDataUrl = await generateQRCodeDataURL(qrSignedJwt);
+    const qrCodeBuffer = await generateQRCodeBuffer(qrSignedJwt);
     await sendTicketEmail({
       to: email.trim().toLowerCase(),
       eventName: event.name,
       ticketType: ticketType.name,
       date: formatDate(event.date),
       purchaserName: name.trim(),
-      qrDataUrl,
+      qrCodeBuffer,
     });
 
     return NextResponse.json({ success: true, ticketId: ticket.id, eventSlug: event.slug });

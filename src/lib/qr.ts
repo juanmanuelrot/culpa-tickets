@@ -25,10 +25,11 @@ export async function verifyQRToken(token: string): Promise<QRPayload | null> {
   }
 }
 
-export async function generateQRCodeDataURL(
+export async function generateQRCodeBuffer(
   signedJwt: string
-): Promise<string> {
-  return QRCode.toDataURL(signedJwt, {
+): Promise<Buffer> {
+  return QRCode.toBuffer(signedJwt, {
+    type: "png",
     errorCorrectionLevel: "H",
     margin: 2,
     width: 400,
