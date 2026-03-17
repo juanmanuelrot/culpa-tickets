@@ -68,7 +68,7 @@ export async function sendTicketEmail(params: {
       {
         filename: "qrcode.png",
         content: params.qrCodeBuffer,
-        content_type: "image/png",
+        contentType: "image/png",
         headers: {
           "Content-ID": "<qrcode>",
           "Content-Disposition": "inline",
