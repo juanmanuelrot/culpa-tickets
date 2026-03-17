@@ -1,8 +1,15 @@
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 import bcryptjs from "bcryptjs";
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const url = process.env.DATABASE_URL!;
+const needsSsl = url.includes("sslmode=") || (url.startsWith("postgresql://") && !url.includes("localhost"));
+const pool = new pg.Pool({
+  connectionString: url,
+  ...(needsSsl && { ssl: { rejectUnauthorized: false } }),
+});
+const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
