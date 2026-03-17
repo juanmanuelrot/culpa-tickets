@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       include: {
         allowedTicketTypes: true,
         tickets: {
-          where: { eventId, ticketTypeId, status: { not: "CANCELLED" } },
+          where: { eventId, ticketTypeId, status: { in: ["PAID", "USED"] } },
         },
       },
     });
@@ -54,6 +54,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Cancel any stale PENDING_PAYMENT tickets so the user can retry
+    await prisma.ticket.updateMany({
+      where: {
+        whitelistedPersonId: person.id,
+        eventId,
+        ticketTypeId,
+        status: "PENDING_PAYMENT",
+      },
+      data: { status: "CANCELLED" },
+    });
+
     const ticketType = await prisma.ticketType.findUnique({
       where: { id: ticketTypeId },
       include: { event: true },
@@ -66,12 +77,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check capacity
+    // Check capacity (only count confirmed tickets, not abandoned PENDING_PAYMENT)
     if (ticketType.capacity !== null) {
       const soldCount = await prisma.ticket.count({
         where: {
           ticketTypeId,
-          status: { not: "CANCELLED" },
+          status: { in: ["PAID", "USED"] },
         },
       });
       if (soldCount >= ticketType.capacity) {
