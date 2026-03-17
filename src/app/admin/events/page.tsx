@@ -34,7 +34,10 @@ export default function AdminEventsPage() {
     await fetch("/api/admin/events", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        ...formData,
+        date: new Date(formData.date).toISOString(),
+      }),
     });
     setFormData({ name: "", date: "", description: "", location: "" });
     setShowForm(false);

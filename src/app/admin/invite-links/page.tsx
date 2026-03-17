@@ -57,8 +57,8 @@ export default function AdminInviteLinksPage() {
       body: JSON.stringify({
         eventId: formData.eventId,
         ticketTypeId: formData.ticketTypeId,
-        expiresAt: formData.expiresAt,
-        ticketValidUntil: formData.ticketValidUntil || null,
+        expiresAt: new Date(formData.expiresAt).toISOString(),
+        ticketValidUntil: formData.ticketValidUntil ? new Date(formData.ticketValidUntil).toISOString() : null,
         maxUses: parseInt(formData.maxUses),
       }),
     });

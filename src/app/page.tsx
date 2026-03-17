@@ -64,22 +64,16 @@ export default function HomePage() {
           <p className="text-sm md:text-base text-white/60 uppercase tracking-[0.3em] mt-2">
             Friends & Family Tickets
           </p>
-          <div className="mt-10 flex gap-4 justify-center flex-wrap">
-            {upcomingEvents.length > 0 && (
+          {upcomingEvents.length > 0 && (
+            <div className="mt-10 flex gap-4 justify-center flex-wrap">
               <a
                 href="#events"
                 className="bg-white text-fyf-red font-bold text-lg uppercase tracking-widest px-10 py-4 hover:bg-fyf-cream transition-colors"
               >
                 Ver Eventos
               </a>
-            )}
-            <Link
-              href="/login"
-              className="border-2 border-white/50 text-white font-bold text-lg uppercase tracking-widest px-10 py-4 hover:bg-white/10 transition-colors"
-            >
-              Admin
-            </Link>
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
