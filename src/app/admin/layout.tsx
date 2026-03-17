@@ -10,6 +10,7 @@ const navItems = [
   { href: "/admin/whitelist", label: "Whitelist" },
   { href: "/admin/invite-links", label: "Invite Links" },
   { href: "/admin/tickets", label: "Tickets" },
+  { href: "/admin/users", label: "Users" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
