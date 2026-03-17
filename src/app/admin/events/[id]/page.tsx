@@ -94,6 +94,7 @@ export default function AdminEventDetailPage() {
   }
 
   async function handleApproveAll(ticketTypeId: string) {
+    if (!confirm("Grant access to all whitelisted people for this ticket type?")) return;
     setApprovingId(ticketTypeId);
     const res = await fetch(`/api/admin/events/${id}/ticket-types/${ticketTypeId}/approve-all`, {
       method: "POST",
