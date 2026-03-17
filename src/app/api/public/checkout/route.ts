@@ -109,6 +109,7 @@ export async function POST(request: NextRequest) {
           whitelistedPersonId: person.id,
           qrCodeToken,
           qrSignedJwt,
+          validUntil: ticketType.validUntil,
           status: "PAID",
           purchaserName: person.name,
           purchaserEmail: person.email,
@@ -136,12 +137,14 @@ export async function POST(request: NextRequest) {
         date: formatDate(ticketType.event.date),
         purchaserName: person.name,
         qrCodeBuffer,
+        validUntil: ticketType.validUntil ? formatDate(ticketType.validUntil) : null,
       });
 
       return NextResponse.json({
         success: true,
         free: true,
         ticketId: ticket.id,
+        ticketValidUntil: ticketType.validUntil,
       });
     }
 
@@ -151,6 +154,7 @@ export async function POST(request: NextRequest) {
         eventId,
         ticketTypeId,
         whitelistedPersonId: person.id,
+        validUntil: ticketType.validUntil,
         status: "PENDING_PAYMENT",
         purchaserName: person.name,
         purchaserEmail: person.email,

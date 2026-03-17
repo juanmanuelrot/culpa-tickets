@@ -122,6 +122,7 @@ export async function POST(request: NextRequest) {
         date: formatDate(ticket.event.date),
         purchaserName: ticket.purchaserName,
         qrCodeBuffer,
+        validUntil: ticket.validUntil ? formatDate(ticket.validUntil) : null,
       });
     } else if (payment.status === "rejected" || payment.status === "cancelled") {
       await prisma.ticket.update({

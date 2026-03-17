@@ -9,6 +9,7 @@ interface TicketTypeInfo {
   name: string;
   price: number;
   currency: string;
+  validUntil: string | null;
   alreadyPurchased: boolean;
   pendingPayment: boolean;
   soldOut: boolean;
@@ -83,7 +84,8 @@ export default function EventPage() {
       }
 
       if (data.free) {
-        router.push(`/event/${slug}/checkout/success?ticketId=${data.ticketId}&free=true`);
+        const successUrl = `/event/${slug}/checkout/success?ticketId=${data.ticketId}&free=true${data.ticketValidUntil ? `&validUntil=${encodeURIComponent(data.ticketValidUntil)}` : ""}`;
+        router.push(successUrl);
       } else if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       }
@@ -199,6 +201,17 @@ export default function EventPage() {
                       <p className="text-white/70 text-lg font-bold mt-1">
                         {formatPrice(tt.price, tt.currency)}
                       </p>
+                      {tt.validUntil && (
+                        <p className="text-yellow-300/80 text-xs mt-1">
+                          Valid until {new Date(tt.validUntil).toLocaleString("es-AR", {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "short",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      )}
                     </div>
                     <button
                       onClick={() => handleCheckout(tt.id)}

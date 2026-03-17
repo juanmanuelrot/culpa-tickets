@@ -5,6 +5,43 @@ import { createQRSignedToken, generateQRCodeBuffer } from "@/lib/qr";
 import { sendTicketEmail } from "@/lib/email";
 import { formatDate } from "@/lib/utils";
 
+export async function GET(request: NextRequest) {
+  const token = new URL(request.url).searchParams.get("token");
+  if (!token) {
+    return NextResponse.json({ error: "Token is required" }, { status: 400 });
+  }
+
+  const link = await prisma.freeInviteLink.findUnique({ where: { token } });
+  if (!link) {
+    return NextResponse.json({ error: "Invalid invite link" }, { status: 404 });
+  }
+
+  const event = await prisma.event.findUnique({
+    where: { id: link.eventId },
+    select: { name: true, date: true },
+  });
+
+  const ticketType = await prisma.ticketType.findUnique({
+    where: { id: link.ticketTypeId },
+    select: { name: true, validUntil: true },
+  });
+
+  const expired = new Date() > link.expiresAt;
+  const fullyUsed = link.usedCount >= link.maxUses;
+
+  // Invite link's ticketValidUntil takes priority, then ticket type's validUntil
+  const ticketValidUntil = link.ticketValidUntil ?? ticketType?.validUntil ?? null;
+
+  return NextResponse.json({
+    eventName: event?.name,
+    eventDate: event?.date,
+    ticketValidUntil,
+    ticketType: ticketType?.name,
+    expired,
+    fullyUsed,
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { token, name, email } = await request.json();
@@ -56,6 +93,9 @@ export async function POST(request: NextRequest) {
 
     const qrCodeToken = uuidv4();
 
+    // Resolve validUntil: invite link override > ticket type default
+    const validUntil = link.ticketValidUntil ?? ticketType.validUntil ?? null;
+
     // Create ticket and increment usage atomically
     const [ticket] = await prisma.$transaction([
       prisma.ticket.create({
@@ -64,6 +104,7 @@ export async function POST(request: NextRequest) {
           ticketTypeId: link.ticketTypeId,
           freeInviteLinkId: link.id,
           qrCodeToken,
+          validUntil,
           status: "PAID",
           purchaserName: name.trim(),
           purchaserEmail: email.trim().toLowerCase(),
@@ -96,9 +137,15 @@ export async function POST(request: NextRequest) {
       date: formatDate(event.date),
       purchaserName: name.trim(),
       qrCodeBuffer,
+      validUntil: validUntil ? formatDate(validUntil) : null,
     });
 
-    return NextResponse.json({ success: true, ticketId: ticket.id, eventSlug: event.slug });
+    return NextResponse.json({
+      success: true,
+      ticketId: ticket.id,
+      eventSlug: event.slug,
+      ticketValidUntil: validUntil,
+    });
   } catch (error) {
     console.error("Free invite error:", error);
     return NextResponse.json(

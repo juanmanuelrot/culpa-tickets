@@ -9,6 +9,7 @@ export async function sendTicketEmail(params: {
   date: string;
   purchaserName: string;
   qrCodeBuffer: Buffer;
+  validUntil?: string | null;
 }) {
   const qrCodeBase64 = params.qrCodeBuffer.toString("base64");
   const qrCodeDataUrl = `data:image/png;base64,${qrCodeBase64}`;
@@ -49,6 +50,12 @@ export async function sendTicketEmail(params: {
           <p style="font-size:14px;margin:0 0 8px 0;">
             <strong style="text-transform:uppercase;letter-spacing:1px;">Name:</strong> ${params.purchaserName}
           </p>
+          ${params.validUntil ? `
+          <p style="font-size:14px;margin:16px 0 0 0;padding:12px;background-color:rgba(0,0,0,0.2);border-radius:6px;">
+            <strong style="text-transform:uppercase;letter-spacing:1px;">&#9200; Valid Until:</strong> ${params.validUntil}
+            <br/><span style="font-size:12px;opacity:0.8;">This ticket cannot be used after this time.</span>
+          </p>
+          ` : ""}
         </div>
 
         <hr style="border:none;border-top:1px solid rgba(255,255,255,0.3);margin:30px 0;" />

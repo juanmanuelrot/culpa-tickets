@@ -9,6 +9,7 @@ interface TicketType {
   price: number;
   currency: string;
   capacity: number | null;
+  validUntil: string | null;
   sortOrder: number;
   _count: { tickets: number };
 }
@@ -31,7 +32,7 @@ export default function AdminEventDetailPage() {
   const id = params.id as string;
 
   const [event, setEvent] = useState<Event | null>(null);
-  const [ttForm, setTtForm] = useState({ name: "", price: "", currency: "UYU", capacity: "", autoApproveWhitelist: true });
+  const [ttForm, setTtForm] = useState({ name: "", price: "", currency: "UYU", capacity: "", validUntil: "", autoApproveWhitelist: true });
   const [showTtForm, setShowTtForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [approvingId, setApprovingId] = useState<string | null>(null);
@@ -76,10 +77,11 @@ export default function AdminEventDetailPage() {
         price: Math.round(parseFloat(ttForm.price) * 100),
         currency: ttForm.currency,
         capacity: ttForm.capacity ? parseInt(ttForm.capacity) : null,
+        validUntil: ttForm.validUntil ? new Date(ttForm.validUntil).toISOString() : null,
         autoApproveWhitelist: ttForm.autoApproveWhitelist,
       }),
     });
-    setTtForm({ name: "", price: "", currency: "UYU", capacity: "", autoApproveWhitelist: true });
+    setTtForm({ name: "", price: "", currency: "UYU", capacity: "", validUntil: "", autoApproveWhitelist: true });
     setShowTtForm(false);
     setLoading(false);
     loadEvent();
@@ -196,7 +198,7 @@ export default function AdminEventDetailPage() {
 
         {showTtForm && (
           <form onSubmit={handleAddTicketType} className="bg-white/5 border border-white/10 p-4 mb-4 space-y-3">
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div>
                 <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Name</label>
                 <input
@@ -243,6 +245,16 @@ export default function AdminEventDetailPage() {
                   className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
                 />
               </div>
+              <div>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Valid Until</label>
+                <input
+                  type="datetime-local"
+                  value={ttForm.validUntil}
+                  onChange={(e) => setTtForm({ ...ttForm, validUntil: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
+                  placeholder="No expiry"
+                />
+              </div>
             </div>
             <label className="flex items-center gap-2 text-white/70 text-sm cursor-pointer">
               <input
@@ -285,6 +297,11 @@ export default function AdminEventDetailPage() {
                 {tt.capacity && (
                   <span className="text-white/30 ml-4 text-sm">
                     Cap: {tt.capacity}
+                  </span>
+                )}
+                {tt.validUntil && (
+                  <span className="text-yellow-400/70 ml-4 text-sm">
+                    Expires: {new Date(tt.validUntil).toLocaleString("es-AR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                   </span>
                 )}
               </div>

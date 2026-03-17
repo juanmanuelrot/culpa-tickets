@@ -10,7 +10,7 @@ export async function POST(
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id: eventId } = await params;
-  const { name, price, currency, capacity, sortOrder, autoApproveWhitelist } = await request.json();
+  const { name, price, currency, capacity, validUntil, sortOrder, autoApproveWhitelist } = await request.json();
 
   if (!name || price === undefined) {
     return NextResponse.json(
@@ -26,6 +26,7 @@ export async function POST(
       price: Math.round(price),
       currency: currency || "UYU",
       capacity: capacity || null,
+      validUntil: validUntil ? new Date(validUntil) : null,
       sortOrder: sortOrder || 0,
     },
   });

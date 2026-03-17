@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   const admin = await requireAdmin(request);
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { eventId, ticketTypeId, expiresAt, maxUses } = await request.json();
+  const { eventId, ticketTypeId, expiresAt, ticketValidUntil, maxUses } = await request.json();
 
   if (!eventId || !ticketTypeId || !expiresAt) {
     return NextResponse.json(
@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
       eventId,
       ticketTypeId,
       expiresAt: new Date(expiresAt),
+      ticketValidUntil: ticketValidUntil ? new Date(ticketValidUntil) : null,
       maxUses: maxUses || 1,
       createdBy: admin.id,
     },

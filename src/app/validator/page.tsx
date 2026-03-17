@@ -6,6 +6,7 @@ interface ScanResult {
   valid: boolean;
   error?: string;
   usedAt?: string;
+  expiredAt?: string;
   ticket?: {
     purchaserName: string;
     ticketType: string;
@@ -164,6 +165,12 @@ export default function ValidatorScannerPage() {
             {scanResult.usedAt && (
               <p className="text-white/40 text-xs mt-2">
                 First scanned: {new Date(scanResult.usedAt).toLocaleString("es-AR")}
+              </p>
+            )}
+
+            {scanResult.expiredAt && (
+              <p className="text-yellow-400 text-xs mt-2">
+                Expired at: {new Date(scanResult.expiredAt).toLocaleString("es-AR")}
               </p>
             )}
           </div>

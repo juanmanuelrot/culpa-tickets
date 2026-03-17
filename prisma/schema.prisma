@@ -72,8 +72,9 @@ model TicketType {
   name      String
   price     Int      // Price in cents (0 for free)
   currency  String   @default("UYU")
-  capacity  Int?     // null = unlimited
-  sortOrder Int      @default(0)
+  capacity   Int?      // null = unlimited
+  validUntil DateTime? // Optional: tickets of this type expire after this time
+  sortOrder  Int       @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -114,6 +115,8 @@ model Ticket {
   purchaserEmail  String
   purchaserGovId  String?
 
+  validUntil      DateTime? // Resolved expiration time for scanning
+
   mpOrderId       String?
   mpPaymentStatus String?
 
@@ -140,8 +143,9 @@ model FreeInviteLink {
   token        String   @unique @default(cuid())
   eventId      String
   ticketTypeId String
-  expiresAt    DateTime
-  maxUses      Int      @default(1)
+  expiresAt        DateTime
+  ticketValidUntil DateTime? // Optional: tickets from this link expire after this time
+  maxUses          Int       @default(1)
   usedCount    Int      @default(0)
   createdBy    String
   createdAt    DateTime @default(now())

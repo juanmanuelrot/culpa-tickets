@@ -48,7 +48,29 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Step 4: Check ticket status
+    // Step 4: Check if ticket has expired
+    if (ticket.validUntil && new Date() > new Date(ticket.validUntil)) {
+      await prisma.scan.create({
+        data: {
+          ticketId: ticket.id,
+          validatorId: user.id,
+          wasValid: false,
+        },
+      });
+
+      return NextResponse.json({
+        valid: false,
+        error: "Ticket has expired",
+        expiredAt: ticket.validUntil,
+        ticket: {
+          purchaserName: ticket.purchaserName,
+          ticketType: ticket.ticketType.name,
+          event: ticket.event.name,
+        },
+      });
+    }
+
+    // Step 5: Check ticket status
     if (ticket.status === "USED") {
       // Find when it was first scanned
       const firstScan = await prisma.scan.findFirst({

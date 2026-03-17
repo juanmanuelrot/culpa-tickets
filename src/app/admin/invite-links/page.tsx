@@ -8,6 +8,7 @@ interface InviteLink {
   eventId: string;
   ticketTypeId: string;
   expiresAt: string;
+  ticketValidUntil: string | null;
   maxUses: number;
   usedCount: number;
   createdAt: string;
@@ -27,6 +28,7 @@ export default function AdminInviteLinksPage() {
     eventId: "",
     ticketTypeId: "",
     expiresAt: "",
+    ticketValidUntil: "",
     maxUses: "1",
   });
   const [loading, setLoading] = useState(false);
@@ -53,7 +55,10 @@ export default function AdminInviteLinksPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ...formData,
+        eventId: formData.eventId,
+        ticketTypeId: formData.ticketTypeId,
+        expiresAt: formData.expiresAt,
+        ticketValidUntil: formData.ticketValidUntil || null,
         maxUses: parseInt(formData.maxUses),
       }),
     });
@@ -61,7 +66,7 @@ export default function AdminInviteLinksPage() {
       const data = await res.json();
       alert(`Invite link created!\n\n${data.url}`);
     }
-    setFormData({ eventId: "", ticketTypeId: "", expiresAt: "", maxUses: "1" });
+    setFormData({ eventId: "", ticketTypeId: "", expiresAt: "", ticketValidUntil: "", maxUses: "1" });
     setShowForm(false);
     setLoading(false);
     loadLinks();
@@ -142,6 +147,16 @@ export default function AdminInviteLinksPage() {
                 required
               />
             </div>
+            <div>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket Valid Until</label>
+              <input
+                type="datetime-local"
+                value={formData.ticketValidUntil}
+                onChange={(e) => setFormData({ ...formData, ticketValidUntil: e.target.value })}
+                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+              />
+              <p className="text-white/30 text-xs mt-1">Optional — when tickets expire for scanning</p>
+            </div>
           </div>
           <button
             type="submit"
@@ -162,8 +177,11 @@ export default function AdminInviteLinksPage() {
                   {appUrl}/invite/{link.token}
                 </p>
                 <p className="text-white/40 text-xs mt-1">
-                  Uses: {link.usedCount}/{link.maxUses} | Expires:{" "}
+                  Uses: {link.usedCount}/{link.maxUses} | Link expires:{" "}
                   {new Date(link.expiresAt).toLocaleString("es-AR")}
+                  {link.ticketValidUntil && (
+                    <span className="text-yellow-400/70"> | Ticket valid until: {new Date(link.ticketValidUntil).toLocaleString("es-AR")}</span>
+                  )}
                 </p>
               </div>
               <div className="flex items-center gap-3">
