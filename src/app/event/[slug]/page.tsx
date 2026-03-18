@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { HaringBorder } from "@/components/decorative/haring-border";
+import { SnakeBorderFrame } from "@/components/decorative/snake-border";
+import { DjCreature } from "@/components/decorative/dj-creature";
+import { HaringFigure } from "@/components/decorative/haring-border";
 
 interface TicketTypeInfo {
   id: string;
@@ -107,17 +109,30 @@ export default function EventPage() {
 
   return (
     <div className="min-h-screen bg-fyf-red relative overflow-hidden">
-      <HaringBorder />
+      <SnakeBorderFrame />
+
+      {/* Subtle texture */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%221%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E')] pointer-events-none" />
+
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">
-        <h1 className="text-5xl md:text-7xl font-black text-white tracking-wider mb-2 text-center">
-          F&F
+        {/* Header */}
+        <h1 className="text-6xl md:text-8xl font-black text-white tracking-wider mb-1 text-center fyf-title-shadow select-none">
+          F<span className="text-white/90">&</span>F
         </h1>
-        <p className="text-lg text-white/80 italic mb-10">Solo para nosotros</p>
+
+        {/* Divider */}
+        <div className="flex items-center gap-2 mb-2 opacity-40">
+          <div className="w-8 h-px bg-white/60" />
+          <HaringFigure variant={2} className="w-5 h-5 text-white" />
+          <div className="w-8 h-px bg-white/60" />
+        </div>
+
+        <p className="text-base text-white/80 italic mb-8">Solo para nosotros</p>
 
         {!lookupResult ? (
           <form onSubmit={handleLookup} className="w-full max-w-sm space-y-6">
             <div>
-              <label className="block text-white/80 text-xs uppercase tracking-widest mb-2">
+              <label className="block text-white/80 text-xs uppercase tracking-[0.2em] mb-3 text-center">
                 Ingresá tu número de documento
               </label>
               <input
@@ -125,43 +140,54 @@ export default function EventPage() {
                 value={govId}
                 onChange={(e) => setGovId(e.target.value)}
                 placeholder="Tu cédula de identidad"
-                className="w-full bg-white/10 border-2 border-white/30 text-white px-4 py-4 text-lg focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
+                className="w-full bg-white/10 border-2 border-white/30 text-white px-4 py-4 text-lg text-center focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
                 required
               />
             </div>
 
             {error && (
-              <p className="text-white bg-black/30 px-4 py-2 text-sm text-center">
-                {error}
-              </p>
+              <div className="bg-black/20 border border-white/20 px-4 py-3">
+                <p className="text-white text-sm text-center">
+                  {error}
+                </p>
+              </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-white text-fyf-red font-bold text-lg uppercase tracking-widest py-4 hover:bg-fyf-cream transition-colors disabled:opacity-50"
+              className="w-full bg-white text-fyf-red font-bold text-base uppercase tracking-[0.2em] py-4 hover:bg-fyf-cream transition-colors disabled:opacity-50"
             >
-              {loading ? "..." : "Buscar Mis Tickets"}
+              {loading ? (
+                <span className="inline-block w-5 h-5 border-2 border-fyf-red/30 border-t-fyf-red rounded-full animate-spin" />
+              ) : (
+                "Buscar Mis Tickets"
+              )}
             </button>
+
+            {/* Decorative creature */}
+            <div className="flex justify-center pt-4 opacity-20">
+              <DjCreature className="w-32 text-white" />
+            </div>
           </form>
         ) : (
-          <div className="w-full max-w-md space-y-6">
+          <div className="w-full max-w-md space-y-5 animate-in">
             {/* Person Info */}
-            <div className="bg-white/10 p-6 border border-white/20">
-              <p className="text-white/60 text-xs uppercase tracking-widest mb-1">
+            <div className="bg-white/10 backdrop-blur-sm p-6 border border-white/20">
+              <p className="text-white/60 text-xs uppercase tracking-[0.2em] mb-1">
                 Bienvenido/a
               </p>
-              <p className="text-white text-2xl font-bold">
+              <p className="text-white text-2xl font-black uppercase tracking-wider">
                 {lookupResult.person.name}
               </p>
-              <p className="text-white/60 text-sm mt-1">
+              <p className="text-white/50 text-sm mt-1">
                 {lookupResult.person.email}
               </p>
             </div>
 
             {/* Event Info */}
-            <div className="bg-white/10 p-6 border border-white/20">
-              <p className="text-white text-xl font-bold uppercase tracking-wider">
+            <div className="bg-white/10 backdrop-blur-sm p-6 border border-white/20">
+              <p className="text-white text-xl font-black uppercase tracking-wider">
                 {lookupResult.event.name}
               </p>
               <p className="text-white/70 text-sm mt-2">
@@ -173,7 +199,7 @@ export default function EventPage() {
                 })}
               </p>
               {lookupResult.event.location && (
-                <p className="text-white/70 text-sm mt-1">
+                <p className="text-white/60 text-sm mt-1">
                   {lookupResult.event.location}
                 </p>
               )}
@@ -181,24 +207,26 @@ export default function EventPage() {
 
             {/* Ticket Types */}
             <div className="space-y-3">
-              <p className="text-white/60 text-xs uppercase tracking-widest">
+              <p className="text-white/60 text-xs uppercase tracking-[0.2em]">
                 Tickets Disponibles
               </p>
               {lookupResult.availableTicketTypes.length === 0 ? (
-                <p className="text-white/50 text-center py-4">
-                  No hay tickets disponibles para vos en este momento
-                </p>
+                <div className="bg-white/5 border border-white/10 p-6 text-center">
+                  <p className="text-white/50">
+                    No hay tickets disponibles para vos en este momento
+                  </p>
+                </div>
               ) : (
                 lookupResult.availableTicketTypes.map((tt) => (
                   <div
                     key={tt.id}
-                    className="bg-white/10 border border-white/20 p-5 flex items-center justify-between"
+                    className="bg-white/10 backdrop-blur-sm border border-white/20 p-5 flex items-center justify-between gap-4 hover:bg-white/[0.15] transition-colors"
                   >
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-white font-bold uppercase tracking-wider">
                         {tt.name}
                       </p>
-                      <p className="text-white/70 text-lg font-bold mt-1">
+                      <p className="text-white/80 text-lg font-black mt-1">
                         {formatPrice(tt.price, tt.currency)}
                       </p>
                       {tt.validUntil && (
@@ -220,7 +248,7 @@ export default function EventPage() {
                         tt.soldOut ||
                         checkoutLoading === tt.id
                       }
-                      className="bg-white text-fyf-red font-bold uppercase tracking-wider px-6 py-3 text-sm hover:bg-fyf-cream transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="bg-white text-fyf-red font-bold uppercase tracking-wider px-6 py-3 text-sm hover:bg-fyf-cream transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
                     >
                       {tt.alreadyPurchased
                         ? "Comprado"
@@ -240,9 +268,11 @@ export default function EventPage() {
             </div>
 
             {error && (
-              <p className="text-white bg-black/30 px-4 py-2 text-sm text-center">
-                {error}
-              </p>
+              <div className="bg-black/20 border border-white/20 px-4 py-3">
+                <p className="text-white text-sm text-center">
+                  {error}
+                </p>
+              </div>
             )}
 
             <button
@@ -250,7 +280,7 @@ export default function EventPage() {
                 setLookupResult(null);
                 setGovId("");
               }}
-              className="text-white/50 text-sm underline block mx-auto"
+              className="text-white/50 text-sm underline block mx-auto hover:text-white/70 transition-colors"
             >
               Usar otro documento
             </button>
