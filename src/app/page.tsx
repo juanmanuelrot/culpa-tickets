@@ -54,7 +54,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-fyf-black text-fyf-white">
       {/* Hero Section - Red with snake border like the flyer */}
-      <section className="relative bg-fyf-red min-h-[100vh] md:min-h-[90vh] flex flex-col items-center justify-center overflow-hidden">
+      <section className="relative bg-fyf-red min-h-screen flex flex-col items-center justify-center overflow-hidden">
         <SnakeBorderFrame />
 
         {/* Subtle texture overlay */}

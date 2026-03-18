@@ -175,7 +175,7 @@ export function SnakeBorder() {
       <svg
         className="absolute inset-0 w-full h-full"
         viewBox="0 0 400 800"
-        preserveAspectRatio="none"
+        preserveAspectRatio="xMidYMid slice"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -309,7 +309,7 @@ export function SnakeBorderFrame() {
       <svg
         className="absolute inset-0 w-full h-full"
         viewBox="0 0 400 710"
-        preserveAspectRatio="none"
+        preserveAspectRatio="xMidYMid slice"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
