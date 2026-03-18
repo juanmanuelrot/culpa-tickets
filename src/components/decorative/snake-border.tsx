@@ -171,9 +171,32 @@ export function SnakeBorderFrame() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        <style>{`
+          @keyframes snakeDash {
+            to { stroke-dashoffset: -48; }
+          }
+          @keyframes heartPulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.2; }
+            50% { transform: scale(1); opacity: 0.35; }
+          }
+          @keyframes tongueLick {
+            0%, 70%, 100% { opacity: 1; transform: scaleX(1); }
+            80% { opacity: 1; transform: scaleX(0.6); }
+            90% { opacity: 1; transform: scaleX(1.1); }
+          }
+          @keyframes snakeShimmer {
+            0%, 100% { opacity: 0.18; }
+            50% { opacity: 0.22; }
+          }
+          .snake-dash { animation: snakeDash 2s linear infinite; }
+          .snake-heart { animation: heartPulse 3s ease-in-out infinite; }
+          .snake-tongue { animation: tongueLick 2.5s ease-in-out infinite; transform-origin: -15px 5px; }
+          .snake-body { animation: snakeShimmer 4s ease-in-out infinite; }
+        `}</style>
         {/* Continuous snake path around the border */}
         {/* Starting from top-center, going clockwise */}
         <path
+          className="snake-body"
           d={`
             M200 8
             C240 12, 260 20, 280 14
@@ -256,6 +279,7 @@ export function SnakeBorderFrame() {
             C160 18, 180 12, 200 8
             Z
           `}
+          className="snake-dash"
           stroke="white"
           strokeWidth="8"
           strokeLinecap="round"
@@ -269,7 +293,7 @@ export function SnakeBorderFrame() {
           <ellipse cx="0" cy="5" rx="15" ry="10" fill="white" />
           <circle cx="-5" cy="2" r="3" fill="currentColor" opacity="0.5" />
           {/* Forked tongue */}
-          <path d="M-15 5 L-24 1 M-15 5 L-24 9" stroke="white" strokeWidth="2" strokeLinecap="round" />
+          <path className="snake-tongue" d="M-15 5 L-24 1 M-15 5 L-24 9" stroke="white" strokeWidth="2" strokeLinecap="round" />
           {/* Crown/spikes */}
           <line x1="-2" y1="-5" x2="-4" y2="-12" stroke="white" strokeWidth="2" />
           <line x1="4" y1="-5" x2="4" y2="-13" stroke="white" strokeWidth="2" />
@@ -311,7 +335,7 @@ export function SnakeBorderFrame() {
           { x: 80, y: 12 },
           { x: 320, y: 10 },
         ].map(({ x, y }, i) => (
-          <g key={`heart-${i}`} opacity="0.2" transform={`translate(${x}, ${y}) scale(0.8)`}>
+          <g key={`heart-${i}`} className="snake-heart" style={{ animationDelay: `${i * 0.4}s`, transformOrigin: `${x}px ${y}px` }} transform={`translate(${x}, ${y}) scale(0.8)`}>
             <path
               d="M0 3 C0 0, -5 -3, -5 1 C-5 4, 0 7, 0 10 C0 7, 5 4, 5 1 C5 -3, 0 0, 0 3Z"
               fill="white"
