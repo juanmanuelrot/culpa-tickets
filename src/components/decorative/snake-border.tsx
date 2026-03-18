@@ -1,156 +1,158 @@
+// Keith Haring-style dancing figure component for border decoration
+function DancingFigure({ pose }: { pose: number }) {
+  const strokeProps = {
+    stroke: "white",
+    strokeWidth: 4.5,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    fill: "none",
+  };
+
+  switch (pose) {
+    case 0:
+      // Arms up, jumping
+      return (
+        <g>
+          <circle cx="0" cy="-22" r="7" fill="white" />
+          <path d="M0 -15 L0 8" {...strokeProps} />
+          <path d="M0 -8 L-16 -24" {...strokeProps} />
+          <path d="M0 -8 L16 -24" {...strokeProps} />
+          <path d="M0 8 L-13 26 L-19 24" {...strokeProps} />
+          <path d="M0 8 L13 26 L19 24" {...strokeProps} />
+          {/* Motion lines */}
+          <path d="M-21 -20 L-25 -18 M-22 -15 L-26 -13 M-21 -10 L-25 -8" {...strokeProps} strokeWidth={2} />
+          <path d="M21 -20 L25 -18 M22 -15 L26 -13 M21 -10 L25 -8" {...strokeProps} strokeWidth={2} />
+        </g>
+      );
+    case 1:
+      // Running
+      return (
+        <g>
+          <circle cx="2" cy="-22" r="7" fill="white" />
+          <path d="M2 -15 L0 8" {...strokeProps} />
+          <path d="M1 -8 L-16 -2" {...strokeProps} />
+          <path d="M1 -8 L16 -20" {...strokeProps} />
+          <path d="M0 8 L-14 24 L-10 28" {...strokeProps} />
+          <path d="M0 8 L16 22 L22 18" {...strokeProps} />
+          {/* Motion lines */}
+          <path d="M-18 2 L-23 4 M-18 7 L-23 9 M-17 12 L-22 14" {...strokeProps} strokeWidth={2} />
+        </g>
+      );
+    case 2:
+      // Dancing sideways
+      return (
+        <g>
+          <circle cx="0" cy="-22" r="7" fill="white" />
+          <path d="M0 -15 L-2 8" {...strokeProps} />
+          <path d="M-1 -8 L15 -20" {...strokeProps} />
+          <path d="M-1 -8 L17 -4" {...strokeProps} />
+          <path d="M-2 8 L-16 24 L-12 28" {...strokeProps} />
+          <path d="M-2 8 L10 26 L16 24" {...strokeProps} />
+          {/* Energy lines from head */}
+          <path d="M-4 -30 L-6 -36 M1 -30 L1 -37 M6 -29 L8 -35" {...strokeProps} strokeWidth={2} />
+        </g>
+      );
+    case 3:
+    default:
+      // Crawling / all fours
+      return (
+        <g>
+          <circle cx="18" cy="-10" r="6" fill="white" />
+          <path d="M12 -8 L-10 -4" {...strokeProps} />
+          <path d="M-10 -4 L-20 -16 L-24 -12" {...strokeProps} />
+          <path d="M-10 -4 L-18 8 L-14 12" {...strokeProps} />
+          <path d="M8 -6 L14 8 L20 10" {...strokeProps} />
+          <path d="M4 -5 L-2 10 L2 14" {...strokeProps} />
+          {/* Motion lines behind */}
+          <path d="M-24 -18 L-28 -20 M-26 -13 L-30 -13 M-24 -8 L-28 -6" {...strokeProps} strokeWidth={2} />
+        </g>
+      );
+  }
+}
+
 export function SnakeBorder() {
+  // Keith Haring-style border with dancing figures along edges
+  const figures = [
+    // Left edge figures (going down)
+    { x: 42, y: 80, pose: 0, scale: 0.55, rotate: 0 },
+    { x: 38, y: 210, pose: 1, scale: 0.5, rotate: 10 },
+    { x: 45, y: 340, pose: 2, scale: 0.55, rotate: -5 },
+    { x: 40, y: 470, pose: 3, scale: 0.5, rotate: 0 },
+    { x: 42, y: 600, pose: 0, scale: 0.5, rotate: 8 },
+    { x: 38, y: 720, pose: 1, scale: 0.55, rotate: -8 },
+    // Right edge figures (going down)
+    { x: 358, y: 120, pose: 2, scale: 0.55, rotate: 180 },
+    { x: 362, y: 250, pose: 0, scale: 0.5, rotate: 175 },
+    { x: 355, y: 380, pose: 1, scale: 0.55, rotate: 185 },
+    { x: 360, y: 510, pose: 3, scale: 0.5, rotate: 180 },
+    { x: 358, y: 640, pose: 2, scale: 0.5, rotate: 170 },
+    { x: 362, y: 760, pose: 0, scale: 0.55, rotate: 185 },
+    // Top edge figures
+    { x: 120, y: 42, pose: 1, scale: 0.5, rotate: -90 },
+    { x: 200, y: 38, pose: 3, scale: 0.55, rotate: -85 },
+    { x: 280, y: 42, pose: 0, scale: 0.5, rotate: -95 },
+    // Bottom edge figures
+    { x: 100, y: 758, pose: 2, scale: 0.5, rotate: 90 },
+    { x: 200, y: 762, pose: 0, scale: 0.55, rotate: 85 },
+    { x: 300, y: 758, pose: 1, scale: 0.5, rotate: 95 },
+  ];
+
+  const hearts = [
+    { x: 42, y: 150, scale: 1.2 },
+    { x: 358, y: 190, scale: 1 },
+    { x: 40, y: 530, scale: 1.1 },
+    { x: 360, y: 450, scale: 1 },
+    { x: 160, y: 40, scale: 0.9 },
+    { x: 240, y: 760, scale: 1.1 },
+  ];
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Left snake - flowing down the left side */}
       <svg
-        className="absolute left-0 top-0 h-full w-16 md:w-24"
-        viewBox="0 0 80 800"
+        className="absolute inset-0 w-full h-full"
+        viewBox="0 0 400 800"
         preserveAspectRatio="none"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path
-          d="M40 0 C60 40, 70 60, 55 100 C40 140, 15 160, 20 200 C25 240, 65 260, 60 300 C55 340, 15 360, 20 400 C25 440, 65 460, 60 500 C55 540, 15 560, 20 600 C25 640, 65 660, 60 700 C55 740, 25 760, 40 800"
-          stroke="white"
-          strokeWidth="22"
-          strokeLinecap="round"
-          opacity="0.15"
-        />
-        {/* Snake pattern lines */}
-        <path
-          d="M40 0 C60 40, 70 60, 55 100 C40 140, 15 160, 20 200 C25 240, 65 260, 60 300 C55 340, 15 360, 20 400 C25 440, 65 460, 60 500 C55 540, 15 560, 20 600 C25 640, 65 660, 60 700 C55 740, 25 760, 40 800"
-          stroke="white"
-          strokeWidth="16"
-          strokeLinecap="round"
-          opacity="0.08"
-        />
-        {/* Inner pattern squiggles */}
-        {[80, 200, 320, 440, 560, 680].map((y) => (
-          <g key={y} opacity="0.12">
-            <path
-              d={`M${30 + (y % 40)} ${y} q8 10 0 20 q-8 10 0 20`}
-              stroke="white"
-              strokeWidth="2"
-              fill="none"
-            />
-            <path
-              d={`M${40 + (y % 30)} ${y + 5} q6 8 0 16 q-6 8 0 16`}
-              stroke="white"
-              strokeWidth="1.5"
-              fill="none"
-            />
-          </g>
-        ))}
-        {/* Small hearts along the snake */}
-        {[150, 350, 550, 750].map((y) => (
-          <g key={`h-${y}`} opacity="0.15" transform={`translate(${25 + (y % 30)}, ${y})`}>
-            <path
-              d="M0 3 C0 0, -4 -2, -4 1 C-4 3, 0 6, 0 8 C0 6, 4 3, 4 1 C4 -2, 0 0, 0 3Z"
-              fill="white"
-            />
-          </g>
-        ))}
-      </svg>
+        <style>{`
+          @keyframes figBounce {
+            0%, 100% { transform: var(--fig-base) translateY(0); }
+            50% { transform: var(--fig-base) translateY(-3px); }
+          }
+          @keyframes heartBeat {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.35; }
+          }
+          .kh-figure { animation: figBounce 2s ease-in-out infinite; }
+          .kh-heart { animation: heartBeat 3s ease-in-out infinite; }
+        `}</style>
 
-      {/* Right snake - flowing down the right side */}
-      <svg
-        className="absolute right-0 top-0 h-full w-16 md:w-24"
-        viewBox="0 0 80 800"
-        preserveAspectRatio="none"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M40 0 C20 40, 10 60, 25 100 C40 140, 65 160, 60 200 C55 240, 15 260, 20 300 C25 340, 65 360, 60 400 C55 440, 15 460, 20 500 C25 540, 65 560, 60 600 C55 640, 15 660, 20 700 C25 740, 55 760, 40 800"
-          stroke="white"
-          strokeWidth="22"
-          strokeLinecap="round"
-          opacity="0.15"
-        />
-        <path
-          d="M40 0 C20 40, 10 60, 25 100 C40 140, 65 160, 60 200 C55 240, 15 260, 20 300 C25 340, 65 360, 60 400 C55 440, 15 460, 20 500 C25 540, 65 560, 60 600 C55 640, 15 660, 20 700 C25 740, 55 760, 40 800"
-          stroke="white"
-          strokeWidth="16"
-          strokeLinecap="round"
-          opacity="0.08"
-        />
-        {[80, 200, 320, 440, 560, 680].map((y) => (
-          <g key={y} opacity="0.12">
-            <path
-              d={`M${35 + (y % 30)} ${y} q8 10 0 20 q-8 10 0 20`}
-              stroke="white"
-              strokeWidth="2"
-              fill="none"
-            />
+        {figures.map((f, i) => (
+          <g
+            key={`fig-${i}`}
+            className="kh-figure"
+            opacity="0.18"
+            style={{
+              ["--fig-base" as string]: `translate(${f.x}px, ${f.y}px) scale(${f.scale}) rotate(${f.rotate}deg)`,
+              transform: `translate(${f.x}px, ${f.y}px) scale(${f.scale}) rotate(${f.rotate}deg)`,
+              animationDelay: `${(i * 0.3) % 2}s`,
+            }}
+          >
+            <DancingFigure pose={f.pose} />
           </g>
         ))}
-        {[250, 450, 650].map((y) => (
-          <g key={`h-${y}`} opacity="0.15" transform={`translate(${45 + (y % 20)}, ${y})`}>
-            <path
-              d="M0 3 C0 0, -4 -2, -4 1 C-4 3, 0 6, 0 8 C0 6, 4 3, 4 1 C4 -2, 0 0, 0 3Z"
-              fill="white"
-            />
-          </g>
-        ))}
-      </svg>
 
-      {/* Top snake - flowing across the top */}
-      <svg
-        className="absolute top-0 left-0 w-full h-16 md:h-24"
-        viewBox="0 0 800 80"
-        preserveAspectRatio="none"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M0 40 C40 60, 60 70, 100 55 C140 40, 160 15, 200 20 C240 25, 260 65, 300 60 C340 55, 360 15, 400 20 C440 25, 460 65, 500 60 C540 55, 560 15, 600 20 C640 25, 660 65, 700 60 C740 55, 760 25, 800 40"
-          stroke="white"
-          strokeWidth="22"
-          strokeLinecap="round"
-          opacity="0.15"
-        />
-        <path
-          d="M0 40 C40 60, 60 70, 100 55 C140 40, 160 15, 200 20 C240 25, 260 65, 300 60 C340 55, 360 15, 400 20 C440 25, 460 65, 500 60 C540 55, 560 15, 600 20 C640 25, 660 65, 700 60 C740 55, 760 25, 800 40"
-          stroke="white"
-          strokeWidth="16"
-          strokeLinecap="round"
-          opacity="0.08"
-        />
-        {/* Snake head at top-left with tongue */}
-        <g opacity="0.2" transform="translate(15, 25)">
-          <ellipse cx="0" cy="0" rx="12" ry="8" fill="white" />
-          <circle cx="-4" cy="-2" r="2.5" fill="currentColor" opacity="0.6" />
-          <path d="M-12 0 L-20 -5 M-12 0 L-20 5" stroke="white" strokeWidth="2" />
-        </g>
-      </svg>
-
-      {/* Bottom snake - flowing across the bottom */}
-      <svg
-        className="absolute bottom-0 left-0 w-full h-16 md:h-24"
-        viewBox="0 0 800 80"
-        preserveAspectRatio="none"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M0 40 C40 20, 60 10, 100 25 C140 40, 160 65, 200 60 C240 55, 260 15, 300 20 C340 25, 360 65, 400 60 C440 55, 460 15, 500 20 C540 25, 560 65, 600 60 C640 55, 660 15, 700 20 C740 25, 760 55, 800 40"
-          stroke="white"
-          strokeWidth="22"
-          strokeLinecap="round"
-          opacity="0.15"
-        />
-        <path
-          d="M0 40 C40 20, 60 10, 100 25 C140 40, 160 65, 200 60 C240 55, 260 15, 300 20 C340 25, 360 65, 400 60 C440 55, 460 15, 500 20 C540 25, 560 65, 600 60 C640 55, 660 15, 700 20 C740 25, 760 55, 800 40"
-          stroke="white"
-          strokeWidth="16"
-          strokeLinecap="round"
-          opacity="0.08"
-        />
-        {/* Hearts near the bottom */}
-        {[200, 400, 600].map((x) => (
-          <g key={`bh-${x}`} opacity="0.15" transform={`translate(${x}, ${30 + (x % 20)})`}>
+        {hearts.map(({ x, y, scale }, i) => (
+          <g
+            key={`h-${i}`}
+            className="kh-heart"
+            opacity="0.2"
+            transform={`translate(${x}, ${y}) scale(${scale})`}
+            style={{ animationDelay: `${i * 0.5}s` }}
+          >
             <path
-              d="M0 3 C0 0, -5 -3, -5 1 C-5 4, 0 7, 0 10 C0 7, 5 4, 5 1 C5 -3, 0 0, 0 3Z"
+              d="M0 3 C0 0, -6 -4, -6 1 C-6 5, 0 9, 0 12 C0 9, 6 5, 6 1 C6 -4, 0 0, 0 3Z"
               fill="white"
             />
           </g>
@@ -161,12 +163,37 @@ export function SnakeBorder() {
 }
 
 export function SnakeBorderFrame() {
-  // A more prominent, continuous snake border that frames content like the flyer
+  // Keith Haring-style snake border — bold, thick body with dramatic undulations,
+  // internal patterns, motion lines, hearts, and animated tongue
+  const snakePath = `
+    M 70 22
+    C 110 8, 160 35, 210 18
+    C 260 2, 310 32, 352 20
+    C 378 12, 392 35, 388 65
+    C 380 100, 342 140, 355 185
+    C 368 230, 398 265, 385 310
+    C 372 355, 335 395, 350 440
+    C 365 485, 400 520, 386 565
+    C 372 605, 345 640, 360 665
+    C 375 688, 358 700, 330 692
+    C 295 680, 260 705, 220 692
+    C 180 678, 145 705, 108 692
+    C 75 682, 48 698, 30 680
+    C 12 660, 20 635, 26 605
+    C 32 575, 4 540, 16 500
+    C 28 460, 58 425, 44 385
+    C 30 345, -2 310, 14 270
+    C 28 230, 60 195, 46 155
+    C 32 115, 10 80, 22 50
+    C 32 28, 48 18, 70 22
+    Z
+  `;
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       <svg
         className="absolute inset-0 w-full h-full"
-        viewBox="0 0 400 700"
+        viewBox="0 0 400 710"
         preserveAspectRatio="none"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -235,12 +262,12 @@ export function SnakeBorderFrame() {
             Z
           `}
           stroke="white"
-          strokeWidth="14"
+          strokeWidth="20"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity="0.18"
+          opacity="0.07"
         />
-        {/* Inner line of the snake body */}
+        {/* Flowing dashed inner line */}
         <path
           d={`
             M200 8
@@ -281,17 +308,20 @@ export function SnakeBorderFrame() {
           `}
           className="snake-dash"
           stroke="white"
-          strokeWidth="8"
+          strokeWidth="10"
           strokeLinecap="round"
           strokeLinejoin="round"
           opacity="0.1"
-          strokeDasharray="4 8"
+          strokeDasharray="8 14"
         />
 
-        {/* Snake head at top - facing left */}
-        <g opacity="0.25" transform="translate(190, 2)">
-          <ellipse cx="0" cy="5" rx="15" ry="10" fill="white" />
-          <circle cx="-5" cy="2" r="3" fill="currentColor" opacity="0.5" />
+        {/* Snake head at top-left — Keith Haring style with open mouth */}
+        <g opacity="0.3">
+          {/* Head shape */}
+          <ellipse cx="54" cy="14" rx="20" ry="14" fill="white" />
+          {/* Eye */}
+          <circle cx="46" cy="9" r="4" fill="currentColor" opacity="0.5" />
+          <circle cx="47" cy="8" r="1.5" fill="white" />
           {/* Forked tongue */}
           <path className="snake-tongue" d="M-15 5 L-24 1 M-15 5 L-24 9" stroke="white" strokeWidth="2" strokeLinecap="round" />
           {/* Crown/spikes */}
@@ -300,44 +330,92 @@ export function SnakeBorderFrame() {
           <line x1="10" y1="-3" x2="12" y2="-10" stroke="white" strokeWidth="2" />
         </g>
 
-        {/* Decorative pattern inside the snake body - zigzag lines */}
-        {/* Right side patterns */}
-        {[100, 180, 260, 340, 420, 500, 580].map((y) => (
-          <g key={`rp-${y}`} opacity="0.1">
+        {/* Motion / energy lines — Keith Haring signature parallel marks */}
+        {/* Near head */}
+        <g opacity="0.22">
+          <path d="M90 10 Q96 5 102 10" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M93 3 Q99 -2 105 3" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M96 -4 Q102 -9 108 -4" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        </g>
+        {/* Right side motion lines */}
+        {[180, 310, 440, 570].map((y) => (
+          <g key={`mr-${y}`} opacity="0.16">
+            <path d={`M398 ${y} L406 ${y - 4}`} stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+            <path d={`M400 ${y - 8} L408 ${y - 12}`} stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+            <path d={`M399 ${y - 16} L407 ${y - 20}`} stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+          </g>
+        ))}
+        {/* Left side motion lines */}
+        {[210, 350, 490].map((y) => (
+          <g key={`ml-${y}`} opacity="0.16">
+            <path d={`M-2 ${y} L-10 ${y - 4}`} stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+            <path d={`M-4 ${y - 8} L-12 ${y - 12}`} stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+            <path d={`M-3 ${y - 16} L-11 ${y - 20}`} stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+          </g>
+        ))}
+
+        {/* Zigzag patterns inside snake body — right side */}
+        {[110, 200, 290, 380, 470, 560, 640].map((y) => (
+          <g key={`zr-${y}`} opacity="0.12">
             <path
-              d={`M383 ${y} l3 8 l-3 8 l3 8 l-3 8`}
+              d={`M380 ${y} l5 12 l-5 12 l5 12 l-5 12`}
               stroke="white"
-              strokeWidth="1.5"
+              strokeWidth="2"
               fill="none"
+              strokeLinecap="round"
             />
           </g>
         ))}
-        {/* Left side patterns */}
-        {[100, 180, 260, 340, 420, 500, 580].map((y) => (
-          <g key={`lp-${y}`} opacity="0.1">
+        {/* Zigzag patterns inside snake body — left side */}
+        {[110, 200, 290, 380, 470, 560, 640].map((y) => (
+          <g key={`zl-${y}`} opacity="0.12">
             <path
-              d={`M17 ${y} l-3 8 l3 8 l-3 8 l3 8`}
+              d={`M20 ${y} l-5 12 l5 12 l-5 12 l5 12`}
               stroke="white"
-              strokeWidth="1.5"
+              strokeWidth="2"
               fill="none"
+              strokeLinecap="round"
+            />
+          </g>
+        ))}
+        {/* Crosshatch inside top/bottom */}
+        {[90, 170, 250, 330].map((x) => (
+          <g key={`zt-${x}`} opacity="0.1">
+            <path
+              d={`M${x} 12 l10 -4 l10 4 l10 -4 l10 4`}
+              stroke="white"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
+          </g>
+        ))}
+        {[90, 170, 250, 330].map((x) => (
+          <g key={`zb-${x}`} opacity="0.1">
+            <path
+              d={`M${x} 694 l10 4 l10 -4 l10 4 l10 -4`}
+              stroke="white"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
             />
           </g>
         ))}
 
         {/* Hearts scattered along the snake body */}
         {[
-          { x: 390, y: 160 },
-          { x: 8, y: 300 },
-          { x: 392, y: 450 },
-          { x: 12, y: 550 },
-          { x: 140, y: 692 },
-          { x: 300, y: 688 },
-          { x: 80, y: 12 },
-          { x: 320, y: 10 },
+          { x: 392, y: 185 },
+          { x: 8, y: 270 },
+          { x: 395, y: 435 },
+          { x: 10, y: 500 },
+          { x: 120, y: 698 },
+          { x: 290, y: 695 },
+          { x: 100, y: 12 },
+          { x: 300, y: 10 },
         ].map(({ x, y }, i) => (
           <g key={`heart-${i}`} className="snake-heart" style={{ animationDelay: `${i * 0.4}s`, transformOrigin: `${x}px ${y}px` }} transform={`translate(${x}, ${y}) scale(0.8)`}>
             <path
-              d="M0 3 C0 0, -5 -3, -5 1 C-5 4, 0 7, 0 10 C0 7, 5 4, 5 1 C5 -3, 0 0, 0 3Z"
+              d="M0 3 C0 0, -6 -4, -6 1 C-6 5, 0 9, 0 12 C0 9, 6 5, 6 1 C6 -4, 0 0, 0 3Z"
               fill="white"
             />
           </g>
