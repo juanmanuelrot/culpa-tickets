@@ -25,7 +25,9 @@ export async function POST(request: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
-    const { email, name, password, role } = await request.json();
+    const body = await request.json();
+    const email = body.email?.trim().toLowerCase();
+    const { name, password, role } = body;
 
     if (!email || !name || !password || !role) {
       return NextResponse.json(

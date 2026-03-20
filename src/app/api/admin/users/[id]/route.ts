@@ -30,7 +30,7 @@ export async function PUT(
 
     const data: Record<string, string> = {};
     if (name) data.name = name;
-    if (email) data.email = email;
+    if (email) data.email = email.trim().toLowerCase();
     if (role) data.role = role;
     if (password) data.passwordHash = await hashPassword(password);
 
