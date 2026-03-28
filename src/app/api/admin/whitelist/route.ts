@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function GET(request: NextRequest) {
   const admin = await requireAdmin(request);
@@ -82,6 +83,30 @@ export async function POST(request: NextRequest) {
           ticketTypeId,
         })),
       });
+    }
+
+    // Send welcome email with the events the person has access to
+    try {
+      const events = Array.isArray(ticketTypeIds) && ticketTypeIds.length > 0
+        ? await prisma.event.findMany({
+            where: {
+              ticketTypes: { some: { id: { in: ticketTypeIds } } },
+              isActive: true,
+            },
+            select: { name: true, date: true, slug: true },
+            distinct: ["id"],
+            orderBy: { date: "asc" },
+          })
+        : [];
+
+      await sendWelcomeEmail({
+        to: person.email,
+        name: person.name,
+        events,
+      });
+    } catch {
+      // Email failure should not block the whitelist creation
+      console.error("Failed to send welcome email to", person.email);
     }
 
     return NextResponse.json(person, { status: 201 });
