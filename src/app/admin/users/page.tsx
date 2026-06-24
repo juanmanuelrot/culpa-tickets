@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatDateTime } from "@/lib/date";
 
 interface User {
   id: string;
@@ -175,7 +176,7 @@ export default function UsersPage() {
                     </span>
                   </td>
                   <td className="text-white/40 py-3 pr-4 text-sm">
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    {formatDateTime(user.createdAt)}
                   </td>
                   <td className="py-3 text-right">
                     <button

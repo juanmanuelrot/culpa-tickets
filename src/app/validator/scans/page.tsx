@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatDateTime } from "@/lib/date";
 
 interface Scan {
   id: string;
@@ -56,7 +57,7 @@ export default function ValidatorScansPage() {
                   {scan.wasValid ? "Válido" : "Inválido"}
                 </span>
                 <p className="text-white/30 text-xs mt-1">
-                  {new Date(scan.scannedAt).toLocaleString("es-AR")}
+                  {formatDateTime(scan.scannedAt)}
                 </p>
               </div>
             </div>

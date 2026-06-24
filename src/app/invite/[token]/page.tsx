@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { SnakeBorderFrame } from "@/components/decorative/snake-border";
 import { HaringFigure } from "@/components/decorative/haring-border";
 import { SmallCreature } from "@/components/decorative/dj-creature";
+import { formatEventDateTime, formatDateTime } from "@/lib/date";
 
 interface InviteInfo {
   eventName: string;
@@ -51,7 +52,10 @@ export default function InvitePage() {
         return;
       }
 
-      const successUrl = `/event/${data.eventSlug}/checkout/success?ticketId=${data.ticketId}&free=true${data.ticketValidUntil ? `&validUntil=${encodeURIComponent(data.ticketValidUntil)}` : ""}`;
+      const eventParams = inviteInfo
+        ? `&eventName=${encodeURIComponent(inviteInfo.eventName)}&eventDate=${encodeURIComponent(inviteInfo.eventDate)}`
+        : "";
+      const successUrl = `/event/${data.eventSlug}/checkout/success?ticketId=${data.ticketId}&free=true${data.ticketValidUntil ? `&validUntil=${encodeURIComponent(data.ticketValidUntil)}` : ""}${eventParams}`;
       router.push(successUrl);
     } catch {
       setError("Algo salió mal");
@@ -94,20 +98,24 @@ export default function InvitePage() {
                   {inviteInfo.eventName}
                 </p>
                 <p className="text-white/60 text-xs mt-1">{inviteInfo.ticketType}</p>
+                {inviteInfo.eventDate && (
+                  <>
+                    <p className="text-white/40 text-[0.6rem] uppercase tracking-[0.2em] mt-3">
+                      Fecha del evento
+                    </p>
+                    <p className="text-white/90 text-sm font-bold mt-0.5">
+                      {formatEventDateTime(inviteInfo.eventDate)}
+                    </p>
+                  </>
+                )}
               </div>
             )}
             {inviteInfo.ticketValidUntil && (
               <div className="bg-black/20 border border-white/20 px-4 py-3 text-center">
                 <p className="text-yellow-300 text-sm font-bold uppercase tracking-wider">
-                  Válido hasta {new Date(inviteInfo.ticketValidUntil).toLocaleString("es-AR", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  Ticket válido hasta {formatDateTime(inviteInfo.ticketValidUntil)}
                 </p>
-                <p className="text-white/50 text-xs mt-1">Este ticket no se puede usar después de esta hora</p>
+                <p className="text-white/50 text-xs mt-1">Este ticket no se puede usar después de esta hora (hora de Montevideo)</p>
               </div>
             )}
           </div>

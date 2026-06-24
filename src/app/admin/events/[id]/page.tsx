@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { formatEventDateTime, formatDateShort, localInputToUtc } from "@/lib/date";
 
 interface TicketType {
   id: string;
@@ -77,7 +78,7 @@ export default function AdminEventDetailPage() {
         price: Math.round(parseFloat(ttForm.price) * 100),
         currency: ttForm.currency,
         capacity: ttForm.capacity ? parseInt(ttForm.capacity) : null,
-        validUntil: ttForm.validUntil ? new Date(ttForm.validUntil).toISOString() : null,
+        validUntil: ttForm.validUntil ? localInputToUtc(ttForm.validUntil).toISOString() : null,
         autoApproveWhitelist: ttForm.autoApproveWhitelist,
       }),
     });
@@ -126,14 +127,7 @@ export default function AdminEventDetailPage() {
             {event.name}
           </h1>
           <p className="text-white/50 text-sm mt-1">
-            {new Date(event.date).toLocaleDateString("es-AR", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {formatEventDateTime(event.date)}
           </p>
         </div>
         <div className="flex gap-2">
@@ -200,7 +194,7 @@ export default function AdminEventDetailPage() {
           <form onSubmit={handleAddTicketType} className="bg-white/5 border border-white/10 p-4 mb-4 space-y-3">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-fyf-red">*</span></label>
                 <input
                   type="text"
                   value={ttForm.name}
@@ -211,7 +205,7 @@ export default function AdminEventDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Precio</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Precio <span className="text-fyf-red">*</span></label>
                 <input
                   type="number"
                   step="0.01"
@@ -235,7 +229,7 @@ export default function AdminEventDetailPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Capacidad</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Capacidad (opcional)</label>
                 <input
                   type="number"
                   min="1"
@@ -246,7 +240,7 @@ export default function AdminEventDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Válido Hasta</label>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket válido hasta (opcional)</label>
                 <input
                   type="datetime-local"
                   value={ttForm.validUntil}
@@ -254,6 +248,7 @@ export default function AdminEventDetailPage() {
                   className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
                   placeholder="Sin vencimiento"
                 />
+                <p className="text-white/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket</p>
               </div>
             </div>
             <label className="flex items-center gap-2 text-white/70 text-sm cursor-pointer">
@@ -301,7 +296,7 @@ export default function AdminEventDetailPage() {
                 )}
                 {tt.validUntil && (
                   <span className="text-yellow-400/70 ml-4 text-sm">
-                    Vence: {new Date(tt.validUntil).toLocaleString("es-AR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    Válido hasta: {formatDateShort(tt.validUntil)}
                   </span>
                 )}
               </div>

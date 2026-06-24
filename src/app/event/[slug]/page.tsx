@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { SnakeBorderFrame } from "@/components/decorative/snake-border";
 import { DjCreature } from "@/components/decorative/dj-creature";
 import { HaringFigure } from "@/components/decorative/haring-border";
+import { formatEventDateTime, formatDateShort } from "@/lib/date";
 
 interface TicketTypeInfo {
   id: string;
@@ -86,7 +87,10 @@ export default function EventPage() {
       }
 
       if (data.free) {
-        const successUrl = `/event/${slug}/checkout/success?ticketId=${data.ticketId}&free=true${data.ticketValidUntil ? `&validUntil=${encodeURIComponent(data.ticketValidUntil)}` : ""}`;
+        const eventParams = lookupResult
+          ? `&eventName=${encodeURIComponent(lookupResult.event.name)}&eventDate=${encodeURIComponent(lookupResult.event.date)}`
+          : "";
+        const successUrl = `/event/${slug}/checkout/success?ticketId=${data.ticketId}&free=true${data.ticketValidUntil ? `&validUntil=${encodeURIComponent(data.ticketValidUntil)}` : ""}${eventParams}`;
         router.push(successUrl);
       } else if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
@@ -190,13 +194,11 @@ export default function EventPage() {
               <p className="text-white text-xl font-black uppercase tracking-wider">
                 {lookupResult.event.name}
               </p>
-              <p className="text-white/70 text-sm mt-2">
-                {new Date(lookupResult.event.date).toLocaleDateString("es-AR", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+              <p className="text-white/50 text-[0.65rem] uppercase tracking-[0.2em] mt-2">
+                Fecha del evento
+              </p>
+              <p className="text-white/80 text-sm mt-0.5">
+                {formatEventDateTime(lookupResult.event.date)}
               </p>
               {lookupResult.event.location && (
                 <p className="text-white/60 text-sm mt-1">
@@ -231,13 +233,7 @@ export default function EventPage() {
                       </p>
                       {tt.validUntil && (
                         <p className="text-yellow-300/80 text-xs mt-1">
-                          Válido hasta {new Date(tt.validUntil).toLocaleString("es-AR", {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "short",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                          Ticket válido hasta {formatDateShort(tt.validUntil)}
                         </p>
                       )}
                     </div>

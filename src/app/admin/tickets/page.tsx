@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { formatDateTime } from "@/lib/date";
 
 interface Ticket {
   id: string;
@@ -83,7 +84,7 @@ export default function AdminTicketsPage() {
                 {ticket.status}
               </span>
               <p className="text-white/30 text-xs mt-1">
-                {new Date(ticket.createdAt).toLocaleString("es-AR")}
+                {formatDateTime(ticket.createdAt)}
               </p>
             </div>
           </div>

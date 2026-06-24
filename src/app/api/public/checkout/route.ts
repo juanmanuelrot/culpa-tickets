@@ -171,6 +171,9 @@ export async function POST(request: NextRequest) {
       payerEmail: person.email,
       payerName: person.name,
       eventSlug: ticketType.event.slug,
+      eventName: ticketType.event.name,
+      eventDate: ticketType.event.date,
+      ticketValidUntil: ticketType.validUntil,
     });
 
     return NextResponse.json({

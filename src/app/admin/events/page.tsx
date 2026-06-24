@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { formatEventDateTime, localInputToUtc } from "@/lib/date";
 
 interface Event {
   id: string;
@@ -36,7 +37,7 @@ export default function AdminEventsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...formData,
-        date: new Date(formData.date).toISOString(),
+        date: localInputToUtc(formData.date).toISOString(),
       }),
     });
     setFormData({ name: "", date: "", description: "", location: "" });
@@ -63,7 +64,7 @@ export default function AdminEventsPage() {
         <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-fyf-red">*</span></label>
               <input
                 type="text"
                 value={formData.name}
@@ -73,7 +74,7 @@ export default function AdminEventsPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Fecha</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Fecha del evento <span className="text-fyf-red">*</span></label>
               <input
                 type="datetime-local"
                 value={formData.date}
@@ -81,6 +82,7 @@ export default function AdminEventsPage() {
                 className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
                 required
               />
+              <p className="text-white/30 text-xs mt-1">Hora de Montevideo</p>
             </div>
             <div>
               <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ubicación (opcional)</label>
@@ -124,12 +126,7 @@ export default function AdminEventsPage() {
                   {event.name}
                 </h3>
                 <p className="text-white/50 text-sm mt-1">
-                  {new Date(event.date).toLocaleDateString("es-AR", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {formatEventDateTime(event.date)}
                 </p>
               </div>
               <div className="text-right">

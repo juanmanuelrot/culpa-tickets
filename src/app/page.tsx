@@ -5,6 +5,7 @@ import Link from "next/link";
 import { SnakeBorderFrame } from "@/components/decorative/snake-border";
 import { DjCreature } from "@/components/decorative/dj-creature";
 import { HaringFigure } from "@/components/decorative/haring-border";
+import { MONTEVIDEO_TZ } from "@/lib/date";
 
 interface EventInfo {
   id: string;
@@ -17,7 +18,8 @@ interface EventInfo {
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("es-AR", {
+  return new Date(dateStr).toLocaleDateString("es-UY", {
+    timeZone: MONTEVIDEO_TZ,
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -26,9 +28,11 @@ function formatDate(dateStr: string) {
 }
 
 function formatTime(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString("es-AR", {
+  return new Date(dateStr).toLocaleTimeString("es-UY", {
+    timeZone: MONTEVIDEO_TZ,
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
   });
 }
 

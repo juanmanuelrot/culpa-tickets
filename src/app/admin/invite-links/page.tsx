@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { formatDateTime, localInputToUtc } from "@/lib/date";
 
 interface InviteLink {
   id: string;
@@ -57,8 +58,8 @@ export default function AdminInviteLinksPage() {
       body: JSON.stringify({
         eventId: formData.eventId,
         ticketTypeId: formData.ticketTypeId,
-        expiresAt: new Date(formData.expiresAt).toISOString(),
-        ticketValidUntil: formData.ticketValidUntil ? new Date(formData.ticketValidUntil).toISOString() : null,
+        expiresAt: localInputToUtc(formData.expiresAt).toISOString(),
+        ticketValidUntil: formData.ticketValidUntil ? localInputToUtc(formData.ticketValidUntil).toISOString() : null,
         maxUses: parseInt(formData.maxUses),
       }),
     });
@@ -98,7 +99,7 @@ export default function AdminInviteLinksPage() {
         <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Evento</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Evento <span className="text-fyf-red">*</span></label>
               <select
                 value={formData.eventId}
                 onChange={(e) => setFormData({ ...formData, eventId: e.target.value, ticketTypeId: "" })}
@@ -112,7 +113,7 @@ export default function AdminInviteLinksPage() {
               </select>
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Tipo de Ticket</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Tipo de Ticket <span className="text-fyf-red">*</span></label>
               <select
                 value={formData.ticketTypeId}
                 onChange={(e) => setFormData({ ...formData, ticketTypeId: e.target.value })}
@@ -127,7 +128,7 @@ export default function AdminInviteLinksPage() {
               </select>
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Expira El</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">El link expira <span className="text-fyf-red">*</span></label>
               <input
                 type="datetime-local"
                 value={formData.expiresAt}
@@ -135,9 +136,10 @@ export default function AdminInviteLinksPage() {
                 className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
                 required
               />
+              <p className="text-white/30 text-xs mt-1">Hora de Montevideo — cuándo deja de funcionar este link</p>
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Usos Máximos</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Usos Máximos <span className="text-fyf-red">*</span></label>
               <input
                 type="number"
                 min="1"
@@ -148,14 +150,14 @@ export default function AdminInviteLinksPage() {
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket Válido Hasta</label>
+              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket válido hasta (opcional)</label>
               <input
                 type="datetime-local"
                 value={formData.ticketValidUntil}
                 onChange={(e) => setFormData({ ...formData, ticketValidUntil: e.target.value })}
                 className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
               />
-              <p className="text-white/30 text-xs mt-1">Opcional — cuándo expiran los tickets para el escaneo</p>
+              <p className="text-white/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket (distinto de la fecha del evento)</p>
             </div>
           </div>
           <button
@@ -177,10 +179,10 @@ export default function AdminInviteLinksPage() {
                   {appUrl}/invite/{link.token}
                 </p>
                 <p className="text-white/40 text-xs mt-1">
-                  Usos: {link.usedCount}/{link.maxUses} | Link expira:{" "}
-                  {new Date(link.expiresAt).toLocaleString("es-AR")}
+                  Usos: {link.usedCount}/{link.maxUses} | El link expira:{" "}
+                  {formatDateTime(link.expiresAt)}
                   {link.ticketValidUntil && (
-                    <span className="text-yellow-400/70"> | Ticket válido hasta: {new Date(link.ticketValidUntil).toLocaleString("es-AR")}</span>
+                    <span className="text-yellow-400/70"> | Ticket válido hasta: {formatDateTime(link.ticketValidUntil)}</span>
                   )}
                 </p>
               </div>

@@ -24,13 +24,6 @@ export function slugify(text: string): string {
     .replace(/(^-|-$)+/g, "");
 }
 
-export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat("es-AR", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
+// Kept for existing importers; always renders in Montevideo time.
+// Prefer importing the helpers from "@/lib/date" directly in new code.
+export { formatEventDateTime as formatDate } from "@/lib/date";

@@ -5,11 +5,14 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { SnakeBorder } from "@/components/decorative/snake-border";
 import { SmallCreature } from "@/components/decorative/dj-creature";
+import { formatEventDateTime, formatDateTime } from "@/lib/date";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const isFree = searchParams.get("free") === "true";
   const validUntil = searchParams.get("validUntil");
+  const eventName = searchParams.get("eventName");
+  const eventDate = searchParams.get("eventDate");
 
   return (
     <div className="min-h-screen bg-fyf-red relative overflow-hidden flex items-center justify-center px-4">
@@ -37,19 +40,33 @@ function SuccessContent() {
           No compartas tu código QR con nadie.
         </p>
 
+        {(eventName || eventDate) && (
+          <div className="bg-white/10 border border-white/20 px-6 py-4 mt-6">
+            {eventName && (
+              <p className="text-white font-bold uppercase tracking-wider text-base">
+                {eventName}
+              </p>
+            )}
+            {eventDate && (
+              <>
+                <p className="text-white/50 text-[0.65rem] uppercase tracking-[0.2em] mt-2">
+                  Fecha del evento
+                </p>
+                <p className="text-white/80 text-sm mt-0.5">
+                  {formatEventDateTime(eventDate)}
+                </p>
+              </>
+            )}
+          </div>
+        )}
+
         {validUntil && (
-          <div className="bg-black/20 border border-white/20 px-6 py-4 mt-6">
+          <div className="bg-black/20 border border-white/20 px-6 py-4 mt-4">
             <p className="text-yellow-300 font-bold uppercase tracking-wider text-sm">
-              Válido hasta {new Date(validUntil).toLocaleString("es-AR", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              Ticket válido hasta {formatDateTime(validUntil)}
             </p>
             <p className="text-white/50 text-xs mt-1">
-              Este ticket no se puede usar después de esta hora
+              Este ticket no se puede usar después de esta hora (hora de Montevideo)
             </p>
           </div>
         )}

@@ -30,28 +30,39 @@ export function HaringBorder() {
   );
 }
 
+// Keith Haring's signature dancing figures: a solid round head and bold,
+// uniform-width limbs with rounded ends. Four poses, all readable at any
+// rotation so they work as a border or as a small standalone accent.
 function HaringFigure({ variant, className = "" }: { variant: number; className?: string }) {
+  const stroke = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 8,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+
   const figures = [
-    // Dancing figure 1
-    <svg viewBox="0 0 100 100" fill="currentColor" className={className} key="f1">
-      <path d="M50 15 C55 15 58 12 58 8 C58 4 55 1 50 1 C45 1 42 4 42 8 C42 12 45 15 50 15Z M35 25 L30 45 L15 40 L12 48 L32 55 L35 70 L20 90 L28 95 L45 72 L55 72 L72 95 L80 90 L65 70 L68 55 L88 48 L85 40 L70 45 L65 25Z" />
-      <line x1="30" y1="18" x2="25" y2="10" stroke="currentColor" strokeWidth="3" />
-      <line x1="70" y1="18" x2="75" y2="10" stroke="currentColor" strokeWidth="3" />
+    // 0 — symmetric dance, arms and legs flung out
+    <svg viewBox="0 0 100 100" className={className} key="f0">
+      <circle cx="50" cy="16" r="9" fill="currentColor" />
+      <path d="M50 26 V52 M50 33 L26 19 M50 33 L74 19 M50 52 L30 87 M50 52 L70 87" {...stroke} />
     </svg>,
-    // Dancing figure 2
-    <svg viewBox="0 0 100 100" fill="currentColor" className={className} key="f2">
-      <path d="M45 15 C50 15 53 12 53 8 C53 4 50 1 45 1 C40 1 37 4 37 8 C37 12 40 15 45 15Z M30 22 L25 42 L10 50 L15 57 L35 48 L38 65 L25 88 L33 93 L48 68 L55 68 L62 93 L70 88 L58 65 L60 48 L75 40 L70 33 L55 38 L50 22Z" />
+    // 1 — asymmetric groove, one arm up one arm out
+    <svg viewBox="0 0 100 100" className={className} key="f1">
+      <circle cx="53" cy="16" r="9" fill="currentColor" />
+      <path d="M52 26 L48 53 M51 32 L32 14 M51 35 L77 47 M48 53 L30 85 M48 53 L71 81" {...stroke} />
     </svg>,
-    // Running figure
-    <svg viewBox="0 0 100 100" fill="currentColor" className={className} key="f3">
-      <path d="M55 12 C59 12 62 9 62 5.5 C62 2 59 -0.5 55 -0.5 C51 -0.5 48 2 48 5.5 C48 9 51 12 55 12Z M40 20 L35 40 L15 35 L12 43 L38 50 L35 65 L15 85 L22 92 L45 70 L60 75 L75 92 L82 85 L65 68 L62 50 L85 55 L88 47 L60 38 L55 20Z" />
+    // 2 — radiant dancer: arms raised in a V with the classic radiating lines
+    <svg viewBox="0 0 100 100" className={className} key="f2">
+      <circle cx="50" cy="20" r="9" fill="currentColor" />
+      <path d="M50 30 V56 M50 35 L33 18 M50 35 L67 18 M50 56 L33 87 M50 56 L67 87" {...stroke} />
+      <path d="M41 9 L36 3 M50 6 V1 M59 9 L64 3" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
     </svg>,
-    // Radiating figure
-    <svg viewBox="0 0 100 100" fill="currentColor" className={className} key="f4">
-      <path d="M50 18 C55 18 58 15 58 11 C58 7 55 4 50 4 C45 4 42 7 42 11 C42 15 45 18 50 18Z M38 26 L33 46 L18 42 L15 50 L35 56 L32 72 L18 90 L26 95 L42 75 L58 75 L74 95 L82 90 L68 72 L65 56 L85 50 L82 42 L67 46 L62 26Z" />
-      <line x1="35" y1="8" x2="28" y2="0" stroke="currentColor" strokeWidth="2.5" />
-      <line x1="50" y1="3" x2="50" y2="-5" stroke="currentColor" strokeWidth="2.5" />
-      <line x1="65" y1="8" x2="72" y2="0" stroke="currentColor" strokeWidth="2.5" />
+    // 3 — leaping figure mid-kick
+    <svg viewBox="0 0 100 100" className={className} key="f3">
+      <circle cx="46" cy="17" r="9" fill="currentColor" />
+      <path d="M46 27 L55 51 M48 33 L26 27 M50 37 L72 23 M55 51 L80 60 M55 51 L47 87" {...stroke} />
     </svg>,
   ];
 

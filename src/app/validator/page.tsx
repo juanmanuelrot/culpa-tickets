@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { formatDateTime } from "@/lib/date";
 
 interface ScanResult {
   valid: boolean;
@@ -164,13 +165,13 @@ export default function ValidatorScannerPage() {
 
             {scanResult.usedAt && (
               <p className="text-white/40 text-xs mt-2">
-                Primer escaneo: {new Date(scanResult.usedAt).toLocaleString("es-AR")}
+                Primer escaneo: {formatDateTime(scanResult.usedAt)}
               </p>
             )}
 
             {scanResult.expiredAt && (
               <p className="text-yellow-400 text-xs mt-2">
-                Expiró el: {new Date(scanResult.expiredAt).toLocaleString("es-AR")}
+                Expiró el: {formatDateTime(scanResult.expiredAt)}
               </p>
             )}
           </div>

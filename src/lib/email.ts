@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { formatEventDateTime } from "@/lib/date";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -16,7 +17,7 @@ export async function sendWelcomeEmail(params: {
           <tr>
             <td style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);">
               <a href="${appUrl}/event/${e.slug}" style="color:#ffffff;text-decoration:none;font-size:14px;font-weight:bold;">${e.name}</a>
-              <br/><span style="font-size:12px;color:rgba(255,255,255,0.7);">${new Intl.DateTimeFormat("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(e.date)}</span>
+              <br/><span style="font-size:12px;color:rgba(255,255,255,0.7);">${formatEventDateTime(e.date)}</span>
             </td>
           </tr>`
         )
@@ -114,7 +115,7 @@ export async function sendTicketEmail(params: {
             <strong style="text-transform:uppercase;letter-spacing:1px;">Evento:</strong> ${params.eventName}
           </p>
           <p style="font-size:14px;margin:0 0 8px 0;">
-            <strong style="text-transform:uppercase;letter-spacing:1px;">Fecha:</strong> ${params.date}
+            <strong style="text-transform:uppercase;letter-spacing:1px;">Fecha del evento:</strong> ${params.date}
           </p>
           <p style="font-size:14px;margin:0 0 8px 0;">
             <strong style="text-transform:uppercase;letter-spacing:1px;">Tipo:</strong> ${params.ticketType}
@@ -124,8 +125,8 @@ export async function sendTicketEmail(params: {
           </p>
           ${params.validUntil ? `
           <p style="font-size:14px;margin:16px 0 0 0;padding:12px;background-color:rgba(0,0,0,0.2);border-radius:6px;">
-            <strong style="text-transform:uppercase;letter-spacing:1px;">&#9200; Válido Hasta:</strong> ${params.validUntil}
-            <br/><span style="font-size:12px;opacity:0.8;">Este ticket no se puede usar después de esta hora.</span>
+            <strong style="text-transform:uppercase;letter-spacing:1px;">&#9200; Ticket válido hasta:</strong> ${params.validUntil}
+            <br/><span style="font-size:12px;opacity:0.8;">Este ticket no se puede usar después de esta hora (hora de Montevideo).</span>
           </p>
           ` : ""}
         </div>
