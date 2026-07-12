@@ -10,13 +10,14 @@ interface Event {
   slug: string;
   date: string;
   isActive: boolean;
+  isPublic: boolean;
   _count: { tickets: number };
 }
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: "", date: "", description: "", location: "" });
+  const [formData, setFormData] = useState({ name: "", date: "", description: "", location: "", isPublic: false });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export default function AdminEventsPage() {
         date: localInputToUtc(formData.date).toISOString(),
       }),
     });
-    setFormData({ name: "", date: "", description: "", location: "" });
+    setFormData({ name: "", date: "", description: "", location: "", isPublic: false });
     setShowForm(false);
     setLoading(false);
     loadEvents();
@@ -103,6 +104,15 @@ export default function AdminEventsPage() {
               />
             </div>
           </div>
+          <label className="flex items-center gap-2 text-white/70 text-sm cursor-pointer w-fit">
+            <input
+              type="checkbox"
+              checked={formData.isPublic}
+              onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
+              className="accent-fyf-red w-4 h-4"
+            />
+            Evento público (cualquiera puede comprar, sin lista de invitados)
+          </label>
           <button
             type="submit"
             disabled={loading}
@@ -132,6 +142,9 @@ export default function AdminEventsPage() {
               <div className="text-right">
                 <span className={`text-xs uppercase tracking-wider font-bold ${event.isActive ? "text-green-400" : "text-white/30"}`}>
                   {event.isActive ? "Activo" : "Inactivo"}
+                </span>
+                <span className={`block text-xs uppercase tracking-wider font-bold mt-0.5 ${event.isPublic ? "text-blue-300" : "text-white/30"}`}>
+                  {event.isPublic ? "Público" : "Privado"}
                 </span>
                 <p className="text-white/50 text-sm mt-1">
                   {event._count.tickets} tickets

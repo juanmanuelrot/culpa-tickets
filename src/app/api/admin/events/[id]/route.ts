@@ -48,6 +48,7 @@ export async function PUT(
       ...(data.locationRevealed !== undefined && { locationRevealed: data.locationRevealed }),
       ...(data.coverImageUrl !== undefined && { coverImageUrl: data.coverImageUrl }),
       ...(data.isActive !== undefined && { isActive: data.isActive }),
+      ...(data.isPublic !== undefined && { isPublic: data.isPublic }),
     },
     include: { ticketTypes: true },
   });

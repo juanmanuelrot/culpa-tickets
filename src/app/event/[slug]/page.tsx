@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { SnakeBorderFrame } from "@/components/decorative/snake-border";
 import { DjCreature } from "@/components/decorative/dj-creature";
@@ -18,10 +18,42 @@ interface TicketTypeInfo {
   soldOut: boolean;
 }
 
+interface EventInfo {
+  id: string;
+  name: string;
+  slug: string;
+  date: string;
+  location: string | null;
+  isPublic?: boolean;
+}
+
 interface LookupResult {
   person: { name: string; email: string; govIdNumber: string };
-  event: { id: string; name: string; slug: string; date: string; location: string | null };
+  event: EventInfo;
   availableTicketTypes: TicketTypeInfo[];
+}
+
+interface PublicTicketType {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  validUntil: string | null;
+  soldOut: boolean;
+}
+
+interface PublicEventData {
+  event: EventInfo;
+  ticketTypes: PublicTicketType[];
+}
+
+function formatPrice(cents: number, currency: string) {
+  if (cents === 0) return "GRATIS";
+  return new Intl.NumberFormat("es-UY", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 0,
+  }).format(cents / 100);
 }
 
 export default function EventPage() {
@@ -29,11 +61,49 @@ export default function EventPage() {
   const router = useRouter();
   const slug = params.slug as string;
 
+  // Shared
+  const [initializing, setInitializing] = useState(true);
+  const [isPublic, setIsPublic] = useState(false);
+  const [error, setError] = useState("");
+
+  // Private (whitelist) flow
   const [govId, setGovId] = useState("");
   const [lookupResult, setLookupResult] = useState<LookupResult | null>(null);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  // Public flow
+  const [publicData, setPublicData] = useState<PublicEventData | null>(null);
+  const [buyingTicket, setBuyingTicket] = useState<PublicTicketType | null>(null);
+  const [form, setForm] = useState({ firstName: "", lastName: "", govId: "", email: "" });
+  const [submitting, setSubmitting] = useState(false);
+
+  // Determine on mount whether the event is public; if so, load its tickets.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/public/events/${slug}`);
+        const data = await res.json();
+        if (cancelled) return;
+        if (!res.ok) {
+          setError(data.error || "Evento no encontrado");
+          return;
+        }
+        if (data.event?.isPublic) {
+          setIsPublic(true);
+          setPublicData(data);
+        }
+      } catch {
+        if (!cancelled) setError("Algo salió mal");
+      } finally {
+        if (!cancelled) setInitializing(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
 
   async function handleLookup(e: React.FormEvent) {
     e.preventDefault();
@@ -86,15 +156,7 @@ export default function EventPage() {
         return;
       }
 
-      if (data.free) {
-        const eventParams = lookupResult
-          ? `&eventName=${encodeURIComponent(lookupResult.event.name)}&eventDate=${encodeURIComponent(lookupResult.event.date)}`
-          : "";
-        const successUrl = `/event/${slug}/checkout/success?ticketId=${data.ticketId}&free=true${data.ticketValidUntil ? `&validUntil=${encodeURIComponent(data.ticketValidUntil)}` : ""}${eventParams}`;
-        router.push(successUrl);
-      } else if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      }
+      redirectAfterCheckout(data, lookupResult.event);
     } catch {
       setError("Algo salió mal");
     } finally {
@@ -102,13 +164,52 @@ export default function EventPage() {
     }
   }
 
-  function formatPrice(cents: number, currency: string) {
-    if (cents === 0) return "GRATIS";
-    return new Intl.NumberFormat("es-UY", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 0,
-    }).format(cents / 100);
+  const redirectAfterCheckout = useCallback(
+    (data: { free?: boolean; ticketId?: string; ticketValidUntil?: string; checkoutUrl?: string }, event: EventInfo) => {
+      if (data.free) {
+        const eventParams = `&eventName=${encodeURIComponent(event.name)}&eventDate=${encodeURIComponent(event.date)}`;
+        const successUrl = `/event/${slug}/checkout/success?ticketId=${data.ticketId}&free=true${data.ticketValidUntil ? `&validUntil=${encodeURIComponent(data.ticketValidUntil)}` : ""}${eventParams}`;
+        router.push(successUrl);
+      } else if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    },
+    [slug, router]
+  );
+
+  async function handlePublicPurchase(e: React.FormEvent) {
+    e.preventDefault();
+    if (!publicData || !buyingTicket) return;
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/public/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId: publicData.event.id,
+          ticketTypeId: buyingTicket.id,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          govIdNumber: form.govId,
+          email: form.email,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Error en el checkout");
+        return;
+      }
+
+      redirectAfterCheckout(data, publicData.event);
+    } catch {
+      setError("Algo salió mal");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -133,7 +234,163 @@ export default function EventPage() {
 
         <p className="text-base text-white/80 italic mb-8">Solo para nosotros</p>
 
-        {!lookupResult ? (
+        {initializing ? (
+          <span className="inline-block w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        ) : isPublic && publicData ? (
+          /* ── PUBLIC EVENT FLOW ────────────────────────────── */
+          <div className="w-full max-w-md space-y-5 animate-in">
+            {/* Event Info */}
+            <div className="bg-white/10 backdrop-blur-sm p-6 border border-white/20">
+              <p className="text-white text-xl font-black uppercase tracking-wider">
+                {publicData.event.name}
+              </p>
+              <p className="text-white/50 text-[0.65rem] uppercase tracking-[0.2em] mt-2">
+                Fecha del evento
+              </p>
+              <p className="text-white/80 text-sm mt-0.5">
+                {formatEventDateTime(publicData.event.date)}
+              </p>
+              {publicData.event.location && (
+                <p className="text-white/60 text-sm mt-1">{publicData.event.location}</p>
+              )}
+            </div>
+
+            {!buyingTicket ? (
+              <>
+                {/* Ticket Types */}
+                <div className="space-y-3">
+                  <p className="text-white/60 text-xs uppercase tracking-[0.2em]">
+                    Tickets Disponibles
+                  </p>
+                  {publicData.ticketTypes.length === 0 ? (
+                    <div className="bg-white/5 border border-white/10 p-6 text-center">
+                      <p className="text-white/50">
+                        No hay tickets disponibles en este momento
+                      </p>
+                    </div>
+                  ) : (
+                    publicData.ticketTypes.map((tt) => (
+                      <div
+                        key={tt.id}
+                        className="bg-white/10 backdrop-blur-sm border border-white/20 p-5 flex items-center justify-between gap-4 hover:bg-white/[0.15] transition-colors"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-white font-bold uppercase tracking-wider">
+                            {tt.name}
+                          </p>
+                          <p className="text-white/80 text-lg font-black mt-1">
+                            {formatPrice(tt.price, tt.currency)}
+                          </p>
+                          {tt.validUntil && (
+                            <p className="text-yellow-300/80 text-xs mt-1">
+                              Ticket válido hasta {formatDateShort(tt.validUntil)}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => {
+                            setError("");
+                            setBuyingTicket(tt);
+                          }}
+                          disabled={tt.soldOut}
+                          className="bg-white text-fyf-red font-bold uppercase tracking-wider px-6 py-3 text-sm hover:bg-fyf-cream transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+                        >
+                          {tt.soldOut ? "Agotado" : tt.price === 0 ? "Reclamar" : "Comprar"}
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {error && (
+                  <div className="bg-black/20 border border-white/20 px-4 py-3">
+                    <p className="text-white text-sm text-center">{error}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Identity form for the selected ticket */
+              <form onSubmit={handlePublicPurchase} className="space-y-4">
+                <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-4 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-white font-bold uppercase tracking-wider">
+                      {buyingTicket.name}
+                    </p>
+                    <p className="text-white/80 font-black">
+                      {formatPrice(buyingTicket.price, buyingTicket.currency)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBuyingTicket(null);
+                      setError("");
+                    }}
+                    className="text-white/60 text-xs uppercase tracking-widest underline shrink-0 hover:text-white/80"
+                  >
+                    Cambiar
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="text"
+                    value={form.firstName}
+                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                    placeholder="Nombre"
+                    className="bg-white/10 border-2 border-white/30 text-white px-4 py-3 focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
+                    required
+                  />
+                  <input
+                    type="text"
+                    value={form.lastName}
+                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                    placeholder="Apellido"
+                    className="bg-white/10 border-2 border-white/30 text-white px-4 py-3 focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
+                    required
+                  />
+                </div>
+                <input
+                  type="text"
+                  value={form.govId}
+                  onChange={(e) => setForm({ ...form, govId: e.target.value })}
+                  placeholder="Cédula de identidad"
+                  className="w-full bg-white/10 border-2 border-white/30 text-white px-4 py-3 focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
+                  required
+                />
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="Email"
+                  className="w-full bg-white/10 border-2 border-white/30 text-white px-4 py-3 focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
+                  required
+                />
+
+                {error && (
+                  <div className="bg-black/20 border border-white/20 px-4 py-3">
+                    <p className="text-white text-sm text-center">{error}</p>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full bg-white text-fyf-red font-bold text-base uppercase tracking-[0.2em] py-4 hover:bg-fyf-cream transition-colors disabled:opacity-50"
+                >
+                  {submitting ? (
+                    <span className="inline-block w-5 h-5 border-2 border-fyf-red/30 border-t-fyf-red rounded-full animate-spin" />
+                  ) : buyingTicket.price === 0 ? (
+                    "Reclamar Ticket"
+                  ) : (
+                    "Continuar al Pago"
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
+        ) : !lookupResult ? (
+          /* ── PRIVATE (WHITELIST) FLOW: gov-ID lookup ──────── */
           <form onSubmit={handleLookup} className="w-full max-w-sm space-y-6">
             <div>
               <label className="block text-white/80 text-xs uppercase tracking-[0.2em] mb-3 text-center">
@@ -151,9 +408,7 @@ export default function EventPage() {
 
             {error && (
               <div className="bg-black/20 border border-white/20 px-4 py-3">
-                <p className="text-white text-sm text-center">
-                  {error}
-                </p>
+                <p className="text-white text-sm text-center">{error}</p>
               </div>
             )}
 
@@ -184,9 +439,7 @@ export default function EventPage() {
               <p className="text-white text-2xl font-black uppercase tracking-wider">
                 {lookupResult.person.name}
               </p>
-              <p className="text-white/50 text-sm mt-1">
-                {lookupResult.person.email}
-              </p>
+              <p className="text-white/50 text-sm mt-1">{lookupResult.person.email}</p>
             </div>
 
             {/* Event Info */}
@@ -201,9 +454,7 @@ export default function EventPage() {
                 {formatEventDateTime(lookupResult.event.date)}
               </p>
               {lookupResult.event.location && (
-                <p className="text-white/60 text-sm mt-1">
-                  {lookupResult.event.location}
-                </p>
+                <p className="text-white/60 text-sm mt-1">{lookupResult.event.location}</p>
               )}
             </div>
 
@@ -225,9 +476,7 @@ export default function EventPage() {
                     className="bg-white/10 backdrop-blur-sm border border-white/20 p-5 flex items-center justify-between gap-4 hover:bg-white/[0.15] transition-colors"
                   >
                     <div className="min-w-0">
-                      <p className="text-white font-bold uppercase tracking-wider">
-                        {tt.name}
-                      </p>
+                      <p className="text-white font-bold uppercase tracking-wider">{tt.name}</p>
                       <p className="text-white/80 text-lg font-black mt-1">
                         {formatPrice(tt.price, tt.currency)}
                       </p>
@@ -239,11 +488,7 @@ export default function EventPage() {
                     </div>
                     <button
                       onClick={() => handleCheckout(tt.id)}
-                      disabled={
-                        tt.alreadyPurchased ||
-                        tt.soldOut ||
-                        checkoutLoading === tt.id
-                      }
+                      disabled={tt.alreadyPurchased || tt.soldOut || checkoutLoading === tt.id}
                       className="bg-white text-fyf-red font-bold uppercase tracking-wider px-6 py-3 text-sm hover:bg-fyf-cream transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
                     >
                       {tt.alreadyPurchased
@@ -265,9 +510,7 @@ export default function EventPage() {
 
             {error && (
               <div className="bg-black/20 border border-white/20 px-4 py-3">
-                <p className="text-white text-sm text-center">
-                  {error}
-                </p>
+                <p className="text-white text-sm text-center">{error}</p>
               </div>
             )}
 

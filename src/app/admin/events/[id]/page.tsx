@@ -24,6 +24,7 @@ interface Event {
   location: string | null;
   locationRevealed: boolean;
   isActive: boolean;
+  isPublic: boolean;
   ticketTypes: TicketType[];
 }
 
@@ -63,6 +64,16 @@ export default function AdminEventDetailPage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ locationRevealed: !event.locationRevealed }),
+    });
+    loadEvent();
+  }
+
+  async function handleTogglePublic() {
+    if (!event) return;
+    await fetch(`/api/admin/events/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isPublic: !event.isPublic }),
     });
     loadEvent();
   }
@@ -140,6 +151,17 @@ export default function AdminEventDetailPage() {
             }`}
           >
             {event.isActive ? "Activo" : "Inactivo"}
+          </button>
+          <button
+            onClick={handleTogglePublic}
+            title={event.isPublic ? "Cualquiera puede comprar" : "Solo lista de invitados"}
+            className={`text-sm uppercase tracking-wider font-bold px-4 py-2 ${
+              event.isPublic
+                ? "bg-blue-700 text-white"
+                : "bg-white/10 text-white/50"
+            }`}
+          >
+            {event.isPublic ? "Público" : "Privado"}
           </button>
           <button
             onClick={handleDeleteEvent}

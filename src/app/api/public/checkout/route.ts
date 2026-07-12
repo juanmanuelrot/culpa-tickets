@@ -6,64 +6,24 @@ import { createQRSignedToken, generateQRCodeBuffer } from "@/lib/qr";
 import { sendTicketEmail } from "@/lib/email";
 import { formatDate } from "@/lib/utils";
 
+interface Purchaser {
+  name: string;
+  email: string;
+  govId: string;
+  whitelistedPersonId: string | null;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { govIdNumber, eventId, ticketTypeId } = await request.json();
+    const body = await request.json();
+    const { eventId, ticketTypeId } = body;
 
-    if (!govIdNumber || !eventId || !ticketTypeId) {
+    if (!eventId || !ticketTypeId) {
       return NextResponse.json(
-        { error: "govIdNumber, eventId, and ticketTypeId are required" },
+        { error: "eventId and ticketTypeId are required" },
         { status: 400 }
       );
     }
-
-    // Re-verify whitelist status (security: don't trust client state)
-    const person = await prisma.whitelistedPerson.findUnique({
-      where: { govIdNumber: govIdNumber.trim().toUpperCase() },
-      include: {
-        allowedTicketTypes: true,
-        tickets: {
-          where: { eventId, ticketTypeId, status: { in: ["PAID", "USED"] } },
-        },
-      },
-    });
-
-    if (!person) {
-      return NextResponse.json(
-        { error: "Not on the guest list" },
-        { status: 403 }
-      );
-    }
-
-    // Verify this person is allowed this ticket type
-    const isAllowed = person.allowedTicketTypes.some(
-      (att) => att.ticketTypeId === ticketTypeId
-    );
-    if (!isAllowed) {
-      return NextResponse.json(
-        { error: "You are not authorized for this ticket type" },
-        { status: 403 }
-      );
-    }
-
-    // Check if already purchased this ticket type for this event
-    if (person.tickets.length > 0) {
-      return NextResponse.json(
-        { error: "You already have a ticket of this type for this event" },
-        { status: 409 }
-      );
-    }
-
-    // Cancel any stale PENDING_PAYMENT tickets so the user can retry
-    await prisma.ticket.updateMany({
-      where: {
-        whitelistedPersonId: person.id,
-        eventId,
-        ticketTypeId,
-        status: "PENDING_PAYMENT",
-      },
-      data: { status: "CANCELLED" },
-    });
 
     const ticketType = await prisma.ticketType.findUnique({
       where: { id: ticketTypeId },
@@ -71,19 +31,101 @@ export async function POST(request: NextRequest) {
     });
 
     if (!ticketType || ticketType.eventId !== eventId) {
-      return NextResponse.json(
-        { error: "Invalid ticket type" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid ticket type" }, { status: 400 });
     }
 
-    // Check capacity (only count confirmed tickets, not abandoned PENDING_PAYMENT)
+    if (!ticketType.event.isActive) {
+      return NextResponse.json({ error: "Event not available" }, { status: 404 });
+    }
+
+    // Resolve the purchaser differently for public vs. whitelist events.
+    let purchaser: Purchaser;
+
+    if (ticketType.event.isPublic) {
+      // Public event: collect buyer identity, no whitelist gate, no per-person limit.
+      const firstName = (body.firstName || "").trim();
+      const lastName = (body.lastName || "").trim();
+      const email = (body.email || "").trim().toLowerCase();
+      const govId = (body.govIdNumber || "").trim().toUpperCase();
+
+      if (!firstName || !lastName || !email || !govId) {
+        return NextResponse.json(
+          { error: "First name, last name, ID and email are required" },
+          { status: 400 }
+        );
+      }
+
+      purchaser = {
+        name: `${firstName} ${lastName}`,
+        email,
+        govId,
+        whitelistedPersonId: null,
+      };
+    } else {
+      // Private event: re-verify whitelist status (don't trust client state).
+      const govIdNumber = body.govIdNumber;
+      if (!govIdNumber) {
+        return NextResponse.json(
+          { error: "govIdNumber is required" },
+          { status: 400 }
+        );
+      }
+
+      const person = await prisma.whitelistedPerson.findUnique({
+        where: { govIdNumber: govIdNumber.trim().toUpperCase() },
+        include: {
+          allowedTicketTypes: true,
+          tickets: {
+            where: { eventId, ticketTypeId, status: { in: ["PAID", "USED"] } },
+          },
+        },
+      });
+
+      if (!person) {
+        return NextResponse.json({ error: "Not on the guest list" }, { status: 403 });
+      }
+
+      const isAllowed = person.allowedTicketTypes.some(
+        (att) => att.ticketTypeId === ticketTypeId
+      );
+      if (!isAllowed) {
+        return NextResponse.json(
+          { error: "You are not authorized for this ticket type" },
+          { status: 403 }
+        );
+      }
+
+      // One ticket of each type per person on private events.
+      if (person.tickets.length > 0) {
+        return NextResponse.json(
+          { error: "You already have a ticket of this type for this event" },
+          { status: 409 }
+        );
+      }
+
+      // Cancel any stale PENDING_PAYMENT tickets so the user can retry.
+      await prisma.ticket.updateMany({
+        where: {
+          whitelistedPersonId: person.id,
+          eventId,
+          ticketTypeId,
+          status: "PENDING_PAYMENT",
+        },
+        data: { status: "CANCELLED" },
+      });
+
+      purchaser = {
+        name: person.name,
+        email: person.email,
+        govId: person.govIdNumber,
+        whitelistedPersonId: person.id,
+      };
+    }
+
+    // Capacity check (only confirmed tickets, not abandoned PENDING_PAYMENT).
     if (ticketType.capacity !== null) {
       const soldCount = await prisma.ticket.count({
-        where: {
-          ticketTypeId,
-          status: { in: ["PAID", "USED"] },
-        },
+        where: { ticketTypeId, status: { in: ["PAID", "USED"] } },
       });
       if (soldCount >= ticketType.capacity) {
         return NextResponse.json(
@@ -93,7 +135,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Handle free tickets (price = 0): create ticket directly as PAID
+    // Free tickets (price = 0): create ticket directly as PAID.
     if (ticketType.price === 0) {
       const qrCodeToken = uuidv4();
       const qrSignedJwt = await createQRSignedToken({
@@ -106,18 +148,17 @@ export async function POST(request: NextRequest) {
         data: {
           eventId,
           ticketTypeId,
-          whitelistedPersonId: person.id,
+          whitelistedPersonId: purchaser.whitelistedPersonId,
           qrCodeToken,
           qrSignedJwt,
           validUntil: ticketType.validUntil,
           status: "PAID",
-          purchaserName: person.name,
-          purchaserEmail: person.email,
-          purchaserGovId: person.govIdNumber,
+          purchaserName: purchaser.name,
+          purchaserEmail: purchaser.email,
+          purchaserGovId: purchaser.govId,
         },
       });
 
-      // Update signed JWT with actual ticket ID
       const finalJwt = await createQRSignedToken({
         ticketId: ticket.id,
         qrCodeToken,
@@ -128,14 +169,13 @@ export async function POST(request: NextRequest) {
         data: { qrSignedJwt: finalJwt },
       });
 
-      // Send email with QR
       const qrCodeBuffer = await generateQRCodeBuffer(finalJwt);
       await sendTicketEmail({
-        to: person.email,
+        to: purchaser.email,
         eventName: ticketType.event.name,
         ticketType: ticketType.name,
         date: formatDate(ticketType.event.date),
-        purchaserName: person.name,
+        purchaserName: purchaser.name,
         qrCodeBuffer,
         validUntil: ticketType.validUntil ? formatDate(ticketType.validUntil) : null,
       });
@@ -148,17 +188,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Paid ticket: create PENDING_PAYMENT ticket and MercadoPago preference
+    // Paid ticket: create PENDING_PAYMENT ticket and MercadoPago preference.
     const ticket = await prisma.ticket.create({
       data: {
         eventId,
         ticketTypeId,
-        whitelistedPersonId: person.id,
+        whitelistedPersonId: purchaser.whitelistedPersonId,
         validUntil: ticketType.validUntil,
         status: "PENDING_PAYMENT",
-        purchaserName: person.name,
-        purchaserEmail: person.email,
-        purchaserGovId: person.govIdNumber,
+        purchaserName: purchaser.name,
+        purchaserEmail: purchaser.email,
+        purchaserGovId: purchaser.govId,
       },
     });
 
@@ -168,8 +208,8 @@ export async function POST(request: NextRequest) {
       description: `Ticket for ${ticketType.event.name}`,
       priceInCents: ticketType.price,
       currency: ticketType.currency,
-      payerEmail: person.email,
-      payerName: person.name,
+      payerEmail: purchaser.email,
+      payerName: purchaser.name,
       eventSlug: ticketType.event.slug,
       eventName: ticketType.event.name,
       eventDate: ticketType.event.date,
@@ -185,9 +225,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Checkout error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

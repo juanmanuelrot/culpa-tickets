@@ -9,6 +9,7 @@ interface Ticket {
   purchaserName: string;
   purchaserEmail: string;
   purchaserGovId: string | null;
+  whitelistedPersonId: string | null;
   createdAt: string;
   event: { name: string };
   ticketType: { name: string };
@@ -18,6 +19,8 @@ export default function AdminTicketsPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [promotingId, setPromotingId] = useState<string | null>(null);
+  const [notice, setNotice] = useState("");
 
   const loadTickets = useCallback(async () => {
     const params = new URLSearchParams();
@@ -31,6 +34,25 @@ export default function AdminTicketsPage() {
   useEffect(() => {
     loadTickets();
   }, [loadTickets]);
+
+  async function handlePromote(ticketId: string) {
+    setPromotingId(ticketId);
+    setNotice("");
+    try {
+      const res = await fetch("/api/admin/whitelist/from-ticket", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketId }),
+      });
+      const data = await res.json();
+      setNotice(res.ok ? "Agregado a la lista" : data.error || "No se pudo agregar");
+      await loadTickets();
+    } catch {
+      setNotice("Algo salió mal");
+    } finally {
+      setPromotingId(null);
+    }
+  }
 
   const statusColors: Record<string, string> = {
     PENDING_PAYMENT: "text-yellow-400",
@@ -66,6 +88,12 @@ export default function AdminTicketsPage() {
         </select>
       </div>
 
+      {notice && (
+        <div className="bg-white/10 border border-white/20 px-4 py-2 mb-4 text-white text-sm">
+          {notice}
+        </div>
+      )}
+
       <div className="space-y-2">
         {tickets.map((ticket) => (
           <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 flex items-center justify-between">
@@ -79,13 +107,24 @@ export default function AdminTicketsPage() {
                 {ticket.purchaserGovId && ` | ${ticket.purchaserGovId}`}
               </p>
             </div>
-            <div className="text-right">
+            <div className="text-right flex flex-col items-end gap-2">
               <span className={`text-xs uppercase tracking-wider font-bold ${statusColors[ticket.status] || "text-white/40"}`}>
                 {ticket.status}
               </span>
-              <p className="text-white/30 text-xs mt-1">
+              <p className="text-white/30 text-xs">
                 {formatDateTime(ticket.createdAt)}
               </p>
+              {ticket.whitelistedPersonId ? (
+                <span className="text-blue-300/70 text-xs uppercase tracking-wider">En la lista</span>
+              ) : ticket.purchaserGovId ? (
+                <button
+                  onClick={() => handlePromote(ticket.id)}
+                  disabled={promotingId === ticket.id}
+                  className="bg-blue-700 text-white text-xs uppercase tracking-wider font-bold px-3 py-1 hover:bg-blue-600 transition-colors disabled:opacity-50"
+                >
+                  {promotingId === ticket.id ? "..." : "Agregar a la lista"}
+                </button>
+              ) : null}
             </div>
           </div>
         ))}
