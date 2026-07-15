@@ -75,6 +75,7 @@ model TicketType {
   currency  String   @default("UYU")
   capacity   Int?      // null = unlimited
   validUntil DateTime? // Optional: tickets of this type expire after this time
+  isOffered  Boolean   @default(true) // false = retired from sale (shows as sold out, blocks new purchases)
   sortOrder  Int       @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

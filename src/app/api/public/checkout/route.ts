@@ -38,6 +38,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Event not available" }, { status: 404 });
     }
 
+    if (!ticketType.isOffered) {
+      return NextResponse.json(
+        { error: "This ticket type is no longer offered" },
+        { status: 409 }
+      );
+    }
+
     // Resolve the purchaser differently for public vs. whitelist events.
     let purchaser: Purchaser;
 

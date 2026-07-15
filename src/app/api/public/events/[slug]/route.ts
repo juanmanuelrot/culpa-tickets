@@ -59,7 +59,8 @@ export async function GET(
       currency: tt.currency,
       validUntil: tt.validUntil,
       soldOut:
-        tt.capacity !== null && (soldByType.get(tt.id) ?? 0) >= tt.capacity,
+        !tt.isOffered ||
+        (tt.capacity !== null && (soldByType.get(tt.id) ?? 0) >= tt.capacity),
     })),
   });
 }

@@ -11,6 +11,7 @@ interface TicketType {
   currency: string;
   capacity: number | null;
   validUntil: string | null;
+  isOffered: boolean;
   sortOrder: number;
   _count: { tickets: number };
 }
@@ -96,6 +97,15 @@ export default function AdminEventDetailPage() {
     setTtForm({ name: "", price: "", currency: "UYU", capacity: "", validUntil: "", autoApproveWhitelist: true });
     setShowTtForm(false);
     setLoading(false);
+    loadEvent();
+  }
+
+  async function handleToggleOffered(ticketTypeId: string, isOffered: boolean) {
+    await fetch(`/api/admin/events/${id}/ticket-types/${ticketTypeId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isOffered: !isOffered }),
+    });
     loadEvent();
   }
 
@@ -302,6 +312,11 @@ export default function AdminEventDetailPage() {
                 <span className="text-white font-bold uppercase tracking-wider">
                   {tt.name}
                 </span>
+                {!tt.isOffered && (
+                  <span className="text-yellow-400/80 ml-3 text-xs uppercase tracking-wider border border-yellow-400/40 px-2 py-0.5">
+                    Agotado
+                  </span>
+                )}
                 <span className="text-white/50 ml-4">
                   {tt.price === 0
                     ? "GRATIS"
@@ -326,6 +341,17 @@ export default function AdminEventDetailPage() {
                 <span className="text-white/40 text-sm">
                   {tt._count.tickets} vendidos
                 </span>
+                <button
+                  onClick={() => handleToggleOffered(tt.id, tt.isOffered)}
+                  title={tt.isOffered ? "Quitar de la venta (se mostrará agotado)" : "Volver a ofrecer"}
+                  className={`text-xs uppercase tracking-wider font-bold px-3 py-1 ${
+                    tt.isOffered
+                      ? "bg-green-700 text-white"
+                      : "bg-yellow-700 text-white"
+                  }`}
+                >
+                  {tt.isOffered ? "En venta" : "Agotado"}
+                </button>
                 <button
                   onClick={() => handleApproveAll(tt.id)}
                   disabled={approvingId === tt.id}

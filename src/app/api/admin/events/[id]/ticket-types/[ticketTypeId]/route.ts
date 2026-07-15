@@ -19,6 +19,7 @@ export async function PUT(
       ...(data.price !== undefined && { price: Math.round(data.price) }),
       ...(data.currency !== undefined && { currency: data.currency }),
       ...(data.capacity !== undefined && { capacity: data.capacity }),
+      ...(data.isOffered !== undefined && { isOffered: data.isOffered }),
       ...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),
     },
   });

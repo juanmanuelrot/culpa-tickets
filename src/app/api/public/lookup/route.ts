@@ -106,7 +106,9 @@ export async function POST(request: NextRequest) {
         validUntil: tt.validUntil,
         alreadyPurchased: purchasedTicketTypeIds.includes(tt.id),
         pendingPayment: pendingTicketTypeIds.includes(tt.id) && !purchasedTicketTypeIds.includes(tt.id),
-        soldOut: tt.capacity !== null
+        soldOut: !tt.isOffered
+          ? true
+          : tt.capacity !== null
           ? paidTickets.filter((t) => t.ticketTypeId === tt.id).length >= 1
           : false,
       })),
