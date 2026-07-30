@@ -7,7 +7,7 @@ interface Ticket {
   id: string;
   status: string;
   purchaserName: string;
-  purchaserEmail: string;
+  purchaserEmail: string | null;
   purchaserGovId: string | null;
   whitelistedPersonId: string | null;
   createdAt: string;

@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { formatDateTime, localInputToUtc } from "@/lib/date";
+import { QrDirectoSection } from "./qr-directo-section";
+import type { EventWithTypes } from "./types";
 
 interface InviteLink {
   id: string;
@@ -13,12 +15,6 @@ interface InviteLink {
   maxUses: number;
   usedCount: number;
   createdAt: string;
-}
-
-interface EventWithTypes {
-  id: string;
-  name: string;
-  ticketTypes: Array<{ id: string; name: string }>;
 }
 
 export default function AdminInviteLinksPage() {
@@ -83,130 +79,142 @@ export default function AdminInviteLinksPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-black uppercase tracking-wider text-white">
-          Links de Invitación
-        </h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors"
-        >
-          {showForm ? "Cancelar" : "+ Generar Link"}
-        </button>
-      </div>
+      <h1 className="text-3xl font-black uppercase tracking-wider text-white mb-10">
+        Invitaciones
+      </h1>
 
-      {showForm && (
-        <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Evento <span className="text-fyf-red">*</span></label>
-              <select
-                value={formData.eventId}
-                onChange={(e) => setFormData({ ...formData, eventId: e.target.value, ticketTypeId: "" })}
-                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
-                required
-              >
-                <option value="">Seleccionar evento</option>
-                {events.map((ev) => (
-                  <option key={ev.id} value={ev.id}>{ev.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Tipo de Ticket <span className="text-fyf-red">*</span></label>
-              <select
-                value={formData.ticketTypeId}
-                onChange={(e) => setFormData({ ...formData, ticketTypeId: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
-                required
-                disabled={!formData.eventId}
-              >
-                <option value="">Seleccionar tipo</option>
-                {selectedEvent?.ticketTypes.map((tt) => (
-                  <option key={tt.id} value={tt.id}>{tt.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">El link expira <span className="text-fyf-red">*</span></label>
-              <input
-                type="datetime-local"
-                value={formData.expiresAt}
-                onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
-                required
-              />
-              <p className="text-white/30 text-xs mt-1">Hora de Montevideo — cuándo deja de funcionar este link</p>
-            </div>
-            <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Usos Máximos <span className="text-fyf-red">*</span></label>
-              <input
-                type="number"
-                min="1"
-                value={formData.maxUses}
-                onChange={(e) => setFormData({ ...formData, maxUses: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket válido hasta (opcional)</label>
-              <input
-                type="datetime-local"
-                value={formData.ticketValidUntil}
-                onChange={(e) => setFormData({ ...formData, ticketValidUntil: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
-              />
-              <p className="text-white/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket (distinto de la fecha del evento)</p>
-            </div>
-          </div>
+      <section className="mb-14">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-xl font-black uppercase tracking-wider text-white">
+            Links de Invitación
+          </h2>
           <button
-            type="submit"
-            disabled={loading}
-            className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
+            onClick={() => setShowForm(!showForm)}
+            className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors"
           >
-            {loading ? "Generando..." : "Generar Link"}
+            {showForm ? "Cancelar" : "+ Generar Link"}
           </button>
-        </form>
-      )}
+        </div>
+        <p className="text-white/40 text-sm mb-6">
+          Link reutilizable que el invitado abre para reclamar su ticket por
+          correo.
+        </p>
 
-      <div className="space-y-2">
-        {links.map((link) => (
-          <div key={link.id} className="bg-white/5 border border-white/10 p-4">
-            <div className="flex items-center justify-between">
+        {showForm && (
+          <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-fyf-red font-mono text-sm break-all">
-                  {appUrl}/invite/{link.token}
-                </p>
-                <p className="text-white/40 text-xs mt-1">
-                  Usos: {link.usedCount}/{link.maxUses} | El link expira:{" "}
-                  {formatDateTime(link.expiresAt)}
-                  {link.ticketValidUntil && (
-                    <span className="text-yellow-400/70"> | Ticket válido hasta: {formatDateTime(link.ticketValidUntil)}</span>
-                  )}
-                </p>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Evento <span className="text-fyf-red">*</span></label>
+                <select
+                  value={formData.eventId}
+                  onChange={(e) => setFormData({ ...formData, eventId: e.target.value, ticketTypeId: "" })}
+                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                  required
+                >
+                  <option value="">Seleccionar evento</option>
+                  {events.map((ev) => (
+                    <option key={ev.id} value={ev.id}>{ev.name}</option>
+                  ))}
+                </select>
               </div>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => navigator.clipboard.writeText(`${appUrl}/invite/${link.token}`)}
-                  className="text-white/50 text-xs uppercase tracking-wider hover:text-white"
+              <div>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Tipo de Ticket <span className="text-fyf-red">*</span></label>
+                <select
+                  value={formData.ticketTypeId}
+                  onChange={(e) => setFormData({ ...formData, ticketTypeId: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                  required
+                  disabled={!formData.eventId}
                 >
-                  Copiar
-                </button>
-                <button
-                  onClick={() => handleDelete(link.id)}
-                  className="text-red-400 text-xs uppercase tracking-wider hover:text-red-300"
-                >
-                  Eliminar
-                </button>
+                  <option value="">Seleccionar tipo</option>
+                  {selectedEvent?.ticketTypes.map((tt) => (
+                    <option key={tt.id} value={tt.id}>{tt.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">El link expira <span className="text-fyf-red">*</span></label>
+                <input
+                  type="datetime-local"
+                  value={formData.expiresAt}
+                  onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                  required
+                />
+                <p className="text-white/30 text-xs mt-1">Hora de Montevideo — cuándo deja de funcionar este link</p>
+              </div>
+              <div>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Usos Máximos <span className="text-fyf-red">*</span></label>
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.maxUses}
+                  onChange={(e) => setFormData({ ...formData, maxUses: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket válido hasta (opcional)</label>
+                <input
+                  type="datetime-local"
+                  value={formData.ticketValidUntil}
+                  onChange={(e) => setFormData({ ...formData, ticketValidUntil: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                />
+                <p className="text-white/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket (distinto de la fecha del evento)</p>
               </div>
             </div>
-          </div>
-        ))}
-        {links.length === 0 && (
-          <p className="text-white/30 text-center py-8">No hay links de invitación todavía</p>
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
+            >
+              {loading ? "Generando..." : "Generar Link"}
+            </button>
+          </form>
         )}
-      </div>
+
+        <div className="space-y-2">
+          {links.map((link) => (
+            <div key={link.id} className="bg-white/5 border border-white/10 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-fyf-red font-mono text-sm break-all">
+                    {appUrl}/invite/{link.token}
+                  </p>
+                  <p className="text-white/40 text-xs mt-1">
+                    Usos: {link.usedCount}/{link.maxUses} | El link expira:{" "}
+                    {formatDateTime(link.expiresAt)}
+                    {link.ticketValidUntil && (
+                      <span className="text-yellow-400/70"> | Ticket válido hasta: {formatDateTime(link.ticketValidUntil)}</span>
+                    )}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => navigator.clipboard.writeText(`${appUrl}/invite/${link.token}`)}
+                    className="text-white/50 text-xs uppercase tracking-wider hover:text-white"
+                  >
+                    Copiar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(link.id)}
+                    className="text-red-400 text-xs uppercase tracking-wider hover:text-red-300"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+          {links.length === 0 && (
+            <p className="text-white/30 text-center py-8">No hay links de invitación todavía</p>
+          )}
+        </div>
+      </section>
+
+      <QrDirectoSection events={events} />
     </div>
   );
 }

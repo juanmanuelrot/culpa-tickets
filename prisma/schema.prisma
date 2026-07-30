@@ -114,7 +114,7 @@ model Ticket {
 
   status          TicketStatus @default(PENDING_PAYMENT)
   purchaserName   String
-  purchaserEmail  String
+  purchaserEmail  String?      // null for admin-issued QR invites with no email
   purchaserGovId  String?
 
   validUntil      DateTime? // Resolved expiration time for scanning

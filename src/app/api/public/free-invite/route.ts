@@ -23,19 +23,15 @@ export async function GET(request: NextRequest) {
 
   const ticketType = await prisma.ticketType.findUnique({
     where: { id: link.ticketTypeId },
-    select: { name: true, validUntil: true },
+    select: { name: true },
   });
 
   const expired = new Date() > link.expiresAt;
   const fullyUsed = link.usedCount >= link.maxUses;
 
-  // Invite link's ticketValidUntil takes priority, then ticket type's validUntil
-  const ticketValidUntil = link.ticketValidUntil ?? ticketType?.validUntil ?? null;
-
   return NextResponse.json({
     eventName: event?.name,
     eventDate: event?.date,
-    ticketValidUntil,
     ticketType: ticketType?.name,
     expired,
     fullyUsed,
@@ -137,14 +133,12 @@ export async function POST(request: NextRequest) {
       date: formatDate(event.date),
       purchaserName: name.trim(),
       qrCodeBuffer,
-      validUntil: validUntil ? formatDate(validUntil) : null,
     });
 
     return NextResponse.json({
       success: true,
       ticketId: ticket.id,
       eventSlug: event.slug,
-      ticketValidUntil: validUntil,
     });
   } catch (error) {
     console.error("Free invite error:", error);

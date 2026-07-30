@@ -25,17 +25,26 @@ export async function verifyQRToken(token: string): Promise<QRPayload | null> {
   }
 }
 
+const QR_RENDER_OPTIONS = {
+  errorCorrectionLevel: "H" as const,
+  margin: 2,
+  width: 400,
+  color: {
+    dark: "#000000",
+    light: "#FFFFFF",
+  },
+};
+
 export async function generateQRCodeBuffer(
   signedJwt: string
 ): Promise<Buffer> {
-  return QRCode.toBuffer(signedJwt, {
-    type: "png",
-    errorCorrectionLevel: "H",
-    margin: 2,
-    width: 400,
-    color: {
-      dark: "#000000",
-      light: "#FFFFFF",
-    },
-  });
+  return QRCode.toBuffer(signedJwt, { type: "png", ...QR_RENDER_OPTIONS });
+}
+
+// Same image as generateQRCodeBuffer, as a data URL for rendering in the
+// browser (admin issues a QR on screen and screenshots or downloads it).
+export async function generateQRCodeDataUrl(
+  signedJwt: string
+): Promise<string> {
+  return QRCode.toDataURL(signedJwt, { type: "image/png", ...QR_RENDER_OPTIONS });
 }

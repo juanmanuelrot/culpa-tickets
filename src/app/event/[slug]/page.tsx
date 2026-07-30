@@ -5,14 +5,13 @@ import { useParams, useRouter } from "next/navigation";
 import { SnakeBorderFrame } from "@/components/decorative/snake-border";
 import { DjCreature } from "@/components/decorative/dj-creature";
 import { HaringFigure } from "@/components/decorative/haring-border";
-import { formatEventDateTime, formatDateShort } from "@/lib/date";
+import { formatEventDateTime } from "@/lib/date";
 
 interface TicketTypeInfo {
   id: string;
   name: string;
   price: number;
   currency: string;
-  validUntil: string | null;
   alreadyPurchased: boolean;
   pendingPayment: boolean;
   soldOut: boolean;
@@ -38,7 +37,6 @@ interface PublicTicketType {
   name: string;
   price: number;
   currency: string;
-  validUntil: string | null;
   soldOut: boolean;
 }
 
@@ -165,10 +163,10 @@ export default function EventPage() {
   }
 
   const redirectAfterCheckout = useCallback(
-    (data: { free?: boolean; ticketId?: string; ticketValidUntil?: string; checkoutUrl?: string }, event: EventInfo) => {
+    (data: { free?: boolean; ticketId?: string; checkoutUrl?: string }, event: EventInfo) => {
       if (data.free) {
         const eventParams = `&eventName=${encodeURIComponent(event.name)}&eventDate=${encodeURIComponent(event.date)}`;
-        const successUrl = `/event/${slug}/checkout/success?ticketId=${data.ticketId}&free=true${data.ticketValidUntil ? `&validUntil=${encodeURIComponent(data.ticketValidUntil)}` : ""}${eventParams}`;
+        const successUrl = `/event/${slug}/checkout/success?ticketId=${data.ticketId}&free=true${eventParams}`;
         router.push(successUrl);
       } else if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
@@ -281,11 +279,6 @@ export default function EventPage() {
                           <p className="text-white/80 text-lg font-black mt-1">
                             {formatPrice(tt.price, tt.currency)}
                           </p>
-                          {tt.validUntil && (
-                            <p className="text-yellow-300/80 text-xs mt-1">
-                              Ticket válido hasta {formatDateShort(tt.validUntil)}
-                            </p>
-                          )}
                         </div>
                         <button
                           onClick={() => {
@@ -480,11 +473,6 @@ export default function EventPage() {
                       <p className="text-white/80 text-lg font-black mt-1">
                         {formatPrice(tt.price, tt.currency)}
                       </p>
-                      {tt.validUntil && (
-                        <p className="text-yellow-300/80 text-xs mt-1">
-                          Ticket válido hasta {formatDateShort(tt.validUntil)}
-                        </p>
-                      )}
                     </div>
                     <button
                       onClick={() => handleCheckout(tt.id)}

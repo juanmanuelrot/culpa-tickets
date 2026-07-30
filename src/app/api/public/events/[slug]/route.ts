@@ -57,7 +57,6 @@ export async function GET(
       name: tt.name,
       price: tt.price,
       currency: tt.currency,
-      validUntil: tt.validUntil,
       soldOut:
         !tt.isOffered ||
         (tt.capacity !== null && (soldByType.get(tt.id) ?? 0) >= tt.capacity),

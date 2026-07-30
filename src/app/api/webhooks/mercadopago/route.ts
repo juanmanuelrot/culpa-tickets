@@ -113,17 +113,19 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Send email with QR code
-      const qrCodeBuffer = await generateQRCodeBuffer(qrSignedJwt);
-      await sendTicketEmail({
-        to: ticket.purchaserEmail,
-        eventName: ticket.event.name,
-        ticketType: ticket.ticketType.name,
-        date: formatDate(ticket.event.date),
-        purchaserName: ticket.purchaserName,
-        qrCodeBuffer,
-        validUntil: ticket.validUntil ? formatDate(ticket.validUntil) : null,
-      });
+      // Send email with QR code. Paid tickets always carry an email, but
+      // admin-issued invites don't, so guard rather than assume.
+      if (ticket.purchaserEmail) {
+        const qrCodeBuffer = await generateQRCodeBuffer(qrSignedJwt);
+        await sendTicketEmail({
+          to: ticket.purchaserEmail,
+          eventName: ticket.event.name,
+          ticketType: ticket.ticketType.name,
+          date: formatDate(ticket.event.date),
+          purchaserName: ticket.purchaserName,
+          qrCodeBuffer,
+        });
+      }
     } else if (payment.status === "rejected" || payment.status === "cancelled") {
       await prisma.ticket.update({
         where: { id: ticket.id },

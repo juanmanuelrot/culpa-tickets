@@ -103,7 +103,6 @@ export async function POST(request: NextRequest) {
         name: tt.name,
         price: tt.price,
         currency: tt.currency,
-        validUntil: tt.validUntil,
         alreadyPurchased: purchasedTicketTypeIds.includes(tt.id),
         pendingPayment: pendingTicketTypeIds.includes(tt.id) && !purchasedTicketTypeIds.includes(tt.id),
         soldOut: !tt.isOffered

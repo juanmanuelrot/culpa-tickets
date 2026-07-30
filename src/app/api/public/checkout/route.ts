@@ -184,14 +184,12 @@ export async function POST(request: NextRequest) {
         date: formatDate(ticketType.event.date),
         purchaserName: purchaser.name,
         qrCodeBuffer,
-        validUntil: ticketType.validUntil ? formatDate(ticketType.validUntil) : null,
       });
 
       return NextResponse.json({
         success: true,
         free: true,
         ticketId: ticket.id,
-        ticketValidUntil: ticketType.validUntil,
       });
     }
 

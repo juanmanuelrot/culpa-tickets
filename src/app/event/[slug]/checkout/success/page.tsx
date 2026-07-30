@@ -5,12 +5,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { SnakeBorder } from "@/components/decorative/snake-border";
 import { SmallCreature } from "@/components/decorative/dj-creature";
-import { formatEventDateTime, formatDateTime } from "@/lib/date";
+import { formatEventDateTime } from "@/lib/date";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const isFree = searchParams.get("free") === "true";
-  const validUntil = searchParams.get("validUntil");
   const eventName = searchParams.get("eventName");
   const eventDate = searchParams.get("eventDate");
 
@@ -57,17 +56,6 @@ function SuccessContent() {
                 </p>
               </>
             )}
-          </div>
-        )}
-
-        {validUntil && (
-          <div className="bg-black/20 border border-white/20 px-6 py-4 mt-4">
-            <p className="text-yellow-300 font-bold uppercase tracking-wider text-sm">
-              Ticket válido hasta {formatDateTime(validUntil)}
-            </p>
-            <p className="text-white/50 text-xs mt-1">
-              Este ticket no se puede usar después de esta hora (hora de Montevideo)
-            </p>
           </div>
         )}
 

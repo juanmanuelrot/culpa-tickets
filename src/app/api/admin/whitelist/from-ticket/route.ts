@@ -32,6 +32,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!ticket.purchaserEmail) {
+      return NextResponse.json(
+        { error: "Ticket has no email address to add" },
+        { status: 400 }
+      );
+    }
+
     const govIdNumber = ticket.purchaserGovId.trim().toUpperCase();
 
     const existing = await prisma.whitelistedPerson.findUnique({
