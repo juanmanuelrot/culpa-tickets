@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { sendWelcomeEmail } from "@/lib/email";
+import { confirmedTicketsWhere } from "@/lib/tickets";
 
 export async function GET(request: NextRequest) {
   const admin = await requireAdmin(request);
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
         allowedTicketTypes: {
           include: { ticketType: { include: { event: true } } },
         },
-        _count: { select: { tickets: true } },
+        _count: { select: { tickets: { where: confirmedTicketsWhere } } },
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,

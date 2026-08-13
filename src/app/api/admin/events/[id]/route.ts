@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { confirmedTicketsWhere } from "@/lib/tickets";
 
 export async function GET(
   request: NextRequest,
@@ -15,9 +16,11 @@ export async function GET(
     include: {
       ticketTypes: {
         orderBy: { sortOrder: "asc" },
-        include: { _count: { select: { tickets: true } } },
+        include: {
+          _count: { select: { tickets: { where: confirmedTicketsWhere } } },
+        },
       },
-      _count: { select: { tickets: true } },
+      _count: { select: { tickets: { where: confirmedTicketsWhere } } },
     },
   });
 

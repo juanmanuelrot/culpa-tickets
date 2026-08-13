@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { confirmedTicketsWhere } from "@/lib/tickets";
 
 export async function GET(request: NextRequest) {
   const admin = await requireAdmin(request);
@@ -8,7 +9,9 @@ export async function GET(request: NextRequest) {
 
   const links = await prisma.freeInviteLink.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { tickets: true } } },
+    include: {
+      _count: { select: { tickets: { where: confirmedTicketsWhere } } },
+    },
   });
 
   return NextResponse.json(links);
