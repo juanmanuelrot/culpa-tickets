@@ -59,7 +59,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={silkscreen.variable}>
-      <body className="antialiased min-h-screen bg-culpa-night text-culpa-cream">
+      {/* dvh y no vh: en mobile el 100vh incluye la barra del navegador, y el
+          sobrante quedaba como una franja negra scrolleable bajo la pantalla. */}
+      <body className="antialiased min-h-[100dvh] bg-culpa-night text-culpa-cream">
         {children}
       </body>
     </html>
