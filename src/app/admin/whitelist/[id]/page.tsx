@@ -88,48 +88,48 @@ export default function AdminWhitelistDetailPage() {
     router.push("/admin/whitelist");
   }
 
-  if (!person) return <div className="text-white/50">Cargando...</div>;
+  if (!person) return <div className="text-culpa-cream/50">Cargando...</div>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black uppercase tracking-wider text-white">
+          <h1 className="culpa-heading text-xl text-culpa-cream">
             {person.name}
           </h1>
-          <p className="text-white/50 font-mono text-sm mt-1">{person.govIdNumber}</p>
+          <p className="text-culpa-cream/50 font-mono text-sm mt-1">{person.govIdNumber}</p>
         </div>
         <button
           onClick={handleDelete}
-          className="bg-red-900 text-white text-sm uppercase tracking-wider font-bold px-4 py-2 hover:bg-red-800"
+          className="bg-red-900 text-culpa-cream text-sm uppercase tracking-wider font-bold px-4 py-2 hover:bg-red-800"
         >
           Eliminar
         </button>
       </div>
 
       {/* Info */}
-      <div className="bg-white/5 border border-white/10 p-5 mb-6">
+      <div className="bg-culpa-cream/5 border border-culpa-cream/10 p-5 mb-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-white/40 text-xs uppercase tracking-widest">Correo</p>
-            <p className="text-white mt-1">{person.email}</p>
+            <p className="text-culpa-cream/40 text-xs uppercase tracking-widest">Correo</p>
+            <p className="text-culpa-cream mt-1">{person.email}</p>
           </div>
           <div>
-            <p className="text-white/40 text-xs uppercase tracking-widest">Instagram</p>
-            <p className="text-white mt-1">{person.instagramHandle || "—"}</p>
+            <p className="text-culpa-cream/40 text-xs uppercase tracking-widest">Instagram</p>
+            <p className="text-culpa-cream mt-1">{person.instagramHandle || "—"}</p>
           </div>
         </div>
       </div>
 
       {/* Ticket Type Permissions */}
       <div className="mb-8">
-        <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4">
+        <h2 className="culpa-heading text-base text-culpa-cream mb-4">
           Tipos de Ticket Permitidos
         </h2>
         <div className="space-y-4">
           {events.map((event) => (
-            <div key={event.id} className="bg-white/5 border border-white/10 p-4">
-              <p className="text-white font-bold uppercase tracking-wider text-sm mb-3">
+            <div key={event.id} className="bg-culpa-cream/5 border border-culpa-cream/10 p-4">
+              <p className="text-culpa-cream font-bold uppercase tracking-wider text-sm mb-3">
                 {event.name}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -139,8 +139,8 @@ export default function AdminWhitelistDetailPage() {
                     onClick={() => toggleTicketType(tt.id)}
                     className={`px-3 py-1.5 text-xs uppercase tracking-wider font-bold border transition-colors ${
                       selectedTicketTypes.has(tt.id)
-                        ? "bg-fyf-red border-fyf-red text-white"
-                        : "bg-transparent border-white/20 text-white/40 hover:border-white/40"
+                        ? "bg-culpa-blue border-culpa-lime text-culpa-cream"
+                        : "bg-transparent border-culpa-cream/20 text-culpa-cream/40 hover:border-culpa-cream/40"
                     }`}
                   >
                     {tt.name}
@@ -149,7 +149,7 @@ export default function AdminWhitelistDetailPage() {
                   </button>
                 ))}
                 {event.ticketTypes.length === 0 && (
-                  <p className="text-white/20 text-xs">Sin tipos de ticket</p>
+                  <p className="text-culpa-cream/20 text-xs">Sin tipos de ticket</p>
                 )}
               </div>
             </div>
@@ -158,7 +158,7 @@ export default function AdminWhitelistDetailPage() {
         <button
           onClick={handleSavePermissions}
           disabled={saving}
-          className="mt-4 bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
+          className="mt-4 bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors disabled:opacity-50"
         >
           {saving ? "Guardando..." : "Guardar Permisos"}
         </button>
@@ -166,15 +166,15 @@ export default function AdminWhitelistDetailPage() {
 
       {/* Tickets */}
       <div>
-        <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4">
+        <h2 className="culpa-heading text-base text-culpa-cream mb-4">
           Tickets
         </h2>
         <div className="space-y-2">
           {person.tickets.map((ticket) => (
-            <div key={ticket.id} className="bg-white/5 border border-white/10 p-3 flex items-center justify-between">
+            <div key={ticket.id} className="bg-culpa-cream/5 border border-culpa-cream/10 p-3 flex items-center justify-between">
               <div>
-                <span className="text-white text-sm">{ticket.event.name}</span>
-                <span className="text-white/40 text-sm ml-2">— {ticket.ticketType.name}</span>
+                <span className="text-culpa-cream text-sm">{ticket.event.name}</span>
+                <span className="text-culpa-cream/40 text-sm ml-2">— {ticket.ticketType.name}</span>
               </div>
               <span
                 className={`text-xs uppercase tracking-wider font-bold ${
@@ -192,7 +192,7 @@ export default function AdminWhitelistDetailPage() {
             </div>
           ))}
           {person.tickets.length === 0 && (
-            <p className="text-white/30 text-center py-4">Sin tickets todavía</p>
+            <p className="text-culpa-cream/30 text-center py-4">Sin tickets todavía</p>
           )}
         </div>
       </div>

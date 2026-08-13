@@ -1,5 +1,5 @@
 {
-  "name": "fyf-tickets",
+  "name": "culpa-tickets",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,7 @@
     "start": "prisma migrate deploy && next start",
     "lint": "eslint",
     "db:migrate": "prisma migrate deploy",
-    "db:seed": "npx tsx prisma/seed.ts",
+    "db:seed": "npx tsx -r dotenv/config prisma/seed.ts",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio --browser none"
   },

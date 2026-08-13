@@ -1,7 +1,81 @@
 import { Resend } from "resend";
-import { formatEventDateTime } from "@/lib/date";
+import { formatDayDot, formatEventDateTime } from "@/lib/date";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+/*
+ * Los mails repiten la pantalla del celular: marco azul, LCD lima, texto
+ * tinta. Sin webfonts (ningún cliente de mail las garantiza): la voz pixelada
+ * la hace Courier y los párrafos Tahoma, igual que en la web.
+ */
+
+const NIGHT = "#080808";
+const BLUE = "#2b3ad8";
+const LIME = "#c9d92c";
+const INK = "#0d0d0d";
+const CREAM = "#f4e3d7";
+
+const PIXEL_FONT = '"Courier New", Courier, monospace';
+const UI_FONT = "Tahoma, Verdana, Geneva, sans-serif";
+
+/** La barra de estado del teléfono, arriba de la pantalla. */
+function statusBar(): string {
+  return `
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+      <tr>
+        <td style="font-family:${PIXEL_FONT};font-size:11px;color:${INK};text-align:left;">
+          .ıll &nbsp;&#9993;
+        </td>
+        <td style="font-family:${PIXEL_FONT};font-size:11px;color:${INK};text-align:right;">
+          11:11 &nbsp;&#9636;
+        </td>
+      </tr>
+    </table>`;
+}
+
+/*
+ * El logo sobre una franja tinta. Va como imagen alojada, así que si el cliente
+ * bloquea imágenes queda el texto alternativo — con color y peso propios, para
+ * que se lea contra el negro en vez de desaparecer.
+ */
+function wordmark(appUrl: string, subtitle: string): string {
+  return `
+    <div style="background-color:${INK};padding:20px 16px;text-align:center;">
+      <img src="${appUrl}/culpa-wordmark.png" alt="Culpa" width="220"
+           style="width:220px;max-width:72%;height:auto;display:block;margin:0 auto;color:${CREAM};font-family:${UI_FONT};font-weight:bold;font-size:30px;" />
+      <div style="font-family:${PIXEL_FONT};font-size:10px;letter-spacing:2px;color:${LIME};margin-top:12px;text-transform:uppercase;">
+        ${subtitle}
+      </div>
+    </div>`;
+}
+
+/** Envuelve el contenido en el celular: fondo noche, cuerpo azul, LCD lima. */
+function shell(inner: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin:0;padding:0;background-color:${NIGHT};font-family:${UI_FONT};">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:${NIGHT};padding:24px 12px;">
+        <tr>
+          <td align="center">
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:460px;background-color:${BLUE};border-radius:28px;padding:18px;">
+              <tr>
+                <td style="background-color:${LIME};border-radius:14px;padding:14px;">
+                  ${statusBar()}
+                  ${inner}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>`;
+}
 
 export async function sendWelcomeEmail(params: {
   to: string;
@@ -10,68 +84,59 @@ export async function sendWelcomeEmail(params: {
 }) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-  const eventListHtml = params.events.length > 0
-    ? params.events
-        .map(
-          (e) => `
-          <tr>
-            <td style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);">
-              <a href="${appUrl}/event/${e.slug}" style="color:#ffffff;text-decoration:none;font-size:14px;font-weight:bold;">${e.name}</a>
-              <br/><span style="font-size:12px;color:rgba(255,255,255,0.7);">${formatEventDateTime(e.date)}</span>
-            </td>
-          </tr>`
-        )
-        .join("")
-    : `<tr><td style="padding:12px 16px;color:rgba(255,255,255,0.7);font-size:13px;">Te avisaremos cuando haya eventos disponibles.</td></tr>`;
+  const eventListHtml =
+    params.events.length > 0
+      ? params.events
+          .map(
+            (e) => `
+          <a href="${appUrl}/event/${e.slug}" style="display:block;text-decoration:none;border:2px solid ${INK};padding:12px;margin:0 0 8px 0;">
+            <span style="font-family:${PIXEL_FONT};font-size:12px;font-weight:bold;color:${INK};text-transform:uppercase;">
+              ${formatDayDot(e.date)} &nbsp;&gt;&nbsp; ${e.name}
+            </span>
+            <br/>
+            <span style="font-family:${UI_FONT};font-size:11px;color:${INK};opacity:0.7;">
+              ${formatEventDateTime(e.date)}
+            </span>
+          </a>`
+          )
+          .join("")
+      : `<p style="font-family:${UI_FONT};font-size:13px;color:${INK};opacity:0.7;margin:0;">
+           Te avisamos cuando abramos la próxima fecha.
+         </p>`;
 
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body style="margin:0;padding:0;background-color:#1a1a1a;font-family:Arial,Helvetica,sans-serif;">
-      <div style="max-width:500px;margin:0 auto;background-color:#B54545;padding:40px 30px;text-align:center;">
-        <h1 style="color:#ffffff;font-size:36px;font-weight:bold;text-transform:uppercase;letter-spacing:4px;margin:0 0 10px 0;">
-          F&F
-        </h1>
-        <p style="color:#ffffff;font-size:14px;text-transform:uppercase;letter-spacing:2px;margin:0 0 30px 0;">
-          Bienvenido/a
-        </p>
+  const inner = `
+    ${wordmark(appUrl, "Reggaeton nostalgico")}
 
-        <div style="background-color:rgba(0,0,0,0.2);border-radius:12px;padding:24px;margin:0 0 24px 0;text-align:left;">
-          <p style="color:#ffffff;font-size:16px;margin:0 0 8px 0;">
-            Hola <strong>${params.name}</strong>,
-          </p>
-          <p style="color:rgba(255,255,255,0.85);font-size:14px;margin:0;line-height:1.5;">
-            Fuiste agregado/a a la lista de F&F. Ya podés comprar tus tickets para los siguientes eventos:
-          </p>
-        </div>
+    <div style="padding:16px 4px 4px 4px;">
+      <p style="font-family:${PIXEL_FONT};font-size:12px;color:${INK};margin:0 0 10px 0;text-transform:uppercase;">
+        Hola ${params.name}
+      </p>
+      <p style="font-family:${UI_FONT};font-size:14px;color:${INK};margin:0;line-height:1.6;">
+        Te agregamos a la lista de Culpa. Ya podés sacar tu entrada para estas fechas:
+      </p>
+    </div>
 
-        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:rgba(0,0,0,0.15);border-radius:8px;margin:0 0 24px 0;text-align:left;">
-          ${eventListHtml}
-        </table>
+    <div style="padding:14px 4px;">
+      ${eventListHtml}
+    </div>
 
-        <a href="${appUrl}" style="display:inline-block;background-color:#ffffff;color:#B54545;font-size:14px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;padding:14px 32px;border-radius:8px;text-decoration:none;">
-          Ver Eventos
-        </a>
+    <div style="padding:6px 4px 16px 4px;text-align:center;">
+      <a href="${appUrl}" style="display:inline-block;background-color:${BLUE};color:${CREAM};border:2px solid ${INK};font-family:${PIXEL_FONT};font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;padding:14px 28px;text-decoration:none;">
+        Ver fechas
+      </a>
+    </div>
 
-        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.3);margin:30px 0;" />
+    <div style="border-top:2px solid ${INK};opacity:0.5;margin:6px 4px;"></div>
 
-        <p style="color:rgba(255,255,255,0.7);font-size:11px;margin:0;text-transform:uppercase;letter-spacing:1px;">
-          Si tenés alguna consulta, contactanos por Instagram.
-        </p>
-      </div>
-    </body>
-    </html>
-  `;
+    <p style="font-family:${PIXEL_FONT};font-size:10px;color:${INK};opacity:0.7;margin:10px 4px 4px 4px;text-transform:uppercase;text-align:center;">
+      Cualquier duda, escribinos por Instagram
+    </p>`;
 
   await resend.emails.send({
-    from: process.env.EMAIL_FROM || "FYF Tickets <tickets@yourdomain.com>",
+    from: process.env.EMAIL_FROM || "Culpa <tickets@yourdomain.com>",
     to: params.to,
-    subject: "Bienvenido/a a F&F",
-    html: htmlContent,
+    subject: "Estás en la lista de Culpa",
+    html: shell(inner),
   });
 }
 
@@ -83,63 +148,40 @@ export async function sendTicketEmail(params: {
   purchaserName: string;
   qrCodeBuffer: Buffer;
 }) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const qrCodeBase64 = params.qrCodeBuffer.toString("base64");
   const qrCodeDataUrl = `data:image/png;base64,${qrCodeBase64}`;
 
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body style="margin:0;padding:0;background-color:#1a1a1a;font-family:Arial,Helvetica,sans-serif;">
-      <div style="max-width:500px;margin:0 auto;background-color:#B54545;padding:40px 30px;text-align:center;">
-        <h1 style="color:#ffffff;font-size:36px;font-weight:bold;text-transform:uppercase;letter-spacing:4px;margin:0 0 10px 0;">
-          F&F
-        </h1>
-        <p style="color:#ffffff;font-size:14px;text-transform:uppercase;letter-spacing:2px;margin:0 0 30px 0;">
-          Tu Ticket
-        </p>
+  const inner = `
+    ${wordmark(appUrl, "Tu entrada")}
 
-        <div style="background-color:#ffffff;border-radius:12px;padding:30px;margin:0 0 30px 0;">
-          <img src="${qrCodeDataUrl}" alt="QR Code" style="width:250px;height:250px;display:block;margin:0 auto 20px auto;" />
-          <p style="color:#333;font-size:12px;margin:0;">
-            Presentá este código QR en la entrada
-          </p>
-        </div>
+    <div style="background-color:#ffffff;border:2px solid ${INK};padding:20px;margin:14px 0;text-align:center;">
+      <img src="${qrCodeDataUrl}" alt="Código QR de tu entrada" width="240" height="240" style="width:240px;height:240px;display:block;margin:0 auto 14px auto;image-rendering:pixelated;" />
+      <p style="font-family:${PIXEL_FONT};font-size:11px;color:${INK};margin:0;text-transform:uppercase;">
+        Mostra este QR en la puerta
+      </p>
+    </div>
 
-        <div style="text-align:left;color:#ffffff;padding:0 10px;">
-          <p style="font-size:14px;margin:0 0 8px 0;">
-            <strong style="text-transform:uppercase;letter-spacing:1px;">Evento:</strong> ${params.eventName}
-          </p>
-          <p style="font-size:14px;margin:0 0 8px 0;">
-            <strong style="text-transform:uppercase;letter-spacing:1px;">Fecha del evento:</strong> ${params.date}
-          </p>
-          <p style="font-size:14px;margin:0 0 8px 0;">
-            <strong style="text-transform:uppercase;letter-spacing:1px;">Tipo:</strong> ${params.ticketType}
-          </p>
-          <p style="font-size:14px;margin:0 0 8px 0;">
-            <strong style="text-transform:uppercase;letter-spacing:1px;">Nombre:</strong> ${params.purchaserName}
-          </p>
-        </div>
-
-        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.3);margin:30px 0;" />
-
-        <p style="color:rgba(255,255,255,0.7);font-size:11px;margin:0;text-transform:uppercase;letter-spacing:1px;">
-          No compartas este código QR con nadie.
-          <br/>Cada ticket solo se puede usar una vez.
-        </p>
+    <div style="padding:0 4px;">
+      <div style="font-family:${PIXEL_FONT};font-size:11px;color:${INK};text-transform:uppercase;line-height:2;">
+        <div><span style="opacity:0.6;">Evento:</span> ${params.eventName}</div>
+        <div><span style="opacity:0.6;">Fecha:</span> ${params.date}</div>
+        <div><span style="opacity:0.6;">Tipo:</span> ${params.ticketType}</div>
+        <div><span style="opacity:0.6;">Nombre:</span> ${params.purchaserName}</div>
       </div>
-    </body>
-    </html>
-  `;
+    </div>
+
+    <div style="border-top:2px solid ${INK};opacity:0.5;margin:16px 4px;"></div>
+
+    <p style="font-family:${PIXEL_FONT};font-size:10px;color:${INK};opacity:0.7;margin:0 4px 4px 4px;text-transform:uppercase;text-align:center;line-height:1.8;">
+      No compartas este QR con nadie.<br/>Cada entrada se usa una sola vez.
+    </p>`;
 
   await resend.emails.send({
-    from: process.env.EMAIL_FROM || "FYF Tickets <tickets@yourdomain.com>",
+    from: process.env.EMAIL_FROM || "Culpa <tickets@yourdomain.com>",
     to: params.to,
-    subject: `Tu ticket para ${params.eventName}`,
-    html: htmlContent,
+    subject: `Tu entrada para ${params.eventName}`,
+    html: shell(inner),
     attachments: [
       {
         filename: "qrcode.png",

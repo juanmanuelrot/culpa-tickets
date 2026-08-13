@@ -104,7 +104,7 @@ export default function ValidatorScannerPage() {
 
   return (
     <div className="text-center">
-      <h1 className="text-2xl font-black uppercase tracking-wider text-white mb-6">
+      <h1 className="culpa-heading text-lg text-culpa-cream mb-6">
         Escanear Ticket
       </h1>
 
@@ -116,7 +116,7 @@ export default function ValidatorScannerPage() {
             className="mx-auto rounded-lg overflow-hidden"
             style={{ width: "100%", maxWidth: "400px" }}
           />
-          <p className="text-white/50 text-sm mt-4 uppercase tracking-wider">
+          <p className="text-culpa-cream/50 text-sm mt-4 uppercase tracking-wider">
             Apuntá la cámara al código QR
           </p>
         </div>
@@ -124,53 +124,57 @@ export default function ValidatorScannerPage() {
 
       {processing && (
         <div className="py-20">
-          <p className="text-white/50 text-lg uppercase tracking-wider">Verificando...</p>
+          <p className="text-culpa-cream/50 text-lg uppercase tracking-wider">Verificando...</p>
         </div>
       )}
 
       {scanResult && !processing && (
         <div className="space-y-6">
           <div
-            className={`p-8 rounded-lg ${
+            className={`p-8 ${
               scanResult.valid
-                ? "bg-green-900/50 border-2 border-green-500 scan-valid"
-                : "bg-red-900/50 border-2 border-red-500 scan-invalid"
+                ? "bg-culpa-lime/15 border-2 border-culpa-lime scan-valid"
+                : "bg-culpa-alert/15 border-2 border-culpa-alert scan-invalid"
             }`}
           >
-            <p className="text-5xl mb-4">
+            <p
+              className={`text-5xl mb-4 ${
+                scanResult.valid ? "text-culpa-lime" : "text-culpa-alert"
+              }`}
+            >
               {scanResult.valid ? "\u2713" : "\u2717"}
             </p>
             <p
-              className={`text-2xl font-black uppercase tracking-wider ${
-                scanResult.valid ? "text-green-400" : "text-red-400"
+              className={`culpa-heading text-lg ${
+                scanResult.valid ? "text-culpa-lime" : "text-culpa-alert"
               }`}
             >
               {scanResult.valid ? "VÁLIDO" : "INVÁLIDO"}
             </p>
 
             {scanResult.error && (
-              <p className="text-white/70 text-sm mt-2">{scanResult.error}</p>
+              <p className="text-culpa-cream/70 text-sm mt-2">{scanResult.error}</p>
             )}
 
             {scanResult.ticket && (
               <div className="mt-4 space-y-1">
-                <p className="text-white text-xl font-bold">
+                <p className="text-culpa-cream text-xl font-bold">
                   {scanResult.ticket.purchaserName}
                 </p>
-                <p className="text-white/60 text-sm">
+                <p className="text-culpa-cream/60 text-sm">
                   {scanResult.ticket.event} — {scanResult.ticket.ticketType}
                 </p>
               </div>
             )}
 
             {scanResult.usedAt && (
-              <p className="text-white/40 text-xs mt-2">
+              <p className="text-culpa-cream/40 text-xs mt-2">
                 Primer escaneo: {formatDateTime(scanResult.usedAt)}
               </p>
             )}
 
             {scanResult.expiredAt && (
-              <p className="text-yellow-400 text-xs mt-2">
+              <p className="text-culpa-yellow text-xs mt-2">
                 Expiró el: {formatDateTime(scanResult.expiredAt)}
               </p>
             )}
@@ -178,7 +182,7 @@ export default function ValidatorScannerPage() {
 
           <button
             onClick={handleScanAgain}
-            className="bg-fyf-red text-white font-bold uppercase tracking-wider text-lg px-8 py-4 hover:bg-fyf-red-dark transition-colors w-full"
+            className="bg-culpa-lime text-culpa-ink font-pixel text-sm uppercase tracking-[0.1em] px-8 py-4 hover:bg-culpa-lime-dark transition-colors w-full"
           >
             Escanear Siguiente
           </button>

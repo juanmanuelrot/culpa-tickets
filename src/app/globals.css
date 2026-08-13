@@ -1,48 +1,97 @@
 @import "tailwindcss";
 
+/*
+ * Culpa — nostalgia de celular viejo.
+ * La pantalla LCD lima es el fondo de todo el contenido; el azul es el cuerpo
+ * del teléfono y los botones; la noche es lo que rodea al celu en desktop.
+ */
 :root {
-  --fyf-red: #B54545;
-  --fyf-red-dark: #8B3030;
-  --fyf-red-light: #D46B6B;
-  --fyf-black: #1A1A1A;
-  --fyf-white: #FFFFFF;
-  --fyf-cream: #F5F0EB;
+  --culpa-lime: #c9d92c;
+  --culpa-lime-dark: #a3b01f;
+  --culpa-blue: #2b3ad8;
+  --culpa-blue-dark: #1d2795;
+  --culpa-ink: #0d0d0d;
+  --culpa-cream: #f4e3d7;
+  --culpa-night: #080808;
+  --culpa-yellow: #ffde59; /* el amarillo exacto del logo */
+  --culpa-alert: #e23b2e;
 }
 
 @theme inline {
-  --color-fyf-red: var(--fyf-red);
-  --color-fyf-red-dark: var(--fyf-red-dark);
-  --color-fyf-red-light: var(--fyf-red-light);
-  --color-fyf-black: var(--fyf-black);
-  --color-fyf-white: var(--fyf-white);
-  --color-fyf-cream: var(--fyf-cream);
+  --color-culpa-lime: var(--culpa-lime);
+  --color-culpa-lime-dark: var(--culpa-lime-dark);
+  --color-culpa-blue: var(--culpa-blue);
+  --color-culpa-blue-dark: var(--culpa-blue-dark);
+  --color-culpa-ink: var(--culpa-ink);
+  --color-culpa-cream: var(--culpa-cream);
+  --color-culpa-night: var(--culpa-night);
+  --color-culpa-yellow: var(--culpa-yellow);
+  --color-culpa-alert: var(--culpa-alert);
+
+  /* La voz de la interfaz es pixelada; los párrafos y los softkeys, Tahoma,
+     tal como mezclaban los teléfonos de la época. */
+  --font-pixel: var(--font-silkscreen), "Courier New", monospace;
+  --font-ui: Tahoma, Verdana, Geneva, sans-serif;
 }
 
 body {
-  background: var(--fyf-black);
-  color: var(--fyf-white);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--culpa-night);
+  color: var(--culpa-cream);
+  font-family: Tahoma, Verdana, Geneva, sans-serif;
 }
 
-/* Keith Haring inspired bold uppercase style */
-.fyf-heading {
-  font-weight: 800;
+/* ── Tipografía de marca ─────────────────────────────────────────── */
+
+.culpa-heading {
+  font-family: var(--font-silkscreen), "Courier New", monospace;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.08em;
 }
 
-.fyf-subheading {
-  font-weight: 600;
+.culpa-subheading {
+  font-family: var(--font-silkscreen), "Courier New", monospace;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
 }
 
-/* Title text shadow for depth */
-.fyf-title-shadow {
-  text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.15);
+/* Sombra dura, sin blur, para texto que necesita despegarse del fondo. La usa
+   el copy destacado; el logo ya trae su extrusión dibujada. */
+.culpa-shadow {
+  text-shadow: 3px 3px 0 var(--culpa-ink);
 }
 
-/* Fade-in animation for content */
+/* ── Pantalla LCD ────────────────────────────────────────────────── */
+
+/* Grilla de píxeles y viñeta, encima del contenido pero sin capturar clics.
+   Va sobre el contenedor de la pantalla, no sobre el área que scrollea, así
+   la textura queda quieta mientras el contenido se mueve debajo. */
+.lcd-texture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(13, 13, 13, 0.07) 0 1px,
+      transparent 1px 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(13, 13, 13, 0.05) 0 1px,
+      transparent 1px 3px
+    );
+  box-shadow: inset 0 0 70px rgba(13, 13, 13, 0.22);
+}
+
+/* Los QR y cualquier bitmap chico se ven como se veían: sin suavizar. */
+.pixelated {
+  image-rendering: pixelated;
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────── */
+
 .animate-in {
   animation: fadeSlideIn 0.4s ease-out;
 }
@@ -58,31 +107,61 @@ body {
   }
 }
 
-/* Success page checkmark pulse */
+/* Parpadeo del cursor de menú, como el caret de un Nokia */
+.blink {
+  animation: blink 1.1s steps(1, end) infinite;
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
 .success-pulse {
   animation: successPulse 2s ease-in-out infinite;
 }
 
 @keyframes successPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3); }
-  50% { box-shadow: 0 0 20px 8px rgba(255, 255, 255, 0.1); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 13, 13, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px 8px rgba(13, 13, 13, 0.1);
+  }
 }
 
-/* Animated glow for valid scan */
-@keyframes pulse-green {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-  50% { box-shadow: 0 0 30px 10px rgba(34, 197, 94, 0.2); }
+/* Glow del validador: lima para válido, alerta para inválido */
+@keyframes pulse-lime {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 217, 44, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 30px 10px rgba(201, 217, 44, 0.2);
+  }
 }
 
 .scan-valid {
-  animation: pulse-green 1.5s ease-in-out infinite;
+  animation: pulse-lime 1.5s ease-in-out infinite;
 }
 
-@keyframes pulse-red {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  50% { box-shadow: 0 0 30px 10px rgba(239, 68, 68, 0.2); }
+@keyframes pulse-alert {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(226, 59, 46, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 30px 10px rgba(226, 59, 46, 0.2);
+  }
 }
 
 .scan-invalid {
-  animation: pulse-red 1.5s ease-in-out infinite;
+  animation: pulse-alert 1.5s ease-in-out infinite;
 }

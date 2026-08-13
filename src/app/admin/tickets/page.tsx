@@ -63,7 +63,7 @@ export default function AdminTicketsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-black uppercase tracking-wider text-white mb-8">
+      <h1 className="culpa-heading text-xl text-culpa-cream mb-8">
         Tickets
       </h1>
 
@@ -73,12 +73,12 @@ export default function AdminTicketsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por nombre, correo o documento..."
-          className="flex-1 bg-white/5 border border-white/10 text-white px-4 py-3 focus:outline-none focus:border-fyf-red"
+          className="flex-1 bg-culpa-cream/5 border border-culpa-cream/10 text-culpa-cream px-4 py-3 focus:outline-none focus:border-culpa-lime"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-white/5 border border-white/10 text-white px-4 py-3 focus:outline-none focus:border-fyf-red"
+          className="bg-culpa-cream/5 border border-culpa-cream/10 text-culpa-cream px-4 py-3 focus:outline-none focus:border-culpa-lime"
         >
           <option value="">Todos los Estados</option>
           <option value="PENDING_PAYMENT">Pendiente</option>
@@ -89,29 +89,29 @@ export default function AdminTicketsPage() {
       </div>
 
       {notice && (
-        <div className="bg-white/10 border border-white/20 px-4 py-2 mb-4 text-white text-sm">
+        <div className="bg-culpa-cream/10 border border-culpa-cream/20 px-4 py-2 mb-4 text-culpa-cream text-sm">
           {notice}
         </div>
       )}
 
       <div className="space-y-2">
         {tickets.map((ticket) => (
-          <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 flex items-center justify-between">
+          <div key={ticket.id} className="bg-culpa-cream/5 border border-culpa-cream/10 p-4 flex items-center justify-between">
             <div>
-              <p className="text-white font-bold">{ticket.purchaserName}</p>
-              <p className="text-white/40 text-sm">
+              <p className="text-culpa-cream font-bold">{ticket.purchaserName}</p>
+              <p className="text-culpa-cream/40 text-sm">
                 {ticket.event.name} — {ticket.ticketType.name}
               </p>
-              <p className="text-white/30 text-xs mt-1">
+              <p className="text-culpa-cream/30 text-xs mt-1">
                 {ticket.purchaserEmail}
                 {ticket.purchaserGovId && ` | ${ticket.purchaserGovId}`}
               </p>
             </div>
             <div className="text-right flex flex-col items-end gap-2">
-              <span className={`text-xs uppercase tracking-wider font-bold ${statusColors[ticket.status] || "text-white/40"}`}>
+              <span className={`text-xs uppercase tracking-wider font-bold ${statusColors[ticket.status] || "text-culpa-cream/40"}`}>
                 {ticket.status}
               </span>
-              <p className="text-white/30 text-xs">
+              <p className="text-culpa-cream/30 text-xs">
                 {formatDateTime(ticket.createdAt)}
               </p>
               {ticket.whitelistedPersonId ? (
@@ -120,7 +120,7 @@ export default function AdminTicketsPage() {
                 <button
                   onClick={() => handlePromote(ticket.id)}
                   disabled={promotingId === ticket.id}
-                  className="bg-blue-700 text-white text-xs uppercase tracking-wider font-bold px-3 py-1 hover:bg-blue-600 transition-colors disabled:opacity-50"
+                  className="bg-blue-700 text-culpa-cream text-xs uppercase tracking-wider font-bold px-3 py-1 hover:bg-blue-600 transition-colors disabled:opacity-50"
                 >
                   {promotingId === ticket.id ? "..." : "Agregar a la lista"}
                 </button>
@@ -129,7 +129,7 @@ export default function AdminTicketsPage() {
           </div>
         ))}
         {tickets.length === 0 && (
-          <p className="text-white/30 text-center py-8">No se encontraron tickets</p>
+          <p className="text-culpa-cream/30 text-center py-8">No se encontraron tickets</p>
         )}
       </div>
     </div>

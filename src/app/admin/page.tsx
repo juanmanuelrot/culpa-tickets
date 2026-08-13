@@ -43,17 +43,19 @@ export default function AdminDashboard() {
     loadStats();
   }, []);
 
+  // Las métricas de plata y de puerta van en lima (tinta sobre lima, el
+  // contraste más alto de la paleta); el resto en la familia azul.
   const cards = [
-    { label: "Eventos", value: stats?.events ?? "...", href: "/admin/events", color: "bg-fyf-red" },
-    { label: "En Lista", value: stats?.whitelisted ?? "...", href: "/admin/whitelist", color: "bg-fyf-red-dark" },
-    { label: "Tickets Confirmados", value: stats?.tickets ?? "...", href: "/admin/tickets", color: "bg-fyf-red" },
-    { label: "Tickets Pagados", value: stats?.paidTickets ?? "...", href: "/admin/tickets?status=PAID", color: "bg-green-700" },
-    { label: "Tickets Usados", value: stats?.usedTickets ?? "...", href: "/admin/tickets?status=USED", color: "bg-blue-700" },
+    { label: "Eventos", value: stats?.events ?? "...", href: "/admin/events", color: "bg-culpa-blue", ink: false },
+    { label: "En Lista", value: stats?.whitelisted ?? "...", href: "/admin/whitelist", color: "bg-culpa-blue-dark", ink: false },
+    { label: "Tickets Confirmados", value: stats?.tickets ?? "...", href: "/admin/tickets", color: "bg-culpa-blue", ink: false },
+    { label: "Tickets Pagados", value: stats?.paidTickets ?? "...", href: "/admin/tickets?status=PAID", color: "bg-culpa-lime", ink: true },
+    { label: "Tickets Usados", value: stats?.usedTickets ?? "...", href: "/admin/tickets?status=USED", color: "bg-culpa-cream", ink: true },
   ];
 
   return (
     <div>
-      <h1 className="text-3xl font-black uppercase tracking-wider text-white mb-8">
+      <h1 className="culpa-heading text-xl text-culpa-cream mb-8">
         Panel
       </h1>
 
@@ -64,8 +66,20 @@ export default function AdminDashboard() {
             href={card.href}
             className={`${card.color} p-6 hover:opacity-80 transition-opacity`}
           >
-            <p className="text-white/70 text-xs uppercase tracking-widest">{card.label}</p>
-            <p className="text-white text-3xl font-black mt-2">{card.value}</p>
+            <p
+              className={`font-pixel text-[0.6rem] uppercase tracking-[0.12em] ${
+                card.ink ? "text-culpa-ink/70" : "text-culpa-cream/70"
+              }`}
+            >
+              {card.label}
+            </p>
+            <p
+              className={`font-pixel text-2xl mt-3 ${
+                card.ink ? "text-culpa-ink" : "text-culpa-cream"
+              }`}
+            >
+              {card.value}
+            </p>
           </Link>
         ))}
       </div>

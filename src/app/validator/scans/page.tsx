@@ -25,7 +25,7 @@ export default function ValidatorScansPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black uppercase tracking-wider text-white mb-6">
+      <h1 className="culpa-heading text-lg text-culpa-cream mb-6">
         Escaneos Recientes
       </h1>
 
@@ -35,28 +35,28 @@ export default function ValidatorScansPage() {
             key={scan.id}
             className={`border p-4 ${
               scan.wasValid
-                ? "bg-green-900/20 border-green-800"
-                : "bg-red-900/20 border-red-800"
+                ? "bg-culpa-lime/10 border-culpa-lime/50"
+                : "bg-culpa-alert/10 border-culpa-alert/50"
             }`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white font-bold">
+                <p className="text-culpa-cream font-bold">
                   {scan.ticket.purchaserName}
                 </p>
-                <p className="text-white/50 text-sm">
+                <p className="text-culpa-cream/50 text-sm">
                   {scan.ticket.event.name} — {scan.ticket.ticketType.name}
                 </p>
               </div>
               <div className="text-right">
                 <span
-                  className={`text-xs uppercase tracking-wider font-bold ${
-                    scan.wasValid ? "text-green-400" : "text-red-400"
+                  className={`font-pixel text-[0.65rem] uppercase tracking-[0.1em] ${
+                    scan.wasValid ? "text-culpa-lime" : "text-culpa-alert"
                   }`}
                 >
                   {scan.wasValid ? "Válido" : "Inválido"}
                 </span>
-                <p className="text-white/30 text-xs mt-1">
+                <p className="text-culpa-cream/30 text-xs mt-1">
                   {formatDateTime(scan.scannedAt)}
                 </p>
               </div>
@@ -64,7 +64,7 @@ export default function ValidatorScansPage() {
           </div>
         ))}
         {scans.length === 0 && (
-          <p className="text-white/30 text-center py-8">No hay escaneos todavía</p>
+          <p className="text-culpa-cream/30 text-center py-8">No hay escaneos todavía</p>
         )}
       </div>
     </div>

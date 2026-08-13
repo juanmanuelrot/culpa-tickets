@@ -13,32 +13,32 @@ export default function ValidatorLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-fyf-black">
-      <nav className="bg-fyf-red border-b border-white/10">
+    <div className="min-h-screen bg-culpa-night">
+      <nav className="bg-culpa-blue border-b border-culpa-cream/10">
         <div className="max-w-md mx-auto px-4 flex items-center justify-between h-14">
-          <span className="text-xl font-black text-white tracking-wider">
-            F&F SCAN
+          <span className="font-pixel text-sm text-culpa-cream tracking-[0.15em]">
+            CULPA PUERTA
           </span>
           <div className="flex items-center gap-4">
             <Link
               href="/validator"
-              className={`text-sm uppercase tracking-widest font-bold ${
-                pathname === "/validator" ? "text-white" : "text-white/60"
+              className={`font-pixel text-[0.7rem] uppercase tracking-[0.12em] ${
+                pathname === "/validator" ? "text-culpa-cream" : "text-culpa-cream/60"
               }`}
             >
               Escáner
             </Link>
             <Link
               href="/validator/scans"
-              className={`text-sm uppercase tracking-widest font-bold ${
-                pathname === "/validator/scans" ? "text-white" : "text-white/60"
+              className={`font-pixel text-[0.7rem] uppercase tracking-[0.12em] ${
+                pathname === "/validator/scans" ? "text-culpa-cream" : "text-culpa-cream/60"
               }`}
             >
               Historial
             </Link>
             <button
               onClick={handleLogout}
-              className="text-sm uppercase tracking-widest font-bold text-white/60 hover:text-white"
+              className="font-pixel text-[0.7rem] uppercase tracking-[0.12em] text-culpa-cream/60 hover:text-culpa-cream"
             >
               Salir
             </button>

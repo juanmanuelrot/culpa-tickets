@@ -136,7 +136,7 @@ export default function AdminEventDetailPage() {
     router.push("/admin/events");
   }
 
-  if (!event) return <div className="text-white/50">Cargando...</div>;
+  if (!event) return <div className="text-culpa-cream/50">Cargando...</div>;
 
   const eventUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/event/${event.slug}`;
 
@@ -144,10 +144,10 @@ export default function AdminEventDetailPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black uppercase tracking-wider text-white">
+          <h1 className="culpa-heading text-xl text-culpa-cream">
             {event.name}
           </h1>
-          <p className="text-white/50 text-sm mt-1">
+          <p className="text-culpa-cream/50 text-sm mt-1">
             {formatEventDateTime(event.date)}
           </p>
         </div>
@@ -156,8 +156,8 @@ export default function AdminEventDetailPage() {
             onClick={handleToggleActive}
             className={`text-sm uppercase tracking-wider font-bold px-4 py-2 ${
               event.isActive
-                ? "bg-green-700 text-white"
-                : "bg-white/10 text-white/50"
+                ? "bg-green-700 text-culpa-cream"
+                : "bg-culpa-cream/10 text-culpa-cream/50"
             }`}
           >
             {event.isActive ? "Activo" : "Inactivo"}
@@ -167,15 +167,15 @@ export default function AdminEventDetailPage() {
             title={event.isPublic ? "Cualquiera puede comprar" : "Solo lista de invitados"}
             className={`text-sm uppercase tracking-wider font-bold px-4 py-2 ${
               event.isPublic
-                ? "bg-blue-700 text-white"
-                : "bg-white/10 text-white/50"
+                ? "bg-blue-700 text-culpa-cream"
+                : "bg-culpa-cream/10 text-culpa-cream/50"
             }`}
           >
             {event.isPublic ? "Público" : "Privado"}
           </button>
           <button
             onClick={handleDeleteEvent}
-            className="bg-red-900 text-white text-sm uppercase tracking-wider font-bold px-4 py-2 hover:bg-red-800"
+            className="bg-red-900 text-culpa-cream text-sm uppercase tracking-wider font-bold px-4 py-2 hover:bg-red-800"
           >
             Eliminar
           </button>
@@ -183,24 +183,24 @@ export default function AdminEventDetailPage() {
       </div>
 
       {/* Event Link */}
-      <div className="bg-white/5 border border-white/10 p-4 mb-6">
-        <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Link del Evento</p>
-        <p className="text-fyf-red font-mono text-sm break-all">{eventUrl}</p>
+      <div className="bg-culpa-cream/5 border border-culpa-cream/10 p-4 mb-6">
+        <p className="text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Link del Evento</p>
+        <p className="text-culpa-lime font-mono text-sm break-all">{eventUrl}</p>
       </div>
 
       {/* Location */}
       {event.location && (
-        <div className="bg-white/5 border border-white/10 p-4 mb-6 flex items-center justify-between">
+        <div className="bg-culpa-cream/5 border border-culpa-cream/10 p-4 mb-6 flex items-center justify-between">
           <div>
-            <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Ubicación</p>
-            <p className="text-white">{event.location}</p>
+            <p className="text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Ubicación</p>
+            <p className="text-culpa-cream">{event.location}</p>
           </div>
           <button
             onClick={handleToggleLocation}
             className={`text-xs uppercase tracking-wider font-bold px-3 py-1 ${
               event.locationRevealed
-                ? "bg-green-700 text-white"
-                : "bg-yellow-700 text-white"
+                ? "bg-green-700 text-culpa-cream"
+                : "bg-yellow-700 text-culpa-cream"
             }`}
           >
             {event.locationRevealed ? "Revelada" : "Secreta"}
@@ -211,33 +211,33 @@ export default function AdminEventDetailPage() {
       {/* Ticket Types */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold uppercase tracking-wider text-white">
+          <h2 className="culpa-heading text-base text-culpa-cream">
             Tipos de Ticket
           </h2>
           <button
             onClick={() => setShowTtForm(!showTtForm)}
-            className="bg-fyf-red text-white font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-fyf-red-dark transition-colors"
+            className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-culpa-blue-dark transition-colors"
           >
             {showTtForm ? "Cancelar" : "+ Agregar Tipo"}
           </button>
         </div>
 
         {showTtForm && (
-          <form onSubmit={handleAddTicketType} className="bg-white/5 border border-white/10 p-4 mb-4 space-y-3">
+          <form onSubmit={handleAddTicketType} className="bg-culpa-cream/5 border border-culpa-cream/10 p-4 mb-4 space-y-3">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-fyf-red">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-culpa-lime">*</span></label>
                 <input
                   type="text"
                   value={ttForm.name}
                   onChange={(e) => setTtForm({ ...ttForm, name: e.target.value })}
                   placeholder="e.g., VIP"
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
                   required
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Precio <span className="text-fyf-red">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Precio <span className="text-culpa-lime">*</span></label>
                 <input
                   type="number"
                   step="0.01"
@@ -245,57 +245,57 @@ export default function AdminEventDetailPage() {
                   value={ttForm.price}
                   onChange={(e) => setTtForm({ ...ttForm, price: e.target.value })}
                   placeholder="0 = gratis"
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
                   required
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Moneda</label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Moneda</label>
                 <select
                   value={ttForm.currency}
                   onChange={(e) => setTtForm({ ...ttForm, currency: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
                 >
                   <option value="UYU">UYU</option>
                   <option value="USD">USD</option>
                 </select>
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Capacidad (opcional)</label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Capacidad (opcional)</label>
                 <input
                   type="number"
                   min="1"
                   value={ttForm.capacity}
                   onChange={(e) => setTtForm({ ...ttForm, capacity: e.target.value })}
                   placeholder="Vacío = ilimitado"
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket válido hasta (opcional)</label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Ticket válido hasta (opcional)</label>
                 <input
                   type="datetime-local"
                   value={ttForm.validUntil}
                   onChange={(e) => setTtForm({ ...ttForm, validUntil: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 text-sm focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
                   placeholder="Sin vencimiento"
                 />
-                <p className="text-white/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket</p>
+                <p className="text-culpa-cream/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket</p>
               </div>
             </div>
-            <label className="flex items-center gap-2 text-white/70 text-sm cursor-pointer">
+            <label className="flex items-center gap-2 text-culpa-cream/70 text-sm cursor-pointer">
               <input
                 type="checkbox"
                 checked={ttForm.autoApproveWhitelist}
                 onChange={(e) => setTtForm({ ...ttForm, autoApproveWhitelist: e.target.checked })}
-                className="accent-fyf-red w-4 h-4"
+                className="accent-culpa-lime w-4 h-4"
               />
               Dar acceso a todas las personas de la lista
             </label>
             <button
               type="submit"
               disabled={loading}
-              className="bg-fyf-red text-white font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-fyf-red-dark disabled:opacity-50"
+              className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-culpa-blue-dark disabled:opacity-50"
             >
               {loading ? "Agregando..." : "Agregar Tipo de Ticket"}
             </button>
@@ -306,10 +306,10 @@ export default function AdminEventDetailPage() {
           {event.ticketTypes.map((tt) => (
             <div
               key={tt.id}
-              className="bg-white/5 border border-white/10 p-4 flex items-center justify-between"
+              className="bg-culpa-cream/5 border border-culpa-cream/10 p-4 flex items-center justify-between"
             >
               <div>
-                <span className="text-white font-bold uppercase tracking-wider">
+                <span className="text-culpa-cream font-bold uppercase tracking-wider">
                   {tt.name}
                 </span>
                 {!tt.isOffered && (
@@ -317,7 +317,7 @@ export default function AdminEventDetailPage() {
                     Agotado
                   </span>
                 )}
-                <span className="text-white/50 ml-4">
+                <span className="text-culpa-cream/50 ml-4">
                   {tt.price === 0
                     ? "GRATIS"
                     : new Intl.NumberFormat("es-UY", {
@@ -327,7 +327,7 @@ export default function AdminEventDetailPage() {
                       }).format(tt.price / 100)}
                 </span>
                 {tt.capacity && (
-                  <span className="text-white/30 ml-4 text-sm">
+                  <span className="text-culpa-cream/30 ml-4 text-sm">
                     Cap.: {tt.capacity}
                   </span>
                 )}
@@ -338,7 +338,7 @@ export default function AdminEventDetailPage() {
                 )}
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-white/40 text-sm">
+                <span className="text-culpa-cream/40 text-sm">
                   {tt._count.tickets} vendidos
                 </span>
                 <button
@@ -346,8 +346,8 @@ export default function AdminEventDetailPage() {
                   title={tt.isOffered ? "Quitar de la venta (se mostrará agotado)" : "Volver a ofrecer"}
                   className={`text-xs uppercase tracking-wider font-bold px-3 py-1 ${
                     tt.isOffered
-                      ? "bg-green-700 text-white"
-                      : "bg-yellow-700 text-white"
+                      ? "bg-green-700 text-culpa-cream"
+                      : "bg-yellow-700 text-culpa-cream"
                   }`}
                 >
                   {tt.isOffered ? "En venta" : "Agotado"}
@@ -369,7 +369,7 @@ export default function AdminEventDetailPage() {
             </div>
           ))}
           {event.ticketTypes.length === 0 && (
-            <p className="text-white/30 text-center py-4">No hay tipos de ticket todavía</p>
+            <p className="text-culpa-cream/30 text-center py-4">No hay tipos de ticket todavía</p>
           )}
         </div>
       </div>

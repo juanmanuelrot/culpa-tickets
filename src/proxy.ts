@@ -15,7 +15,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get("fyf-session")?.value;
+  const token = request.cookies.get("culpa-session")?.value;
 
   if (!token) {
     if (pathname.startsWith("/api/")) {

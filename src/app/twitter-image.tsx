@@ -1,90 +1,24 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { ImageResponse } from "next/og";
+import { OgCard, OG_SIZE } from "@/components/og-card";
 
-export const runtime = "edge";
+// Ver la nota en opengraph-image.tsx sobre por qué corre en Node.
+export const runtime = "nodejs";
 
-export const alt = "F&F Tickets";
-export const size = {
-  width: 1200,
-  height: 630,
-};
+export const alt = "Culpa";
+export const size = OG_SIZE;
 export const contentType = "image/png";
 
-export default function Image() {
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          background: "#B54545",
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          position: "relative",
-        }}
-      >
-        {/* Top decorative border */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "8px",
-            background: "#1A1A1A",
-            display: "flex",
-          }}
-        />
-        {/* Bottom decorative border */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: "8px",
-            background: "#1A1A1A",
-            display: "flex",
-          }}
-        />
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 180,
-              fontWeight: 900,
-              color: "white",
-              letterSpacing: "0.1em",
-              lineHeight: 1,
-              marginBottom: 16,
-              display: "flex",
-            }}
-          >
-            F&F
-          </div>
-          <div
-            style={{
-              fontSize: 36,
-              color: "rgba(255, 255, 255, 0.9)",
-              fontStyle: "italic",
-              display: "flex",
-            }}
-          >
-            Solo para nosotros
-          </div>
-        </div>
-      </div>
-    ),
-    {
-      ...size,
-    }
+async function wordmarkDataUri() {
+  const file = await readFile(
+    path.join(process.cwd(), "public", "culpa-wordmark.png")
   );
+  return `data:image/png;base64,${file.toString("base64")}`;
+}
+
+export default async function Image() {
+  return new ImageResponse(<OgCard wordmarkSrc={await wordmarkDataUri()} />, {
+    ...size,
+  });
 }

@@ -79,36 +79,36 @@ export default function AdminInviteLinksPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-black uppercase tracking-wider text-white mb-10">
+      <h1 className="culpa-heading text-xl text-culpa-cream mb-10">
         Invitaciones
       </h1>
 
       <section className="mb-14">
         <div className="flex items-center justify-between mb-1">
-          <h2 className="text-xl font-black uppercase tracking-wider text-white">
+          <h2 className="culpa-heading text-base text-culpa-cream">
             Links de Invitación
           </h2>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors"
+            className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors"
           >
             {showForm ? "Cancelar" : "+ Generar Link"}
           </button>
         </div>
-        <p className="text-white/40 text-sm mb-6">
+        <p className="text-culpa-cream/40 text-sm mb-6">
           Link reutilizable que el invitado abre para reclamar su ticket por
           correo.
         </p>
 
         {showForm && (
-          <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
+          <form onSubmit={handleCreate} className="bg-culpa-cream/5 border border-culpa-cream/10 p-6 mb-8 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Evento <span className="text-fyf-red">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Evento <span className="text-culpa-lime">*</span></label>
                 <select
                   value={formData.eventId}
                   onChange={(e) => setFormData({ ...formData, eventId: e.target.value, ticketTypeId: "" })}
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
                   required
                 >
                   <option value="">Seleccionar evento</option>
@@ -118,11 +118,11 @@ export default function AdminInviteLinksPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Tipo de Ticket <span className="text-fyf-red">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Tipo de Ticket <span className="text-culpa-lime">*</span></label>
                 <select
                   value={formData.ticketTypeId}
                   onChange={(e) => setFormData({ ...formData, ticketTypeId: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
                   required
                   disabled={!formData.eventId}
                 >
@@ -133,42 +133,42 @@ export default function AdminInviteLinksPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">El link expira <span className="text-fyf-red">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">El link expira <span className="text-culpa-lime">*</span></label>
                 <input
                   type="datetime-local"
                   value={formData.expiresAt}
                   onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
                   required
                 />
-                <p className="text-white/30 text-xs mt-1">Hora de Montevideo — cuándo deja de funcionar este link</p>
+                <p className="text-culpa-cream/30 text-xs mt-1">Hora de Montevideo — cuándo deja de funcionar este link</p>
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Usos Máximos <span className="text-fyf-red">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Usos Máximos <span className="text-culpa-lime">*</span></label>
                 <input
                   type="number"
                   min="1"
                   value={formData.maxUses}
                   onChange={(e) => setFormData({ ...formData, maxUses: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
                   required
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ticket válido hasta (opcional)</label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Ticket válido hasta (opcional)</label>
                 <input
                   type="datetime-local"
                   value={formData.ticketValidUntil}
                   onChange={(e) => setFormData({ ...formData, ticketValidUntil: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
                 />
-                <p className="text-white/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket (distinto de la fecha del evento)</p>
+                <p className="text-culpa-cream/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket (distinto de la fecha del evento)</p>
               </div>
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
+              className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors disabled:opacity-50"
             >
               {loading ? "Generando..." : "Generar Link"}
             </button>
@@ -177,13 +177,13 @@ export default function AdminInviteLinksPage() {
 
         <div className="space-y-2">
           {links.map((link) => (
-            <div key={link.id} className="bg-white/5 border border-white/10 p-4">
+            <div key={link.id} className="bg-culpa-cream/5 border border-culpa-cream/10 p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-fyf-red font-mono text-sm break-all">
+                  <p className="text-culpa-lime font-mono text-sm break-all">
                     {appUrl}/invite/{link.token}
                   </p>
-                  <p className="text-white/40 text-xs mt-1">
+                  <p className="text-culpa-cream/40 text-xs mt-1">
                     Usos: {link.usedCount}/{link.maxUses} | El link expira:{" "}
                     {formatDateTime(link.expiresAt)}
                     {link.ticketValidUntil && (
@@ -194,7 +194,7 @@ export default function AdminInviteLinksPage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => navigator.clipboard.writeText(`${appUrl}/invite/${link.token}`)}
-                    className="text-white/50 text-xs uppercase tracking-wider hover:text-white"
+                    className="text-culpa-cream/50 text-xs uppercase tracking-wider hover:text-culpa-cream"
                   >
                     Copiar
                   </button>
@@ -209,7 +209,7 @@ export default function AdminInviteLinksPage() {
             </div>
           ))}
           {links.length === 0 && (
-            <p className="text-white/30 text-center py-8">No hay links de invitación todavía</p>
+            <p className="text-culpa-cream/30 text-center py-8">No hay links de invitación todavía</p>
           )}
         </div>
       </section>

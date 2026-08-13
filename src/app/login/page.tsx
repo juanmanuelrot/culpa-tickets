@@ -2,6 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { PhoneShell } from "@/components/nokia/phone-shell";
+import {
+  LcdButton,
+  LcdError,
+  LcdInput,
+  PixelLabel,
+  ScreenPad,
+  Wordmark,
+} from "@/components/nokia/ui";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -42,55 +51,48 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-fyf-black flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <h1 className="text-5xl font-black text-center text-white tracking-wider mb-2">
-          F&F
-        </h1>
-        <p className="text-center text-white/60 uppercase tracking-widest text-sm mb-10">
-          Acceso Staff
+    <PhoneShell leftKey={{ label: "Menu", href: "/" }}>
+      <ScreenPad className="pt-8 pb-4 text-center">
+        <Wordmark className="w-[52%] max-w-[200px] mx-auto" />
+        {/* La pantalla de código de seguridad del celu, con otro nombre. */}
+        <p className="font-pixel text-[0.7rem] uppercase tracking-[0.15em] mt-4">
+          Codigo de seguridad
         </p>
+      </ScreenPad>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit}>
+        <ScreenPad className="space-y-3">
           <div>
-            <label className="block text-white/70 text-xs uppercase tracking-widest mb-2">
-              Correo
-            </label>
-            <input
+            <PixelLabel className="mb-2">Correo</PixelLabel>
+            <LcdInput
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white/10 border border-white/20 text-white px-4 py-3 focus:outline-none focus:border-fyf-red transition-colors"
               required
             />
           </div>
 
           <div>
-            <label className="block text-white/70 text-xs uppercase tracking-widest mb-2">
-              Contraseña
-            </label>
-            <input
+            <PixelLabel className="mb-2">Contraseña</PixelLabel>
+            <LcdInput
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white/10 border border-white/20 text-white px-4 py-3 focus:outline-none focus:border-fyf-red transition-colors"
               required
             />
           </div>
 
-          {error && (
-            <p className="text-fyf-red text-sm text-center">{error}</p>
-          )}
+          {error && <LcdError>{error}</LcdError>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-fyf-red text-white font-bold uppercase tracking-widest py-4 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
-          >
-            {loading ? "..." : "Entrar"}
-          </button>
-        </form>
-      </div>
-    </div>
+          <LcdButton type="submit" disabled={loading} className="w-full">
+            {loading ? "Entrando..." : "Entrar"}
+          </LcdButton>
+
+          <p className="font-ui text-xs text-culpa-ink/60 text-center">
+            Acceso solo para staff.
+          </p>
+        </ScreenPad>
+      </form>
+    </PhoneShell>
   );
 }

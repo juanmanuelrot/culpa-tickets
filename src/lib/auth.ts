@@ -6,7 +6,7 @@ import { prisma } from "./db";
 import { UserRole } from "@/generated/prisma/client";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
-const COOKIE_NAME = "fyf-session";
+const COOKIE_NAME = "culpa-session";
 
 interface JWTPayload {
   userId: string;

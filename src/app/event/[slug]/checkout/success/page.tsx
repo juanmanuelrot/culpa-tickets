@@ -3,9 +3,33 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import Link from "next/link";
-import { SnakeBorder } from "@/components/decorative/snake-border";
-import { SmallCreature } from "@/components/decorative/dj-creature";
-import { formatEventDateTime } from "@/lib/date";
+import { PhoneShell } from "@/components/nokia/phone-shell";
+import {
+  LcdBox,
+  LcdLoading,
+  PixelLabel,
+  ScreenPad,
+  Wordmark,
+} from "@/components/nokia/ui";
+import { formatClock, formatDayDot, formatEventDateTime } from "@/lib/date";
+
+/* El sobre de «mensaje enviado», que es exactamente lo que acaba de pasar:
+   el QR salió para el mail del comprador. */
+function SentEnvelope() {
+  return (
+    <svg
+      viewBox="0 0 48 34"
+      className="w-20 h-auto mx-auto text-culpa-ink"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      aria-hidden="true"
+    >
+      <rect x="1.25" y="1.25" width="45.5" height="31.5" />
+      <path d="M1.25 1.25 L24 18 L46.75 1.25" />
+    </svg>
+  );
+}
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -14,78 +38,80 @@ function SuccessContent() {
   const eventDate = searchParams.get("eventDate");
 
   return (
-    <div className="min-h-screen bg-fyf-red relative overflow-hidden flex items-center justify-center px-4">
-      <SnakeBorder />
+    <PhoneShell leftKey={{ label: "Menu", href: "/" }} rightKey={null}>
+      <ScreenPad className="pt-6 pb-4 text-center">
+        <Wordmark className="w-[52%] max-w-[200px] mx-auto" />
+      </ScreenPad>
 
-      {/* Subtle texture */}
-      <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%221%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E')] pointer-events-none" />
-
-      <div className="relative z-10 text-center max-w-md">
-        {/* Success checkmark */}
-        <div className="w-20 h-20 mx-auto mb-6 border-3 border-white rounded-full flex items-center justify-center success-pulse">
-          <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
+      <ScreenPad className="pt-2 text-center">
+        <div className="success-pulse inline-block p-4 border-2 border-culpa-ink">
+          <SentEnvelope />
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-black text-white uppercase tracking-wider mb-4">
-          {isFree ? "¡Ticket Reclamado!" : "¡Pago Recibido!"}
+        <h1 className="font-pixel text-sm uppercase tracking-[0.1em] mt-6 leading-relaxed">
+          {isFree ? "Entrada reclamada" : "Pago recibido"}
         </h1>
 
-        <p className="text-white/80 text-base mb-2">
-          Revisá tu correo para obtener tu ticket con el código QR.
-        </p>
-        <p className="text-white font-bold text-sm uppercase tracking-wider">
-          No compartas tu código QR con nadie.
+        <p className="font-ui text-sm text-culpa-ink/80 mt-3 leading-relaxed">
+          Te mandamos el QR por mail. Mostralo en la puerta y entrás.
         </p>
 
-        {(eventName || eventDate) && (
-          <div className="bg-white/10 border border-white/20 px-6 py-4 mt-6">
+        <p className="font-pixel text-[0.65rem] uppercase tracking-[0.1em] mt-4 text-culpa-ink">
+          No compartas tu QR con nadie
+        </p>
+      </ScreenPad>
+
+      {(eventName || eventDate) && (
+        <ScreenPad className="pt-4">
+          <LcdBox className="bg-culpa-ink text-culpa-lime border-culpa-ink text-left">
+            {eventDate && (
+              <p className="font-pixel text-2xl leading-none">
+                {formatDayDot(eventDate)}
+              </p>
+            )}
             {eventName && (
-              <p className="text-white font-bold uppercase tracking-wider text-base">
+              <p className="font-pixel text-xs mt-2 leading-relaxed">
                 {eventName}
               </p>
             )}
             {eventDate && (
               <>
-                <p className="text-white/50 text-[0.65rem] uppercase tracking-[0.2em] mt-2">
-                  Fecha del evento
+                <p className="font-pixel text-[0.65rem] mt-2 opacity-80">
+                  OPEN DOORS {formatClock(eventDate)}
                 </p>
-                <p className="text-white/80 text-sm mt-0.5">
+                <p className="font-ui text-[0.7rem] mt-2 opacity-70">
                   {formatEventDateTime(eventDate)}
                 </p>
               </>
             )}
-          </div>
-        )}
+          </LcdBox>
+        </ScreenPad>
+      )}
 
-        <p className="text-white/50 text-sm mt-6">
-          Presentá el código QR en la entrada para acceder.
-        </p>
-
+      <ScreenPad className="pt-6 pb-8 text-center">
+        <PixelLabel className="mb-3">Fin</PixelLabel>
         <Link
           href="/"
-          className="inline-block mt-8 text-white/40 text-sm underline hover:text-white/60 transition-colors"
+          className="font-pixel text-[0.65rem] uppercase tracking-[0.1em] underline hover:opacity-60"
         >
           Volver al inicio
         </Link>
-
-        {/* Decorative */}
-        <div className="flex justify-center mt-8 opacity-20">
-          <SmallCreature className="w-10 text-white" />
-        </div>
-      </div>
-    </div>
+      </ScreenPad>
+    </PhoneShell>
   );
 }
 
 export default function CheckoutSuccessPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-fyf-red flex items-center justify-center">
-        <div className="inline-block w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <PhoneShell leftKey={{ label: "Menu", href: "/" }} rightKey={null}>
+          <ScreenPad>
+            <LcdLoading />
+          </ScreenPad>
+        </PhoneShell>
+      }
+    >
       <SuccessContent />
     </Suspense>
   );

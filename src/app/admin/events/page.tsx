@@ -50,73 +50,73 @@ export default function AdminEventsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-black uppercase tracking-wider text-white">
+        <h1 className="culpa-heading text-xl text-culpa-cream">
           Eventos
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors"
+          className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors"
         >
           {showForm ? "Cancelar" : "+ Nuevo Evento"}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 p-6 mb-8 space-y-4">
+        <form onSubmit={handleCreate} className="bg-culpa-cream/5 border border-culpa-cream/10 p-6 mb-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-fyf-red">*</span></label>
+              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-culpa-lime">*</span></label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
                 required
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Fecha del evento <span className="text-fyf-red">*</span></label>
+              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Fecha del evento <span className="text-culpa-lime">*</span></label>
               <input
                 type="datetime-local"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
                 required
               />
-              <p className="text-white/30 text-xs mt-1">Hora de Montevideo</p>
+              <p className="text-culpa-cream/30 text-xs mt-1">Hora de Montevideo</p>
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Ubicación (opcional)</label>
+              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Ubicación (opcional)</label>
               <input
                 type="text"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
               />
             </div>
             <div>
-              <label className="block text-white/60 text-xs uppercase tracking-widest mb-1">Descripción (opcional)</label>
+              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Descripción (opcional)</label>
               <input
                 type="text"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 text-white px-3 py-2 focus:outline-none focus:border-fyf-red"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
               />
             </div>
           </div>
-          <label className="flex items-center gap-2 text-white/70 text-sm cursor-pointer w-fit">
+          <label className="flex items-center gap-2 text-culpa-cream/70 text-sm cursor-pointer w-fit">
             <input
               type="checkbox"
               checked={formData.isPublic}
               onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
-              className="accent-fyf-red w-4 h-4"
+              className="accent-culpa-lime w-4 h-4"
             />
             Evento público (cualquiera puede comprar, sin lista de invitados)
           </label>
           <button
             type="submit"
             disabled={loading}
-            className="bg-fyf-red text-white font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-fyf-red-dark transition-colors disabled:opacity-50"
+            className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors disabled:opacity-50"
           >
             {loading ? "Creando..." : "Crear Evento"}
           </button>
@@ -128,36 +128,36 @@ export default function AdminEventsPage() {
           <Link
             key={event.id}
             href={`/admin/events/${event.id}`}
-            className="block bg-white/5 border border-white/10 p-5 hover:bg-white/10 transition-colors"
+            className="block bg-culpa-cream/5 border border-culpa-cream/10 p-5 hover:bg-culpa-cream/10 transition-colors"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-white font-bold text-lg uppercase tracking-wider">
+                <h3 className="text-culpa-cream font-bold text-lg uppercase tracking-wider">
                   {event.name}
                 </h3>
-                <p className="text-white/50 text-sm mt-1">
+                <p className="text-culpa-cream/50 text-sm mt-1">
                   {formatEventDateTime(event.date)}
                 </p>
               </div>
               <div className="text-right">
-                <span className={`text-xs uppercase tracking-wider font-bold ${event.isActive ? "text-green-400" : "text-white/30"}`}>
+                <span className={`text-xs uppercase tracking-wider font-bold ${event.isActive ? "text-green-400" : "text-culpa-cream/30"}`}>
                   {event.isActive ? "Activo" : "Inactivo"}
                 </span>
-                <span className={`block text-xs uppercase tracking-wider font-bold mt-0.5 ${event.isPublic ? "text-blue-300" : "text-white/30"}`}>
+                <span className={`block text-xs uppercase tracking-wider font-bold mt-0.5 ${event.isPublic ? "text-blue-300" : "text-culpa-cream/30"}`}>
                   {event.isPublic ? "Público" : "Privado"}
                 </span>
-                <p className="text-white/50 text-sm mt-1">
+                <p className="text-culpa-cream/50 text-sm mt-1">
                   {event._count.tickets} tickets
                 </p>
               </div>
             </div>
-            <p className="text-white/40 text-xs mt-2 font-mono">
+            <p className="text-culpa-cream/40 text-xs mt-2 font-mono">
               /event/{event.slug}
             </p>
           </Link>
         ))}
         {events.length === 0 && (
-          <p className="text-white/30 text-center py-8">No hay eventos todavía</p>
+          <p className="text-culpa-cream/30 text-center py-8">No hay eventos todavía</p>
         )}
       </div>
     </div>

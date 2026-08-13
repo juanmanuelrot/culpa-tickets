@@ -37,6 +37,25 @@ export function formatDateTime(input: DateInput): string {
   }).format(toDate(input));
 }
 
+// Flyer form: the date as it appears on Culpa's artwork. e.g. "24.08"
+// Derived from the ISO form rather than a "2-digit" Intl skeleton: with the
+// default best-fit matcher, ICU is free to hand back "8" instead of "08", and
+// the artwork always pads.
+export function formatDayDot(input: DateInput): string {
+  const [, month, day] = utcToLocalInput(input).slice(0, 10).split("-");
+  return `${day}.${month}`;
+}
+
+// Just the clock, for the phone's status bar and door times. e.g. "00:00"
+export function formatClock(input: DateInput): string {
+  return new Intl.DateTimeFormat("es-UY", {
+    timeZone: MONTEVIDEO_TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(toDate(input));
+}
+
 // Compact form for dense admin lists. e.g. "30 jun, 22:00"
 export function formatDateShort(input: DateInput): string {
   return new Intl.DateTimeFormat("es-UY", {

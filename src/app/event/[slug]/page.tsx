@@ -2,10 +2,19 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { SnakeBorderFrame } from "@/components/decorative/snake-border";
-import { DjCreature } from "@/components/decorative/dj-creature";
-import { HaringFigure } from "@/components/decorative/haring-border";
-import { formatEventDateTime } from "@/lib/date";
+import { PhoneShell } from "@/components/nokia/phone-shell";
+import { NokiaMenu, type MenuItem } from "@/components/nokia/menu-list";
+import {
+  LcdBox,
+  LcdButton,
+  LcdError,
+  LcdInput,
+  LcdLoading,
+  PixelLabel,
+  ScreenPad,
+  Wordmark,
+} from "@/components/nokia/ui";
+import { formatClock, formatDayDot, formatEventDateTime } from "@/lib/date";
 
 interface TicketTypeInfo {
   id: string;
@@ -52,6 +61,25 @@ function formatPrice(cents: number, currency: string) {
     currency,
     minimumFractionDigits: 0,
   }).format(cents / 100);
+}
+
+/** La cabecera de la pantalla: fecha grande, nombre y lugar del evento. */
+function EventHeader({ event }: { event: EventInfo }) {
+  return (
+    <LcdBox className="bg-culpa-ink text-culpa-lime border-culpa-ink">
+      <p className="font-pixel text-2xl leading-none">
+        {formatDayDot(event.date)}
+      </p>
+      <p className="font-pixel text-xs mt-2 leading-relaxed">{event.name}</p>
+      <p className="font-pixel text-[0.65rem] mt-2 opacity-80 leading-relaxed">
+        OPEN DOORS {formatClock(event.date)}
+        {event.location ? ` · ${event.location}` : ""}
+      </p>
+      <p className="font-ui text-[0.7rem] mt-2 opacity-70">
+        {formatEventDateTime(event.date)}
+      </p>
+    </LcdBox>
+  );
 }
 
 export default function EventPage() {
@@ -210,106 +238,105 @@ export default function EventPage() {
     }
   }
 
+  // El softkey derecho sigue el paso en el que está el usuario.
+  const rightKey = buyingTicket
+    ? {
+        label: "Atras",
+        onClick: () => {
+          setBuyingTicket(null);
+          setError("");
+        },
+      }
+    : lookupResult
+    ? {
+        label: "Salir",
+        onClick: () => {
+          setLookupResult(null);
+          setGovId("");
+        },
+      }
+    : { label: "Back" };
+
+  const publicTicketItems: MenuItem[] = (publicData?.ticketTypes ?? []).map(
+    (tt) => ({
+      label: tt.name,
+      meta: formatPrice(tt.price, tt.currency),
+      sub: tt.soldOut ? "Agotado" : undefined,
+      disabled: tt.soldOut,
+      onSelect: () => {
+        setError("");
+        setBuyingTicket(tt);
+      },
+    })
+  );
+
+  const privateTicketItems: MenuItem[] = (
+    lookupResult?.availableTicketTypes ?? []
+  ).map((tt) => ({
+    label: tt.name,
+    meta: formatPrice(tt.price, tt.currency),
+    sub: tt.alreadyPurchased
+      ? "Ya lo tenés"
+      : tt.soldOut
+      ? "Agotado"
+      : checkoutLoading === tt.id
+      ? "Procesando..."
+      : tt.pendingPayment
+      ? "Reintentar pago"
+      : undefined,
+    disabled: tt.alreadyPurchased || tt.soldOut || checkoutLoading === tt.id,
+    onSelect: () => handleCheckout(tt.id),
+  }));
+
   return (
-    <div className="min-h-screen bg-fyf-red relative overflow-hidden">
-      <SnakeBorderFrame />
+    <PhoneShell leftKey={{ label: "Menu", href: "/" }} rightKey={rightKey}>
+      <ScreenPad className="pt-5 pb-4 text-center">
+        <Wordmark className="w-[52%] max-w-[200px] mx-auto" />
+      </ScreenPad>
 
-      {/* Subtle texture */}
-      <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%221%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E')] pointer-events-none" />
+      {initializing ? (
+        <ScreenPad>
+          <LcdLoading />
+        </ScreenPad>
+      ) : isPublic && publicData ? (
+        /* ── PUBLIC EVENT FLOW ────────────────────────────── */
+        <div className="animate-in">
+          <ScreenPad className="pt-0">
+            <EventHeader event={publicData.event} />
+          </ScreenPad>
 
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">
-        {/* Header */}
-        <h1 className="text-6xl md:text-8xl font-black text-white tracking-wider mb-1 text-center fyf-title-shadow select-none">
-          F<span className="text-white/90">&</span>F
-        </h1>
+          {!buyingTicket ? (
+            <>
+              <ScreenPad className="py-2">
+                <PixelLabel>Entradas</PixelLabel>
+              </ScreenPad>
 
-        {/* Divider */}
-        <div className="flex items-center gap-2 mb-2 opacity-40">
-          <div className="w-8 h-px bg-white/60" />
-          <HaringFigure variant={2} className="w-5 h-5 text-white" />
-          <div className="w-8 h-px bg-white/60" />
-        </div>
-
-        <p className="text-base text-white/80 italic mb-8">Solo para nosotros</p>
-
-        {initializing ? (
-          <span className="inline-block w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-        ) : isPublic && publicData ? (
-          /* ── PUBLIC EVENT FLOW ────────────────────────────── */
-          <div className="w-full max-w-md space-y-5 animate-in">
-            {/* Event Info */}
-            <div className="bg-white/10 backdrop-blur-sm p-6 border border-white/20">
-              <p className="text-white text-xl font-black uppercase tracking-wider">
-                {publicData.event.name}
-              </p>
-              <p className="text-white/50 text-[0.65rem] uppercase tracking-[0.2em] mt-2">
-                Fecha del evento
-              </p>
-              <p className="text-white/80 text-sm mt-0.5">
-                {formatEventDateTime(publicData.event.date)}
-              </p>
-              {publicData.event.location && (
-                <p className="text-white/60 text-sm mt-1">{publicData.event.location}</p>
-              )}
-            </div>
-
-            {!buyingTicket ? (
-              <>
-                {/* Ticket Types */}
-                <div className="space-y-3">
-                  <p className="text-white/60 text-xs uppercase tracking-[0.2em]">
-                    Tickets Disponibles
+              {publicTicketItems.length === 0 ? (
+                <ScreenPad className="pt-1">
+                  <p className="font-ui text-sm text-culpa-ink/60">
+                    No hay entradas disponibles en este momento.
                   </p>
-                  {publicData.ticketTypes.length === 0 ? (
-                    <div className="bg-white/5 border border-white/10 p-6 text-center">
-                      <p className="text-white/50">
-                        No hay tickets disponibles en este momento
-                      </p>
-                    </div>
-                  ) : (
-                    publicData.ticketTypes.map((tt) => (
-                      <div
-                        key={tt.id}
-                        className="bg-white/10 backdrop-blur-sm border border-white/20 p-5 flex items-center justify-between gap-4 hover:bg-white/[0.15] transition-colors"
-                      >
-                        <div className="min-w-0">
-                          <p className="text-white font-bold uppercase tracking-wider">
-                            {tt.name}
-                          </p>
-                          <p className="text-white/80 text-lg font-black mt-1">
-                            {formatPrice(tt.price, tt.currency)}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => {
-                            setError("");
-                            setBuyingTicket(tt);
-                          }}
-                          disabled={tt.soldOut}
-                          className="bg-white text-fyf-red font-bold uppercase tracking-wider px-6 py-3 text-sm hover:bg-fyf-cream transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
-                        >
-                          {tt.soldOut ? "Agotado" : tt.price === 0 ? "Reclamar" : "Comprar"}
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
+                </ScreenPad>
+              ) : (
+                <NokiaMenu items={publicTicketItems} />
+              )}
 
-                {error && (
-                  <div className="bg-black/20 border border-white/20 px-4 py-3">
-                    <p className="text-white text-sm text-center">{error}</p>
-                  </div>
-                )}
-              </>
-            ) : (
-              /* Identity form for the selected ticket */
-              <form onSubmit={handlePublicPurchase} className="space-y-4">
-                <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-4 flex items-center justify-between gap-3">
+              {error && (
+                <ScreenPad className="pt-4">
+                  <LcdError>{error}</LcdError>
+                </ScreenPad>
+              )}
+            </>
+          ) : (
+            /* Identity form for the selected ticket */
+            <form onSubmit={handlePublicPurchase}>
+              <ScreenPad className="pt-0 space-y-3">
+                <LcdBox className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-white font-bold uppercase tracking-wider">
+                    <p className="font-pixel text-[0.7rem] uppercase tracking-[0.1em]">
                       {buyingTicket.name}
                     </p>
-                    <p className="text-white/80 font-black">
+                    <p className="font-pixel text-sm mt-1">
                       {formatPrice(buyingTicket.price, buyingTicket.currency)}
                     </p>
                   </div>
@@ -319,201 +346,135 @@ export default function EventPage() {
                       setBuyingTicket(null);
                       setError("");
                     }}
-                    className="text-white/60 text-xs uppercase tracking-widest underline shrink-0 hover:text-white/80"
+                    className="font-pixel text-[0.6rem] uppercase tracking-[0.1em] underline shrink-0 hover:opacity-60"
                   >
                     Cambiar
                   </button>
-                </div>
+                </LcdBox>
+
+                <PixelLabel>Tus datos</PixelLabel>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <input
+                  <LcdInput
                     type="text"
                     value={form.firstName}
                     onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                     placeholder="Nombre"
-                    className="bg-white/10 border-2 border-white/30 text-white px-4 py-3 focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
                     required
                   />
-                  <input
+                  <LcdInput
                     type="text"
                     value={form.lastName}
                     onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                     placeholder="Apellido"
-                    className="bg-white/10 border-2 border-white/30 text-white px-4 py-3 focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
                     required
                   />
                 </div>
-                <input
+                <LcdInput
                   type="text"
                   value={form.govId}
                   onChange={(e) => setForm({ ...form, govId: e.target.value })}
                   placeholder="Cédula de identidad"
-                  className="w-full bg-white/10 border-2 border-white/30 text-white px-4 py-3 focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
                   required
                 />
-                <input
+                <LcdInput
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="Email"
-                  className="w-full bg-white/10 border-2 border-white/30 text-white px-4 py-3 focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
                   required
                 />
 
-                {error && (
-                  <div className="bg-black/20 border border-white/20 px-4 py-3">
-                    <p className="text-white text-sm text-center">{error}</p>
-                  </div>
-                )}
+                {error && <LcdError>{error}</LcdError>}
 
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full bg-white text-fyf-red font-bold text-base uppercase tracking-[0.2em] py-4 hover:bg-fyf-cream transition-colors disabled:opacity-50"
-                >
-                  {submitting ? (
-                    <span className="inline-block w-5 h-5 border-2 border-fyf-red/30 border-t-fyf-red rounded-full animate-spin" />
-                  ) : buyingTicket.price === 0 ? (
-                    "Reclamar Ticket"
-                  ) : (
-                    "Continuar al Pago"
-                  )}
-                </button>
-              </form>
-            )}
-          </div>
-        ) : !lookupResult ? (
-          /* ── PRIVATE (WHITELIST) FLOW: gov-ID lookup ──────── */
-          <form onSubmit={handleLookup} className="w-full max-w-sm space-y-6">
-            <div>
-              <label className="block text-white/80 text-xs uppercase tracking-[0.2em] mb-3 text-center">
-                Ingresá tu número de documento
-              </label>
-              <input
-                type="text"
-                value={govId}
-                onChange={(e) => setGovId(e.target.value)}
-                placeholder="Tu cédula de identidad"
-                className="w-full bg-white/10 border-2 border-white/30 text-white px-4 py-4 text-lg text-center focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
-                required
-              />
-            </div>
+                <LcdButton type="submit" disabled={submitting} className="w-full">
+                  {submitting
+                    ? "Procesando..."
+                    : buyingTicket.price === 0
+                    ? "Reclamar entrada"
+                    : "Ir al pago"}
+                </LcdButton>
 
-            {error && (
-              <div className="bg-black/20 border border-white/20 px-4 py-3">
-                <p className="text-white text-sm text-center">{error}</p>
-              </div>
-            )}
+                <p className="font-ui text-xs text-culpa-ink/60 text-center">
+                  Te mandamos el QR a ese mail.
+                </p>
+              </ScreenPad>
+            </form>
+          )}
+        </div>
+      ) : !lookupResult ? (
+        /* ── PRIVATE (WHITELIST) FLOW: gov-ID lookup ──────── */
+        <form onSubmit={handleLookup}>
+          <ScreenPad className="pt-0 space-y-4">
+            <PixelLabel className="text-center">
+              Ingresa tu documento
+            </PixelLabel>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-white text-fyf-red font-bold text-base uppercase tracking-[0.2em] py-4 hover:bg-fyf-cream transition-colors disabled:opacity-50"
-            >
-              {loading ? (
-                <span className="inline-block w-5 h-5 border-2 border-fyf-red/30 border-t-fyf-red rounded-full animate-spin" />
-              ) : (
-                "Buscar Mis Tickets"
-              )}
-            </button>
+            <LcdInput
+              type="text"
+              value={govId}
+              onChange={(e) => setGovId(e.target.value)}
+              placeholder="Cédula de identidad"
+              className="text-center"
+              required
+            />
 
-            {/* Decorative creature */}
-            <div className="flex justify-center pt-4 opacity-20">
-              <DjCreature className="w-32 text-white" />
-            </div>
-          </form>
-        ) : (
-          <div className="w-full max-w-md space-y-5 animate-in">
-            {/* Person Info */}
-            <div className="bg-white/10 backdrop-blur-sm p-6 border border-white/20">
-              <p className="text-white/60 text-xs uppercase tracking-[0.2em] mb-1">
-                Bienvenido/a
-              </p>
-              <p className="text-white text-2xl font-black uppercase tracking-wider">
+            {error && <LcdError>{error}</LcdError>}
+
+            <LcdButton type="submit" disabled={loading} className="w-full">
+              {loading ? "Buscando..." : "Buscar mis entradas"}
+            </LcdButton>
+
+            <p className="font-ui text-xs text-culpa-ink/60 text-center">
+              Esta fecha es con lista. Si no estás, escribinos por Instagram.
+            </p>
+          </ScreenPad>
+        </form>
+      ) : (
+        <div className="animate-in">
+          <ScreenPad className="pt-0 space-y-3">
+            <LcdBox>
+              <PixelLabel>Hola</PixelLabel>
+              <p className="font-pixel text-sm mt-1 uppercase">
                 {lookupResult.person.name}
               </p>
-              <p className="text-white/50 text-sm mt-1">{lookupResult.person.email}</p>
-            </div>
+              <p className="font-ui text-xs text-culpa-ink/60 mt-1">
+                {lookupResult.person.email}
+              </p>
+            </LcdBox>
 
-            {/* Event Info */}
-            <div className="bg-white/10 backdrop-blur-sm p-6 border border-white/20">
-              <p className="text-white text-xl font-black uppercase tracking-wider">
-                {lookupResult.event.name}
-              </p>
-              <p className="text-white/50 text-[0.65rem] uppercase tracking-[0.2em] mt-2">
-                Fecha del evento
-              </p>
-              <p className="text-white/80 text-sm mt-0.5">
-                {formatEventDateTime(lookupResult.event.date)}
-              </p>
-              {lookupResult.event.location && (
-                <p className="text-white/60 text-sm mt-1">{lookupResult.event.location}</p>
-              )}
-            </div>
+            <EventHeader event={lookupResult.event} />
+          </ScreenPad>
 
-            {/* Ticket Types */}
-            <div className="space-y-3">
-              <p className="text-white/60 text-xs uppercase tracking-[0.2em]">
-                Tickets Disponibles
-              </p>
-              {lookupResult.availableTicketTypes.length === 0 ? (
-                <div className="bg-white/5 border border-white/10 p-6 text-center">
-                  <p className="text-white/50">
-                    No hay tickets disponibles para vos en este momento
-                  </p>
-                </div>
-              ) : (
-                lookupResult.availableTicketTypes.map((tt) => (
-                  <div
-                    key={tt.id}
-                    className="bg-white/10 backdrop-blur-sm border border-white/20 p-5 flex items-center justify-between gap-4 hover:bg-white/[0.15] transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-white font-bold uppercase tracking-wider">{tt.name}</p>
-                      <p className="text-white/80 text-lg font-black mt-1">
-                        {formatPrice(tt.price, tt.currency)}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleCheckout(tt.id)}
-                      disabled={tt.alreadyPurchased || tt.soldOut || checkoutLoading === tt.id}
-                      className="bg-white text-fyf-red font-bold uppercase tracking-wider px-6 py-3 text-sm hover:bg-fyf-cream transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
-                    >
-                      {tt.alreadyPurchased
-                        ? "Comprado"
-                        : tt.soldOut
-                        ? "Agotado"
-                        : checkoutLoading === tt.id
-                        ? "..."
-                        : tt.pendingPayment
-                        ? "Reintentar Pago"
-                        : tt.price === 0
-                        ? "Reclamar"
-                        : "Comprar"}
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
+          <ScreenPad className="py-2">
+            <PixelLabel>Entradas</PixelLabel>
+          </ScreenPad>
 
-            {error && (
-              <div className="bg-black/20 border border-white/20 px-4 py-3">
-                <p className="text-white text-sm text-center">{error}</p>
-              </div>
-            )}
+          {privateTicketItems.length === 0 ? (
+            <ScreenPad className="pt-1">
+              <p className="font-ui text-sm text-culpa-ink/60">
+                No hay entradas disponibles para vos en este momento.
+              </p>
+            </ScreenPad>
+          ) : (
+            <NokiaMenu items={privateTicketItems} />
+          )}
+
+          <ScreenPad className="space-y-4">
+            {error && <LcdError>{error}</LcdError>}
 
             <button
               onClick={() => {
                 setLookupResult(null);
                 setGovId("");
               }}
-              className="text-white/50 text-sm underline block mx-auto hover:text-white/70 transition-colors"
+              className="font-pixel text-[0.6rem] uppercase tracking-[0.1em] underline mx-auto block hover:opacity-60"
             >
               Usar otro documento
             </button>
-          </div>
-        )}
-      </div>
-    </div>
+          </ScreenPad>
+        </div>
+      )}
+    </PhoneShell>
   );
 }
