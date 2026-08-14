@@ -37,7 +37,12 @@ function isTypingTarget(target: EventTarget | null): boolean {
 export function NokiaMenu({ items, keyboardNav = true }: NokiaMenuProps) {
   const router = useRouter();
   const firstEnabled = items.findIndex((i) => !i.disabled);
-  const [cursor, setCursor] = useState(firstEnabled === -1 ? 0 : firstEnabled);
+  const lastEnabled = items.map((i) => !i.disabled).lastIndexOf(true);
+  /*
+   * Arranca sin cursor: en touch no hay hover que lo mueva, así que dejar la
+   * primera fila invertida se leía como «ya elegiste esta».
+   */
+  const [cursor, setCursor] = useState(-1);
 
   const select = useCallback(
     (item: MenuItem | undefined) => {
@@ -54,6 +59,8 @@ export function NokiaMenu({ items, keyboardNav = true }: NokiaMenuProps) {
   const move = useCallback(
     (delta: number) => {
       setCursor((current) => {
+        // La primera flecha entra al menú por el extremo que corresponda.
+        if (current === -1) return delta > 0 ? firstEnabled : lastEnabled;
         // Salta los deshabilitados; si no hay ninguno seleccionable, se queda.
         for (let step = 1; step <= items.length; step++) {
           const next =
@@ -63,7 +70,7 @@ export function NokiaMenu({ items, keyboardNav = true }: NokiaMenuProps) {
         return current;
       });
     },
-    [items]
+    [items, firstEnabled, lastEnabled]
   );
 
   useEffect(() => {
@@ -114,10 +121,12 @@ export function NokiaMenu({ items, keyboardNav = true }: NokiaMenuProps) {
                 active ? "bg-culpa-ink text-culpa-lime" : "text-culpa-ink"
               }`}
             >
+              {/* El cursor queda tenue en las filas tocables: sin hover es la
+                  única pista de que la entrada se toca. */}
               <span
                 aria-hidden="true"
-                className={`font-pixel text-sm leading-5 shrink-0 ${
-                  active ? "opacity-100" : "opacity-0"
+                className={`font-pixel text-sm leading-5 shrink-0 transition-opacity ${
+                  active ? "opacity-100" : item.disabled ? "opacity-0" : "opacity-40"
                 }`}
               >
                 &gt;
