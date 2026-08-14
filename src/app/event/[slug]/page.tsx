@@ -255,7 +255,7 @@ export default function EventPage() {
           setGovId("");
         },
       }
-    : { label: "Back" };
+    : { label: "Mensajes", href: "/mensajes" };
 
   const publicTicketItems: MenuItem[] = (publicData?.ticketTypes ?? []).map(
     (tt) => ({
@@ -307,8 +307,13 @@ export default function EventPage() {
 
           {!buyingTicket ? (
             <>
-              <ScreenPad className="py-2">
+              <ScreenPad className="py-2 flex items-baseline justify-between gap-3">
                 <PixelLabel>Entradas</PixelLabel>
+                {publicTicketItems.length > 0 && (
+                  <PixelLabel className="opacity-70">
+                    Tocá para elegir
+                  </PixelLabel>
+                )}
               </ScreenPad>
 
               {publicTicketItems.length === 0 ? (
@@ -446,8 +451,11 @@ export default function EventPage() {
             <EventHeader event={lookupResult.event} />
           </ScreenPad>
 
-          <ScreenPad className="py-2">
+          <ScreenPad className="py-2 flex items-baseline justify-between gap-3">
             <PixelLabel>Entradas</PixelLabel>
+            {privateTicketItems.length > 0 && (
+              <PixelLabel className="opacity-70">Tocá para elegir</PixelLabel>
+            )}
           </ScreenPad>
 
           {privateTicketItems.length === 0 ? (

@@ -74,7 +74,7 @@ export default function HomePage() {
             .getElementById("fechas")
             ?.scrollIntoView({ behavior: "smooth", block: "start" }),
       }}
-      rightKey={{ label: "Staff", href: "/login" }}
+      rightKey={{ label: "Mensajes", href: "/mensajes" }}
     >
       {/* ── Pantalla de inicio ─────────────────────────────────── */}
       <ScreenPad className="text-center pt-8 pb-6">
