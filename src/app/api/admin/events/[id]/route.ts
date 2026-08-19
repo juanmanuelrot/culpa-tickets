@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-import { confirmedTicketsWhere } from "@/lib/tickets";
+import {
+  confirmedInvitationsWhere,
+  confirmedTicketsWhere,
+  soldTicketsWhere,
+} from "@/lib/tickets";
 
 export async function GET(
   request: NextRequest,
@@ -11,24 +15,44 @@ export async function GET(
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
-  const event = await prisma.event.findUnique({
-    where: { id },
-    include: {
-      ticketTypes: {
-        orderBy: { sortOrder: "asc" },
-        include: {
-          _count: { select: { tickets: { where: confirmedTicketsWhere } } },
+
+  // Prisma allows a single filter per counted relation, so the invitation
+  // tally needs its own pass alongside the sold-only _count.
+  const [event, invitationCounts] = await Promise.all([
+    prisma.event.findUnique({
+      where: { id },
+      include: {
+        ticketTypes: {
+          orderBy: { sortOrder: "asc" },
+          include: {
+            _count: { select: { tickets: { where: soldTicketsWhere } } },
+          },
         },
+        _count: { select: { tickets: { where: confirmedTicketsWhere } } },
       },
-      _count: { select: { tickets: { where: confirmedTicketsWhere } } },
-    },
-  });
+    }),
+    prisma.ticket.groupBy({
+      by: ["ticketTypeId"],
+      where: { eventId: id, ...confirmedInvitationsWhere },
+      _count: { _all: true },
+    }),
+  ]);
 
   if (!event) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.json(event);
+  const invitationsByType = new Map(
+    invitationCounts.map((row) => [row.ticketTypeId, row._count._all])
+  );
+
+  return NextResponse.json({
+    ...event,
+    ticketTypes: event.ticketTypes.map((tt) => ({
+      ...tt,
+      invitationCount: invitationsByType.get(tt.id) ?? 0,
+    })),
+  });
 }
 
 export async function PUT(

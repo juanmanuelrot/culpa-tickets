@@ -14,6 +14,7 @@ interface TicketType {
   isOffered: boolean;
   sortOrder: number;
   _count: { tickets: number };
+  invitationCount: number;
 }
 
 interface Event {
@@ -340,6 +341,10 @@ export default function AdminEventDetailPage() {
               <div className="flex items-center gap-4">
                 <span className="text-culpa-cream/40 text-sm">
                   {tt._count.tickets} vendidos
+                  <span className="text-culpa-cream/25">
+                    {" · "}
+                    {tt.invitationCount} invitaciones
+                  </span>
                 </span>
                 <button
                   onClick={() => handleToggleOffered(tt.id, tt.isOffered)}
