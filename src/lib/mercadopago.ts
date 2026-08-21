@@ -6,6 +6,17 @@ const mpClient = new MercadoPagoConfig({
 
 const preferenceClient = new Preference(mpClient);
 
+// Service fee added on top of the ticket price. It only shows up as its own
+// line inside the MercadoPago checkout, never on the public event page.
+const SERVICE_FEE_PERCENT = Number(process.env.SERVICE_FEE_PERCENT ?? 10);
+
+export function serviceFeeInCents(priceInCents: number): number {
+  if (!Number.isFinite(SERVICE_FEE_PERCENT) || SERVICE_FEE_PERCENT <= 0) {
+    return 0;
+  }
+  return Math.round((priceInCents * SERVICE_FEE_PERCENT) / 100);
+}
+
 export async function createCheckoutPreference(params: {
   ticketId: string;
   title: string;
@@ -28,18 +39,32 @@ export async function createCheckoutPreference(params: {
   }
   const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/event/${params.eventSlug}/checkout/success?${successParams.toString()}`;
 
+  const items = [
+    {
+      id: params.ticketId,
+      title: params.title,
+      description: params.description,
+      quantity: 1,
+      unit_price: params.priceInCents / 100,
+      currency_id: params.currency,
+    },
+  ];
+
+  const feeInCents = serviceFeeInCents(params.priceInCents);
+  if (feeInCents > 0) {
+    items.push({
+      id: `${params.ticketId}-fee`,
+      title: "Cargo por servicio",
+      description: "Cargo por servicio",
+      quantity: 1,
+      unit_price: feeInCents / 100,
+      currency_id: params.currency,
+    });
+  }
+
   const preference = await preferenceClient.create({
     body: {
-      items: [
-        {
-          id: params.ticketId,
-          title: params.title,
-          description: params.description,
-          quantity: 1,
-          unit_price: params.priceInCents / 100,
-          currency_id: params.currency,
-        },
-      ],
+      items,
       payer: {
         email: params.payerEmail,
         name: params.payerName,
