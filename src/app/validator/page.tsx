@@ -133,20 +133,20 @@ export default function ValidatorScannerPage() {
           <div
             className={`p-8 ${
               scanResult.valid
-                ? "bg-culpa-lime/15 border-2 border-culpa-lime scan-valid"
+                ? "bg-culpa-lcd/15 border-2 border-culpa-lcd scan-valid"
                 : "bg-culpa-alert/15 border-2 border-culpa-alert scan-invalid"
             }`}
           >
             <p
               className={`text-5xl mb-4 ${
-                scanResult.valid ? "text-culpa-lime" : "text-culpa-alert"
+                scanResult.valid ? "text-culpa-lcd" : "text-culpa-alert"
               }`}
             >
               {scanResult.valid ? "\u2713" : "\u2717"}
             </p>
             <p
               className={`culpa-heading text-lg ${
-                scanResult.valid ? "text-culpa-lime" : "text-culpa-alert"
+                scanResult.valid ? "text-culpa-lcd" : "text-culpa-alert"
               }`}
             >
               {scanResult.valid ? "VÁLIDO" : "INVÁLIDO"}
@@ -182,7 +182,7 @@ export default function ValidatorScannerPage() {
 
           <button
             onClick={handleScanAgain}
-            className="bg-culpa-lime text-culpa-ink font-pixel text-sm uppercase tracking-[0.1em] px-8 py-4 hover:bg-culpa-lime-dark transition-colors w-full"
+            className="bg-culpa-lcd text-culpa-ink font-pixel text-sm uppercase tracking-[0.1em] px-8 py-4 hover:bg-culpa-lcd-dark transition-colors w-full"
           >
             Escanear Siguiente
           </button>

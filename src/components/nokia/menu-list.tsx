@@ -118,7 +118,7 @@ export function NokiaMenu({ items, keyboardNav = true }: NokiaMenuProps) {
               onFocus={() => !item.disabled && setCursor(index)}
               onClick={() => select(item)}
               className={`w-full text-left px-3 py-3 flex items-start gap-2 transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
-                active ? "bg-culpa-ink text-culpa-lime" : "text-culpa-ink"
+                active ? "bg-culpa-ink text-culpa-lcd" : "text-culpa-ink"
               }`}
             >
               {/* El cursor queda tenue en las filas tocables: sin hover es la

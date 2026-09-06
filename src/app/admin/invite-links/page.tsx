@@ -90,7 +90,7 @@ export default function AdminInviteLinksPage() {
           </h2>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors"
+            className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-body-dark transition-colors"
           >
             {showForm ? "Cancelar" : "+ Generar Link"}
           </button>
@@ -104,11 +104,11 @@ export default function AdminInviteLinksPage() {
           <form onSubmit={handleCreate} className="bg-culpa-cream/5 border border-culpa-cream/10 p-6 mb-8 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Evento <span className="text-culpa-lime">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Evento <span className="text-culpa-lcd">*</span></label>
                 <select
                   value={formData.eventId}
                   onChange={(e) => setFormData({ ...formData, eventId: e.target.value, ticketTypeId: "" })}
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                   required
                 >
                   <option value="">Seleccionar evento</option>
@@ -118,11 +118,11 @@ export default function AdminInviteLinksPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Tipo de Ticket <span className="text-culpa-lime">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Tipo de Ticket <span className="text-culpa-lcd">*</span></label>
                 <select
                   value={formData.ticketTypeId}
                   onChange={(e) => setFormData({ ...formData, ticketTypeId: e.target.value })}
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                   required
                   disabled={!formData.eventId}
                 >
@@ -133,24 +133,24 @@ export default function AdminInviteLinksPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">El link expira <span className="text-culpa-lime">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">El link expira <span className="text-culpa-lcd">*</span></label>
                 <input
                   type="datetime-local"
                   value={formData.expiresAt}
                   onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                   required
                 />
                 <p className="text-culpa-cream/30 text-xs mt-1">Hora de Montevideo — cuándo deja de funcionar este link</p>
               </div>
               <div>
-                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Usos Máximos <span className="text-culpa-lime">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Usos Máximos <span className="text-culpa-lcd">*</span></label>
                 <input
                   type="number"
                   min="1"
                   value={formData.maxUses}
                   onChange={(e) => setFormData({ ...formData, maxUses: e.target.value })}
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                   required
                 />
               </div>
@@ -160,7 +160,7 @@ export default function AdminInviteLinksPage() {
                   type="datetime-local"
                   value={formData.ticketValidUntil}
                   onChange={(e) => setFormData({ ...formData, ticketValidUntil: e.target.value })}
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                 />
                 <p className="text-culpa-cream/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket (distinto de la fecha del evento)</p>
               </div>
@@ -168,7 +168,7 @@ export default function AdminInviteLinksPage() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors disabled:opacity-50"
+              className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-body-dark transition-colors disabled:opacity-50"
             >
               {loading ? "Generando..." : "Generar Link"}
             </button>
@@ -180,7 +180,7 @@ export default function AdminInviteLinksPage() {
             <div key={link.id} className="bg-culpa-cream/5 border border-culpa-cream/10 p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-culpa-lime font-mono text-sm break-all">
+                  <p className="text-culpa-lcd font-mono text-sm break-all">
                     {appUrl}/invite/{link.token}
                   </p>
                   <p className="text-culpa-cream/40 text-xs mt-1">

@@ -73,12 +73,12 @@ export default function AdminTicketsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por nombre, correo o documento..."
-          className="flex-1 bg-culpa-cream/5 border border-culpa-cream/10 text-culpa-cream px-4 py-3 focus:outline-none focus:border-culpa-lime"
+          className="flex-1 bg-culpa-cream/5 border border-culpa-cream/10 text-culpa-cream px-4 py-3 focus:outline-none focus:border-culpa-lcd"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-culpa-cream/5 border border-culpa-cream/10 text-culpa-cream px-4 py-3 focus:outline-none focus:border-culpa-lime"
+          className="bg-culpa-cream/5 border border-culpa-cream/10 text-culpa-cream px-4 py-3 focus:outline-none focus:border-culpa-lcd"
         >
           <option value="">Todos los Estados</option>
           <option value="PENDING_PAYMENT">Pendiente</option>

@@ -72,7 +72,7 @@ export default function UsersPage() {
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-culpa-blue text-culpa-cream px-4 py-2 text-sm uppercase tracking-widest font-bold hover:opacity-80 transition-opacity"
+          className="bg-culpa-body text-culpa-cream px-4 py-2 text-sm uppercase tracking-widest font-bold hover:opacity-80 transition-opacity"
         >
           {showForm ? "Cancelar" : "Nuevo Usuario"}
         </button>
@@ -96,7 +96,7 @@ export default function UsersPage() {
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lcd"
               />
             </div>
             <div>
@@ -106,7 +106,7 @@ export default function UsersPage() {
                 required
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lcd"
               />
             </div>
             <div>
@@ -117,7 +117,7 @@ export default function UsersPage() {
                 minLength={6}
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lcd"
               />
             </div>
             <div>
@@ -125,7 +125,7 @@ export default function UsersPage() {
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value as "ADMIN" | "VALIDATOR" })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lcd"
               >
                 <option value="VALIDATOR">Validator</option>
                 <option value="ADMIN">Admin</option>
@@ -136,7 +136,7 @@ export default function UsersPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="bg-culpa-blue text-culpa-cream px-6 py-2 text-sm uppercase tracking-widest font-bold hover:opacity-80 transition-opacity disabled:opacity-50"
+            className="bg-culpa-body text-culpa-cream px-6 py-2 text-sm uppercase tracking-widest font-bold hover:opacity-80 transition-opacity disabled:opacity-50"
           >
             {submitting ? "Creando..." : "Crear Usuario"}
           </button>
@@ -168,7 +168,7 @@ export default function UsersPage() {
                     <span
                       className={`text-xs font-bold uppercase tracking-widest px-2 py-1 ${
                         user.role === "ADMIN"
-                          ? "bg-culpa-blue/20 text-culpa-lime"
+                          ? "bg-culpa-body/20 text-culpa-lcd"
                           : "bg-blue-500/20 text-blue-400"
                       }`}
                     >

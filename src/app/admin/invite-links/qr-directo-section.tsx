@@ -106,7 +106,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
           {/* Deliberately white and self-contained: a rectangular screenshot
               of this card is already a usable ticket. */}
           <div className="bg-culpa-cream p-8 max-w-sm mx-auto text-center">
-            <p className="text-culpa-lime text-3xl font-black tracking-wider">
+            <p className="text-culpa-lcd text-3xl font-black tracking-wider">
               F&amp;F
             </p>
             <p className="text-black/50 text-[0.6rem] uppercase tracking-[0.3em] mt-1">
@@ -154,7 +154,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
             </a>
             <button
               onClick={handleGenerateAnother}
-              className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-culpa-blue-dark transition-colors"
+              className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-culpa-body-dark transition-colors"
             >
               Generar otro
             </button>
@@ -183,14 +183,14 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">
-                Evento <span className="text-culpa-lime">*</span>
+                Evento <span className="text-culpa-lcd">*</span>
               </label>
               <select
                 value={form.eventId}
                 onChange={(e) =>
                   setForm({ ...form, eventId: e.target.value, ticketTypeId: "" })
                 }
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                 required
               >
                 <option value="">Seleccionar evento</option>
@@ -203,14 +203,14 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
             </div>
             <div>
               <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">
-                Tipo de Ticket <span className="text-culpa-lime">*</span>
+                Tipo de Ticket <span className="text-culpa-lcd">*</span>
               </label>
               <select
                 value={form.ticketTypeId}
                 onChange={(e) =>
                   setForm({ ...form, ticketTypeId: e.target.value })
                 }
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                 required
                 disabled={!form.eventId}
               >
@@ -228,14 +228,14 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
             </div>
             <div>
               <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">
-                Nombre del invitado <span className="text-culpa-lime">*</span>
+                Nombre del invitado <span className="text-culpa-lcd">*</span>
               </label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="Sofi - prensa"
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                 required
               />
               <p className="text-culpa-cream/30 text-xs mt-1">
@@ -250,7 +250,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
               />
               <p className="text-culpa-cream/30 text-xs mt-1">
                 No se envía nada solo, pero te habilita el botón de enviar
@@ -266,7 +266,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
                 onChange={(e) =>
                   setForm({ ...form, ticketValidUntil: e.target.value })
                 }
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
               />
               <p className="text-culpa-cream/30 text-xs mt-1">
                 Hora de Montevideo — si lo dejás vacío usa el del tipo de ticket
@@ -281,7 +281,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
           <button
             type="submit"
             disabled={loading}
-            className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors disabled:opacity-50"
+            className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-body-dark transition-colors disabled:opacity-50"
           >
             {loading ? "Generando..." : "Generar QR"}
           </button>

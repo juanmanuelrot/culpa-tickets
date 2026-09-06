@@ -150,11 +150,11 @@ function SoftKeyButton({
 function Keypad() {
   return (
     <div className="hidden md:flex items-center justify-center gap-5 pt-4">
-      <div className="w-10 h-5 rounded-b-full bg-culpa-blue-dark/70" />
-      <div className="w-11 h-11 rounded-full bg-culpa-blue-dark/70 flex items-center justify-center">
-        <div className="w-4 h-4 rounded-full bg-culpa-blue" />
+      <div className="w-10 h-5 rounded-b-full bg-culpa-body-dark/70" />
+      <div className="w-11 h-11 rounded-full bg-culpa-body-dark/70 flex items-center justify-center">
+        <div className="w-4 h-4 rounded-full bg-culpa-body" />
       </div>
-      <div className="w-10 h-5 rounded-b-full bg-culpa-blue-dark/70" />
+      <div className="w-10 h-5 rounded-b-full bg-culpa-body-dark/70" />
     </div>
   );
 }
@@ -167,16 +167,16 @@ export function PhoneShell({ children, leftKey, rightKey }: PhoneShellProps) {
 
   return (
     <div className="min-h-[100dvh] bg-culpa-night flex justify-center md:items-center md:py-10 md:px-4">
-      <div className="w-full md:w-auto md:bg-culpa-blue md:rounded-[2.75rem] md:p-5 md:pb-5 md:shadow-[0_40px_90px_-25px_rgba(43,58,216,0.55)]">
+      <div className="w-full md:w-auto md:bg-culpa-body md:rounded-[2.75rem] md:p-5 md:pb-5 md:shadow-[0_40px_90px_-25px_rgba(43,58,216,0.55)]">
         {/* Auricular y marca, sobre la pantalla — solo en desktop */}
         <div className="hidden md:flex flex-col items-center gap-2 pb-4">
-          <div className="w-14 h-1.5 rounded-full bg-culpa-blue-dark/70" />
+          <div className="w-14 h-1.5 rounded-full bg-culpa-body-dark/70" />
           <span className="font-pixel text-[0.6rem] tracking-[0.35em] text-culpa-cream/70">
             CULPA
           </span>
         </div>
 
-        <div className="lcd-texture relative overflow-hidden flex flex-col bg-culpa-lime text-culpa-ink h-[100dvh] md:h-[660px] md:w-[400px] md:rounded-[1.25rem]">
+        <div className="lcd-texture relative overflow-hidden flex flex-col bg-culpa-lcd text-culpa-ink h-[100dvh] md:h-[660px] md:w-[400px] md:rounded-[1.25rem]">
           <StatusBar />
 
           <div className="relative z-20 flex-1 overflow-y-auto overscroll-contain">

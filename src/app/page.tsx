@@ -85,7 +85,7 @@ export default function HomePage() {
 
         {nextEvent && (
           <div className="mt-6 text-left">
-            <LcdBox className="bg-culpa-ink text-culpa-lime border-culpa-ink">
+            <LcdBox className="bg-culpa-ink text-culpa-lcd border-culpa-ink">
               <p className="font-pixel text-2xl leading-none">
                 {formatDayDot(nextEvent.date)}
               </p>
@@ -130,7 +130,7 @@ export default function HomePage() {
         <ScreenPad className="pt-2 space-y-4">
           {STEPS.map((step) => (
             <div key={step.n} className="flex gap-3">
-              <span className="font-pixel text-lg text-culpa-blue shrink-0">
+              <span className="font-pixel text-lg text-culpa-body shrink-0">
                 {step.n}
               </span>
               <div className="min-w-0">

@@ -81,7 +81,7 @@ export default function MessagesPage() {
       {open ? (
         <div className="animate-in">
           <ScreenPad className="pt-1 space-y-3">
-            <LcdBox className="bg-culpa-ink text-culpa-lime border-culpa-ink">
+            <LcdBox className="bg-culpa-ink text-culpa-lcd border-culpa-ink">
               <div className="flex items-baseline justify-between gap-3">
                 <p className="font-pixel text-sm">De: {open.from}</p>
                 <p className="font-pixel text-xs opacity-80">{open.time}</p>

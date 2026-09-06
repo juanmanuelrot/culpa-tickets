@@ -95,7 +95,7 @@ export default function AdminWhitelistPage() {
             if (!showForm) loadTicketTypes();
             setShowForm(!showForm);
           }}
-          className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors"
+          className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-body-dark transition-colors"
         >
           {showForm ? "Cancelar" : "+ Agregar Persona"}
         </button>
@@ -110,7 +110,7 @@ export default function AdminWhitelistPage() {
                 type="text"
                 value={formData.govIdNumber}
                 onChange={(e) => setFormData({ ...formData, govIdNumber: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                 required
               />
             </div>
@@ -120,7 +120,7 @@ export default function AdminWhitelistPage() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                 required
               />
             </div>
@@ -130,7 +130,7 @@ export default function AdminWhitelistPage() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                 required
               />
             </div>
@@ -140,7 +140,7 @@ export default function AdminWhitelistPage() {
                 type="text"
                 value={formData.instagramHandle}
                 onChange={(e) => setFormData({ ...formData, instagramHandle: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
               />
             </div>
           </div>
@@ -157,7 +157,7 @@ export default function AdminWhitelistPage() {
                         : ticketTypes.map((tt) => tt.id)
                     )
                   }
-                  className="text-culpa-lime text-xs uppercase tracking-wider hover:text-culpa-blue-dark"
+                  className="text-culpa-lcd text-xs uppercase tracking-wider hover:text-culpa-body-dark"
                 >
                   {selectedTicketTypeIds.length === ticketTypes.length ? "Deseleccionar Todo" : "Seleccionar Todo"}
                 </button>
@@ -175,7 +175,7 @@ export default function AdminWhitelistPage() {
                             : selectedTicketTypeIds.filter((id) => id !== tt.id)
                         )
                       }
-                      className="accent-culpa-lime w-4 h-4"
+                      className="accent-culpa-lcd w-4 h-4"
                     />
                     <span className="text-culpa-cream font-bold">{tt.event.name}</span>
                     <span className="text-culpa-cream/50">—</span>
@@ -194,7 +194,7 @@ export default function AdminWhitelistPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors disabled:opacity-50"
+            className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-body-dark transition-colors disabled:opacity-50"
           >
             {loading ? "Agregando..." : "Agregar a la Lista"}
           </button>
@@ -207,7 +207,7 @@ export default function AdminWhitelistPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Buscar por nombre, documento, correo o Instagram..."
-        className="w-full bg-culpa-cream/5 border border-culpa-cream/10 text-culpa-cream px-4 py-3 mb-6 focus:outline-none focus:border-culpa-lime"
+        className="w-full bg-culpa-cream/5 border border-culpa-cream/10 text-culpa-cream px-4 py-3 mb-6 focus:outline-none focus:border-culpa-lcd"
       />
 
       {/* List */}

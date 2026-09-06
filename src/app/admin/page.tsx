@@ -46,10 +46,10 @@ export default function AdminDashboard() {
   // Las métricas de plata y de puerta van en lima (tinta sobre lima, el
   // contraste más alto de la paleta); el resto en la familia azul.
   const cards = [
-    { label: "Eventos", value: stats?.events ?? "...", href: "/admin/events", color: "bg-culpa-blue", ink: false },
-    { label: "En Lista", value: stats?.whitelisted ?? "...", href: "/admin/whitelist", color: "bg-culpa-blue-dark", ink: false },
-    { label: "Tickets Confirmados", value: stats?.tickets ?? "...", href: "/admin/tickets", color: "bg-culpa-blue", ink: false },
-    { label: "Tickets Pagados", value: stats?.paidTickets ?? "...", href: "/admin/tickets?status=PAID", color: "bg-culpa-lime", ink: true },
+    { label: "Eventos", value: stats?.events ?? "...", href: "/admin/events", color: "bg-culpa-body", ink: false },
+    { label: "En Lista", value: stats?.whitelisted ?? "...", href: "/admin/whitelist", color: "bg-culpa-body-dark", ink: false },
+    { label: "Tickets Confirmados", value: stats?.tickets ?? "...", href: "/admin/tickets", color: "bg-culpa-body", ink: false },
+    { label: "Tickets Pagados", value: stats?.paidTickets ?? "...", href: "/admin/tickets?status=PAID", color: "bg-culpa-lcd", ink: true },
     { label: "Tickets Usados", value: stats?.usedTickets ?? "...", href: "/admin/tickets?status=USED", color: "bg-culpa-cream", ink: true },
   ];
 

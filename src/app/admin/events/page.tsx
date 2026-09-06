@@ -55,7 +55,7 @@ export default function AdminEventsPage() {
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors"
+          className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-body-dark transition-colors"
         >
           {showForm ? "Cancelar" : "+ Nuevo Evento"}
         </button>
@@ -65,22 +65,22 @@ export default function AdminEventsPage() {
         <form onSubmit={handleCreate} className="bg-culpa-cream/5 border border-culpa-cream/10 p-6 mb-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-culpa-lime">*</span></label>
+              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-culpa-lcd">*</span></label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                 required
               />
             </div>
             <div>
-              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Fecha del evento <span className="text-culpa-lime">*</span></label>
+              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Fecha del evento <span className="text-culpa-lcd">*</span></label>
               <input
                 type="datetime-local"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
                 required
               />
               <p className="text-culpa-cream/30 text-xs mt-1">Hora de Montevideo</p>
@@ -91,7 +91,7 @@ export default function AdminEventsPage() {
                 type="text"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
               />
             </div>
             <div>
@@ -100,7 +100,7 @@ export default function AdminEventsPage() {
                 type="text"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lime"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
               />
             </div>
           </div>
@@ -109,14 +109,14 @@ export default function AdminEventsPage() {
               type="checkbox"
               checked={formData.isPublic}
               onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
-              className="accent-culpa-lime w-4 h-4"
+              className="accent-culpa-lcd w-4 h-4"
             />
             Evento público (cualquiera puede comprar, sin lista de invitados)
           </label>
           <button
             type="submit"
             disabled={loading}
-            className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors disabled:opacity-50"
+            className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-body-dark transition-colors disabled:opacity-50"
           >
             {loading ? "Creando..." : "Crear Evento"}
           </button>

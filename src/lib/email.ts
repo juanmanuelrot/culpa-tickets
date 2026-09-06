@@ -59,7 +59,7 @@ function wordmark(appUrl: string, subtitle: string): string {
     <div class="culpa-band" style="background-color:${INK};padding:20px 16px;text-align:center;">
       <img src="${appUrl}/culpa-wordmark.png" alt="Culpa" width="220" class="culpa-cream"
            style="width:220px;max-width:72%;height:auto;display:block;margin:0 auto;color:${CREAM};font-family:${UI_FONT};font-weight:bold;font-size:30px;" />
-      <div class="culpa-lime-text" style="font-family:${PIXEL_FONT};font-size:10px;letter-spacing:2px;color:${LIME};margin-top:12px;text-transform:uppercase;">
+      <div class="culpa-lcd-text" style="font-family:${PIXEL_FONT};font-size:10px;letter-spacing:2px;color:${LIME};margin-top:12px;text-transform:uppercase;">
         ${subtitle}
       </div>
     </div>`;
@@ -82,7 +82,7 @@ function wordmark(appUrl: string, subtitle: string): string {
 function palette(): string {
   const rules = [
     [".culpa-night", `background-color:${NIGHT}`],
-    [".culpa-blue", `background-color:${BLUE}`],
+    [".culpa-body", `background-color:${BLUE}`],
     [".culpa-lcd", `background-color:${LIME}`],
     [".culpa-band", `background-color:${INK}`],
     [".culpa-paper", `background-color:${PAPER}`],
@@ -90,7 +90,7 @@ function palette(): string {
     [".culpa-ink-soft", `color:${INK_SOFT}`],
     [".culpa-ink-muted", `color:${INK_MUTED}`],
     [".culpa-cream", `color:${CREAM}`],
-    [".culpa-lime-text", `color:${LIME}`],
+    [".culpa-lcd-text", `color:${LIME}`],
   ];
 
   const force = (prefix: string) =>
@@ -122,7 +122,7 @@ function shell(inner: string): string {
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation" class="culpa-night" style="background-color:${NIGHT};padding:24px 12px;">
         <tr>
           <td align="center">
-            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" class="culpa-blue" style="max-width:460px;background-color:${BLUE};border-radius:28px;padding:18px;">
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" class="culpa-body" style="max-width:460px;background-color:${BLUE};border-radius:28px;padding:18px;">
               <tr>
                 <td class="culpa-lcd" style="background-color:${LIME};border-radius:14px;padding:14px;">
                   ${statusBar()}
@@ -188,7 +188,7 @@ export function buildWelcomeEmail(params: WelcomeEmailParams): {
     </div>
 
     <div style="padding:6px 4px 16px 4px;text-align:center;">
-      <a href="${appUrl}" class="culpa-blue culpa-cream" style="display:inline-block;background-color:${BLUE};color:${CREAM};border:2px solid ${INK};font-family:${PIXEL_FONT};font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;padding:14px 28px;text-decoration:none;">
+      <a href="${appUrl}" class="culpa-body culpa-cream" style="display:inline-block;background-color:${BLUE};color:${CREAM};border:2px solid ${INK};font-family:${PIXEL_FONT};font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;padding:14px 28px;text-decoration:none;">
         Ver fechas
       </a>
     </div>

@@ -139,7 +139,7 @@ export default function AdminWhitelistDetailPage() {
                     onClick={() => toggleTicketType(tt.id)}
                     className={`px-3 py-1.5 text-xs uppercase tracking-wider font-bold border transition-colors ${
                       selectedTicketTypes.has(tt.id)
-                        ? "bg-culpa-blue border-culpa-lime text-culpa-cream"
+                        ? "bg-culpa-body border-culpa-lcd text-culpa-cream"
                         : "bg-transparent border-culpa-cream/20 text-culpa-cream/40 hover:border-culpa-cream/40"
                     }`}
                   >
@@ -158,7 +158,7 @@ export default function AdminWhitelistDetailPage() {
         <button
           onClick={handleSavePermissions}
           disabled={saving}
-          className="mt-4 bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-blue-dark transition-colors disabled:opacity-50"
+          className="mt-4 bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-body-dark transition-colors disabled:opacity-50"
         >
           {saving ? "Guardando..." : "Guardar Permisos"}
         </button>

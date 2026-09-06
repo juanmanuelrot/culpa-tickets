@@ -18,8 +18,8 @@ Nokia.
 
 | Token | Hex | Uso |
 | --- | --- | --- |
-| `culpa-lime` | `#C9D92C` | pantalla LCD, fondo del contenido |
-| `culpa-blue` | `#2B3AD8` | cuerpo del teléfono, botones, links |
+| `culpa-lcd` | `#C9D92C` | pantalla LCD, fondo del contenido |
+| `culpa-body` | `#2B3AD8` | cuerpo del teléfono, botones, links |
 | `culpa-ink` | `#0D0D0D` | texto pixelado, bordes |
 | `culpa-cream` | `#F4E3D7` | texto sobre azul y sobre noche |
 | `culpa-night` | `#080808` | fondo alrededor del celu |

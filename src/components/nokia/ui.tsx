@@ -85,7 +85,7 @@ export function LcdButton({
     "font-pixel text-xs uppercase tracking-[0.1em] border-2 border-culpa-ink px-4 py-3 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0";
   const skin =
     variant === "primary"
-      ? "bg-culpa-blue text-culpa-cream shadow-[3px_3px_0_var(--culpa-ink)] enabled:hover:shadow-[1px_1px_0_var(--culpa-ink)] enabled:hover:translate-x-0.5 enabled:hover:translate-y-0.5"
+      ? "bg-culpa-body text-culpa-cream shadow-[3px_3px_0_var(--culpa-ink)] enabled:hover:shadow-[1px_1px_0_var(--culpa-ink)] enabled:hover:translate-x-0.5 enabled:hover:translate-y-0.5"
       : "bg-transparent text-culpa-ink hover:bg-culpa-ink/10";
 
   return <button className={`${base} ${skin} ${className}`} {...props} />;
@@ -98,7 +98,7 @@ export function LcdInput({
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={`w-full bg-culpa-lime/40 border-2 border-culpa-ink text-culpa-ink font-ui text-base px-3 py-3 placeholder:text-culpa-ink/40 focus:outline-none focus:bg-culpa-lime/80 focus:shadow-[3px_3px_0_var(--culpa-ink)] transition-shadow ${className}`}
+      className={`w-full bg-culpa-lcd/40 border-2 border-culpa-ink text-culpa-ink font-ui text-base px-3 py-3 placeholder:text-culpa-ink/40 focus:outline-none focus:bg-culpa-lcd/80 focus:shadow-[3px_3px_0_var(--culpa-ink)] transition-shadow ${className}`}
       {...props}
     />
   );
