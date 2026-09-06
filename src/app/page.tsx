@@ -12,6 +12,7 @@ import {
   Wordmark,
 } from "@/components/nokia/ui";
 import { formatClock, formatDayDot, formatEventDateTime } from "@/lib/date";
+import { useTheme } from "@/components/theme-provider";
 
 interface EventInfo {
   id: string;
@@ -23,27 +24,10 @@ interface EventInfo {
   coverImageUrl: string | null;
 }
 
-const STEPS = [
-  {
-    n: "01",
-    title: "Elegi tu entrada",
-    body: "Mirá las fechas, elegí el tipo de entrada y listo. No hay lista ni invitación: entra cualquiera.",
-  },
-  {
-    n: "02",
-    title: "Paga y confirma",
-    body: "Checkout seguro con MercadoPago. Si la entrada es gratis, la reclamás y ya.",
-  },
-  {
-    n: "03",
-    title: "Te llega el QR",
-    body: "Recibís tu código por mail. Mostralo en la puerta y entrás.",
-  },
-];
-
 export default function HomePage() {
   const [events, setEvents] = useState<EventInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const { copy } = useTheme();
 
   useEffect(() => {
     fetch("/api/public/events")
@@ -80,7 +64,7 @@ export default function HomePage() {
       <ScreenPad className="text-center pt-8 pb-6">
         <Wordmark className="w-[78%] max-w-[290px] mx-auto" />
         <p className="font-pixel text-[0.7rem] tracking-[0.1em] text-culpa-ink mt-3">
-          reggaeton nostalgico
+          {copy.tagline}
         </p>
 
         {nextEvent && (
@@ -114,7 +98,7 @@ export default function HomePage() {
         ) : menuItems.length === 0 ? (
           <ScreenPad className="py-3">
             <p className="font-ui text-sm text-culpa-ink/60">
-              No hay fechas abiertas ahora. Volvé pronto.
+              {copy.emptyDates}
             </p>
           </ScreenPad>
         ) : (
@@ -128,7 +112,7 @@ export default function HomePage() {
           <PixelLabel>Como funciona</PixelLabel>
         </ScreenPad>
         <ScreenPad className="pt-2 space-y-4">
-          {STEPS.map((step) => (
+          {copy.steps.map((step) => (
             <div key={step.n} className="flex gap-3">
               <span className="font-pixel text-lg text-culpa-body shrink-0">
                 {step.n}
@@ -172,7 +156,7 @@ export default function HomePage() {
       <ScreenPad className="pt-8 pb-6">
         <div className="border-t-2 border-culpa-ink/20 pt-4 flex items-center justify-between gap-3">
           <span className="font-pixel text-[0.6rem] tracking-[0.15em] text-culpa-ink/60">
-            CULPA · MVD
+            {copy.footerBrand}
           </span>
           <div className="flex gap-3 font-pixel text-[0.6rem] tracking-[0.1em] text-culpa-ink/60">
             <Link href="/login" className="hover:text-culpa-ink">

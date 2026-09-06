@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatClock } from "@/lib/date";
+import { useTheme } from "@/components/theme-provider";
 
 /*
  * El shell del teléfono.
@@ -61,6 +62,35 @@ function EnvelopeIcon() {
   );
 }
 
+/* Murciélago de píxeles, 14×10 como el sobre. Solo sale en Halloween. */
+function BatIcon() {
+  return (
+    <svg
+      width="14"
+      height="10"
+      viewBox="0 0 14 10"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <rect x="2" y="1" width="1" height="1" />
+      <rect x="11" y="1" width="1" height="1" />
+      <rect x="1" y="2" width="2" height="1" />
+      <rect x="11" y="2" width="2" height="1" />
+      <rect x="1" y="3" width="3" height="1" />
+      <rect x="10" y="3" width="3" height="1" />
+      <rect x="1" y="4" width="4" height="1" />
+      <rect x="6" y="4" width="2" height="1" />
+      <rect x="9" y="4" width="4" height="1" />
+      <rect x="1" y="5" width="12" height="1" />
+      <rect x="2" y="6" width="10" height="1" />
+      <rect x="3" y="7" width="3" height="1" />
+      <rect x="8" y="7" width="3" height="1" />
+      <rect x="4" y="8" width="1" height="1" />
+      <rect x="9" y="8" width="1" height="1" />
+    </svg>
+  );
+}
+
 function BatteryIcon() {
   return (
     <svg
@@ -88,6 +118,7 @@ function StatusBar() {
   // El reloj arranca vacío para no romper la hidratación: el servidor y el
   // navegador nunca coinciden al minuto. Se llena en cuanto monta.
   const [clock, setClock] = useState<string | null>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     const tick = () => setClock(formatClock(new Date()));
@@ -100,7 +131,7 @@ function StatusBar() {
     <div className="relative z-20 flex items-center justify-between px-4 pt-3 pb-2 text-culpa-ink shrink-0">
       <div className="flex items-center gap-2">
         <SignalBars />
-        <EnvelopeIcon />
+        {theme.name === "halloween" ? <BatIcon /> : <EnvelopeIcon />}
       </div>
       <div className="flex items-center gap-2">
         <span className="font-pixel text-xs tabular-nums w-[3.4em] text-right">

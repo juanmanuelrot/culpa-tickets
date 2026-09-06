@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import wordmark from "../../../public/culpa-wordmark.png";
+import { useTheme } from "@/components/theme-provider";
 
 /*
  * Piezas chicas y repetidas de la pantalla LCD. Todo acá asume fondo lima y
@@ -113,11 +116,13 @@ export function LcdError({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** «CARGANDO» con el bloque parpadeando, como un teléfono pensando. */
-export function LcdLoading({ label = "Cargando" }: { label?: string }) {
+/** «CARGANDO» con el bloque parpadeando, como un teléfono pensando. El texto
+    por defecto lo pone el tema. */
+export function LcdLoading({ label }: { label?: string }) {
+  const { copy } = useTheme();
   return (
     <p className="font-pixel text-xs uppercase tracking-[0.15em] text-culpa-ink/70 flex items-center gap-1">
-      {label}
+      {label ?? copy.loadingLabel}
       <span className="blink" aria-hidden="true">
         _
       </span>
