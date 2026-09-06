@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTheme } from "@/components/theme-provider";
+import { THEMES, THEME_NAMES, type ThemeName } from "@/lib/theme";
 
 interface Stats {
   events: number;
@@ -9,6 +12,77 @@ interface Stats {
   tickets: number;
   paidTickets: number;
   usedTickets: number;
+}
+
+/*
+ * El switch de tema. Cambia el sitio público, los mails y el link compartido,
+ * y también este admin: tras guardar se refresca el árbol para que el root
+ * layout vuelva a leer la DB y la piel cambie al instante.
+ */
+function ThemeSwitch() {
+  const router = useRouter();
+  const current = useTheme().name;
+  const [saving, setSaving] = useState<ThemeName | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function choose(theme: ThemeName) {
+    if (theme === current || saving) return;
+    setSaving(theme);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/settings/theme", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ theme }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "No se pudo cambiar el tema");
+      }
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo cambiar el tema");
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  return (
+    <section className="mt-10">
+      <h2 className="culpa-heading text-sm text-culpa-cream mb-3">
+        Tema del sitio
+      </h2>
+      <div className="flex flex-wrap gap-3">
+        {THEME_NAMES.map((name) => {
+          const active = name === current;
+          return (
+            <button
+              key={name}
+              type="button"
+              onClick={() => choose(name)}
+              disabled={saving !== null}
+              aria-pressed={active}
+              className={`font-pixel text-[0.7rem] uppercase tracking-[0.12em] px-5 py-3 border-2 border-culpa-ink transition-opacity disabled:opacity-60 ${
+                active
+                  ? "bg-culpa-lcd text-culpa-ink"
+                  : "bg-culpa-body-dark text-culpa-cream hover:opacity-80"
+              }`}
+            >
+              {saving === name ? "Guardando..." : THEMES[name].label}
+              {active && saving === null ? " ✓" : ""}
+            </button>
+          );
+        })}
+      </div>
+      <p className="font-ui text-xs text-culpa-cream/60 mt-3">
+        Cambia el sitio público, los mails que salen desde ahora y la imagen
+        del link compartido.
+      </p>
+      {error && (
+        <p className="font-ui text-xs text-culpa-alert mt-2">{error}</p>
+      )}
+    </section>
+  );
 }
 
 export default function AdminDashboard() {
@@ -83,6 +157,8 @@ export default function AdminDashboard() {
           </Link>
         ))}
       </div>
+
+      <ThemeSwitch />
     </div>
   );
 }
