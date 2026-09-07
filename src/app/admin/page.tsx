@@ -5,14 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
 import { THEMES, THEME_NAMES, type ThemeName } from "@/lib/theme";
-
-interface Stats {
-  events: number;
-  whitelisted: number;
-  tickets: number;
-  paidTickets: number;
-  usedTickets: number;
-}
+import { summarizeStats, type DashboardStats } from "@/lib/dashboard-stats";
 
 /*
  * El switch de tema. Cambia el sitio público, los mails y el link compartido,
@@ -87,7 +80,7 @@ function ThemeSwitch() {
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
 
   useEffect(() => {
     async function loadStats() {
@@ -101,19 +94,13 @@ export default function AdminDashboard() {
       const whitelist = await whitelistRes.json();
       const tickets = await ticketsRes.json();
 
-      // Only real payments and invitations count; abandoned checkouts
-      // (PENDING_PAYMENT) and cancelled tickets are left out.
-      const ticketList: { status: string }[] = Array.isArray(tickets) ? tickets : [];
-      const paidTickets = ticketList.filter((t) => t.status === "PAID").length;
-      const usedTickets = ticketList.filter((t) => t.status === "USED").length;
-
-      setStats({
-        events: Array.isArray(events) ? events.length : 0,
-        whitelisted: whitelist.total || 0,
-        tickets: paidTickets + usedTickets,
-        paidTickets,
-        usedTickets,
-      });
+      setStats(
+        summarizeStats({
+          events,
+          tickets,
+          whitelistTotal: whitelist.total,
+        })
+      );
     }
     loadStats();
   }, []);
