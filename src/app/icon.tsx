@@ -47,6 +47,6 @@ export default async function Icon() {
         </div>
       </div>
     ),
-    size
+    { ...size, headers: { "cache-control": "public, max-age=300, s-maxage=300" } }
   );
 }

@@ -27,6 +27,6 @@ export default async function Image() {
   const theme = THEMES[await getSiteTheme()];
   return new ImageResponse(
     <OgCard wordmarkSrc={await wordmarkDataUri()} theme={theme} />,
-    { ...size }
+    { ...size, headers: { "cache-control": "public, max-age=300, s-maxage=300" } }
   );
 }
