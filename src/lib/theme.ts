@@ -97,7 +97,7 @@ const classic: Theme = {
       {
         n: "01",
         title: "Elegi tu entrada",
-        body: "Mirá las fechas, elegí el tipo de entrada y listo. No hay lista ni invitación: entra cualquiera.",
+        body: "Mirá las fechas, elegí el tipo de entrada y listo.",
       },
       {
         n: "02",
@@ -171,7 +171,7 @@ const halloween: Theme = {
       {
         n: "01",
         title: "Elegi tu entrada",
-        body: "Mirá las fechas, elegí el tipo de entrada y listo. No hay lista ni invitación: entra cualquiera, con o sin disfraz.",
+        body: "Mirá las fechas, elegí el tipo de entrada y listo.",
       },
       {
         n: "02",
