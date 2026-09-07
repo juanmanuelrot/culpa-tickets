@@ -19,9 +19,11 @@ Nokia.
 Hay dos pieles, **Clásico** (cuerpo azul, LCD lima) y **Halloween** (cuerpo
 violeta, LCD calabaza, murciélago en la barra de estado, otro guion en el
 inbox). Se eligen desde el Panel de `/admin` y el cambio alcanza al sitio,
-los mails, la imagen del link compartido y el favicon. Sin elegir nada, el
-sitio es Clásico. La fuente de verdad de hex y copy es `src/lib/theme.ts`;
-`globals.css` repite los hex porque CSS no puede importarlos.
+los mails, la imagen del link compartido y el favicon. Los links ya
+compartidos pueden tardar en actualizarse: las redes cachean la imagen. Sin
+elegir nada, el sitio es Clásico. La fuente de verdad de hex y copy es
+`src/lib/theme.ts`; `globals.css` repite los hex porque CSS no puede
+importarlos.
 
 Los tokens llevan nombre de rol, no de color, porque cambian con el tema:
 

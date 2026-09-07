@@ -76,7 +76,8 @@ function ThemeSwitch() {
       </div>
       <p className="font-ui text-xs text-culpa-cream/60 mt-3">
         Cambia el sitio público, los mails que salen desde ahora y la imagen
-        del link compartido.
+        del link compartido. Los links ya compartidos pueden tardar en
+        actualizarse: las redes cachean la imagen.
       </p>
       {error && (
         <p className="font-ui text-xs text-culpa-alert mt-2">{error}</p>
