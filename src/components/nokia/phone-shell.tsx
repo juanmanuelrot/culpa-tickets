@@ -8,8 +8,9 @@ import { useTheme } from "@/components/theme-provider";
 /*
  * El shell del teléfono.
  *
- * En desktop se dibuja el celular completo: cuerpo azul, pantalla LCD lima
- * redondeada de alto fijo, y el contenido scrollea adentro.
+ * En desktop se dibuja el celular completo: cuerpo de color, pantalla LCD (la
+ * paleta la pone el tema) redondeada de alto fijo, y el contenido scrollea
+ * adentro.
  * En mobile el cuerpo desaparece y la pantalla ocupa el viewport entero, así
  * no se pierde ni un píxel de ancho: el celular del usuario ES el Nokia.
  */
@@ -198,7 +199,7 @@ export function PhoneShell({ children, leftKey, rightKey }: PhoneShellProps) {
 
   return (
     <div className="min-h-[100dvh] bg-culpa-night flex justify-center md:items-center md:py-10 md:px-4">
-      <div className="w-full md:w-auto md:bg-culpa-body md:rounded-[2.75rem] md:p-5 md:pb-5 md:shadow-[0_40px_90px_-25px_rgba(43,58,216,0.55)]">
+      <div className="w-full md:w-auto md:bg-culpa-body md:rounded-[2.75rem] md:p-5 md:pb-5 phone-glow">
         {/* Auricular y marca, sobre la pantalla — solo en desktop */}
         <div className="hidden md:flex flex-col items-center gap-2 pb-4">
           <div className="w-14 h-1.5 rounded-full bg-culpa-body-dark/70" />

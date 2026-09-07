@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 /*
  * El menú del teléfono: cursor «>», selección invertida (fondo tinta, texto
- * lima) y navegación con flechas + Enter, como se movía uno por el menú de un
+ * LCD) y navegación con flechas + Enter, como se movía uno por el menú de un
  * Nokia. El mouse y el touch mueven el cursor igual que las flechas.
  */
 

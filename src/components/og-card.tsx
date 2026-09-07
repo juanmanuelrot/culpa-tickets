@@ -1,11 +1,11 @@
 /*
  * La tarjeta que se ve cuando alguien comparte el link: el celular de Culpa,
- * pantalla lima con la marca adentro, en la paleta del tema vigente.
+ * pantalla LCD con la marca adentro, en la paleta del tema vigente.
  *
  * Ojo: esto lo renderiza Satori (next/og), que solo dibuja con las fuentes que
  * se le pasan. Como no cargamos ninguna, el texto va en la fuente por defecto
- * y en tinta sobre lima, el par de mayor contraste de la paleta. El logo entra
- * como imagen, así que no depende de fuentes.
+ * y en tinta sobre el LCD, el par de mayor contraste de la paleta. El logo
+ * entra como imagen, así que no depende de fuentes.
  */
 
 import type { Theme } from "@/lib/theme";
@@ -19,7 +19,7 @@ export function OgCard({
   wordmarkSrc: string;
   theme: Theme;
 }) {
-  const { night: NIGHT, body: BLUE, lcd: LIME, ink: INK } = theme.palette;
+  const { night: NIGHT, body: BODY, lcd: LCD, ink: INK } = theme.palette;
   return (
     <div
       style={{
@@ -36,7 +36,7 @@ export function OgCard({
         style={{
           display: "flex",
           flexDirection: "column",
-          background: BLUE,
+          background: BODY,
           borderRadius: 56,
           padding: 36,
         }}
@@ -49,7 +49,7 @@ export function OgCard({
             justifyContent: "space-between",
             width: 760,
             height: 470,
-            background: LIME,
+            background: LCD,
             borderRadius: 28,
             padding: "24px 32px",
           }}

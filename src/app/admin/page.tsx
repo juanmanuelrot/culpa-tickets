@@ -117,8 +117,8 @@ export default function AdminDashboard() {
     loadStats();
   }, []);
 
-  // Las métricas de plata y de puerta van en lima (tinta sobre lima, el
-  // contraste más alto de la paleta); el resto en la familia azul.
+  // Las métricas de plata y de puerta van en LCD (tinta sobre el LCD, el
+  // contraste más alto de la paleta); el resto en la familia del cuerpo.
   const cards = [
     { label: "Eventos", value: stats?.events ?? "...", href: "/admin/events", color: "bg-culpa-body", ink: false },
     { label: "En Lista", value: stats?.whitelisted ?? "...", href: "/admin/whitelist", color: "bg-culpa-body-dark", ink: false },

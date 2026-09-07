@@ -5,13 +5,13 @@ import wordmark from "../../../public/culpa-wordmark.png";
 import { useTheme } from "@/components/theme-provider";
 
 /*
- * Piezas chicas y repetidas de la pantalla LCD. Todo acá asume fondo lima y
+ * Piezas chicas y repetidas de la pantalla LCD. Todo acá asume fondo LCD y
  * texto tinta: bordes duros de 2px, sombras sin blur, cero gradientes.
  */
 
 /*
  * El logo, tal cual la gráfica: amarillo con la extrusión negra. El keyline
- * negro es lo que lo hace legible contra el lima, así que no se recolorea ni
+ * negro es lo que lo hace legible contra el LCD, así que no se recolorea ni
  * se le agrega sombra encima.
  *
  * `className` controla el ancho (el logo ocupa el 100% de su contenedor), no
@@ -78,7 +78,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "ghost";
 };
 
-/** El botón de acción: azul, borde duro y sombra desplazada que se hunde. */
+/** El botón de acción: color del cuerpo, borde duro y sombra desplazada que se hunde. */
 export function LcdButton({
   variant = "primary",
   className = "",
