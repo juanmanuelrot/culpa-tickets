@@ -154,3 +154,10 @@ model FreeInviteLink {
 
   tickets Ticket[]
 }
+
+// Configuración global del sitio, clave/valor. Hoy solo guarda `theme`.
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

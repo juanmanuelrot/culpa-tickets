@@ -11,6 +11,7 @@ import {
 } from "@/components/nokia/ui";
 import { formatDayDot } from "@/lib/date";
 import { buildMessages, previewOf, type PhoneMessage } from "@/lib/messages";
+import { useTheme } from "@/components/theme-provider";
 
 /*
  * La bandeja de entrada del Nokia: tus amigos, tu vieja y el chico que te
@@ -28,6 +29,7 @@ export default function MessagesPage() {
   const [nextEvent, setNextEvent] = useState<EventInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState<PhoneMessage | null>(null);
+  const { copy } = useTheme();
 
   useEffect(() => {
     let cancelled = false;
@@ -50,7 +52,8 @@ export default function MessagesPage() {
   }, []);
 
   const messages = buildMessages(
-    nextEvent ? formatDayDot(nextEvent.date) : null
+    nextEvent ? formatDayDot(nextEvent.date) : null,
+    copy.messages
   );
 
   // Contestar es ir a comprar. Sin fecha abierta, al menos vuelve al inicio.
@@ -81,7 +84,7 @@ export default function MessagesPage() {
       {open ? (
         <div className="animate-in">
           <ScreenPad className="pt-1 space-y-3">
-            <LcdBox className="bg-culpa-ink text-culpa-lime border-culpa-ink">
+            <LcdBox className="bg-culpa-ink text-culpa-lcd border-culpa-ink">
               <div className="flex items-baseline justify-between gap-3">
                 <p className="font-pixel text-sm">De: {open.from}</p>
                 <p className="font-pixel text-xs opacity-80">{open.time}</p>

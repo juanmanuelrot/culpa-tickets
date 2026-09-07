@@ -66,7 +66,7 @@ function formatPrice(cents: number, currency: string) {
 /** La cabecera de la pantalla: fecha grande, nombre y lugar del evento. */
 function EventHeader({ event }: { event: EventInfo }) {
   return (
-    <LcdBox className="bg-culpa-ink text-culpa-lime border-culpa-ink">
+    <LcdBox className="bg-culpa-ink text-culpa-lcd border-culpa-ink">
       <p className="font-pixel text-2xl leading-none">
         {formatDayDot(event.date)}
       </p>

@@ -186,7 +186,7 @@ export default function AdminEventDetailPage() {
       {/* Event Link */}
       <div className="bg-culpa-cream/5 border border-culpa-cream/10 p-4 mb-6">
         <p className="text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Link del Evento</p>
-        <p className="text-culpa-lime font-mono text-sm break-all">{eventUrl}</p>
+        <p className="text-culpa-lcd font-mono text-sm break-all">{eventUrl}</p>
       </div>
 
       {/* Location */}
@@ -217,7 +217,7 @@ export default function AdminEventDetailPage() {
           </h2>
           <button
             onClick={() => setShowTtForm(!showTtForm)}
-            className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-culpa-blue-dark transition-colors"
+            className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-culpa-body-dark transition-colors"
           >
             {showTtForm ? "Cancelar" : "+ Agregar Tipo"}
           </button>
@@ -227,18 +227,18 @@ export default function AdminEventDetailPage() {
           <form onSubmit={handleAddTicketType} className="bg-culpa-cream/5 border border-culpa-cream/10 p-4 mb-4 space-y-3">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-culpa-lime">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Nombre <span className="text-culpa-lcd">*</span></label>
                 <input
                   type="text"
                   value={ttForm.name}
                   onChange={(e) => setTtForm({ ...ttForm, name: e.target.value })}
                   placeholder="e.g., VIP"
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lcd"
                   required
                 />
               </div>
               <div>
-                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Precio <span className="text-culpa-lime">*</span></label>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Precio <span className="text-culpa-lcd">*</span></label>
                 <input
                   type="number"
                   step="0.01"
@@ -246,7 +246,7 @@ export default function AdminEventDetailPage() {
                   value={ttForm.price}
                   onChange={(e) => setTtForm({ ...ttForm, price: e.target.value })}
                   placeholder="0 = gratis"
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lcd"
                   required
                 />
               </div>
@@ -255,7 +255,7 @@ export default function AdminEventDetailPage() {
                 <select
                   value={ttForm.currency}
                   onChange={(e) => setTtForm({ ...ttForm, currency: e.target.value })}
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lcd"
                 >
                   <option value="UYU">UYU</option>
                   <option value="USD">USD</option>
@@ -269,7 +269,7 @@ export default function AdminEventDetailPage() {
                   value={ttForm.capacity}
                   onChange={(e) => setTtForm({ ...ttForm, capacity: e.target.value })}
                   placeholder="Vacío = ilimitado"
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lcd"
                 />
               </div>
               <div>
@@ -278,7 +278,7 @@ export default function AdminEventDetailPage() {
                   type="datetime-local"
                   value={ttForm.validUntil}
                   onChange={(e) => setTtForm({ ...ttForm, validUntil: e.target.value })}
-                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lime"
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm focus:outline-none focus:border-culpa-lcd"
                   placeholder="Sin vencimiento"
                 />
                 <p className="text-culpa-cream/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket</p>
@@ -289,14 +289,14 @@ export default function AdminEventDetailPage() {
                 type="checkbox"
                 checked={ttForm.autoApproveWhitelist}
                 onChange={(e) => setTtForm({ ...ttForm, autoApproveWhitelist: e.target.checked })}
-                className="accent-culpa-lime w-4 h-4"
+                className="accent-culpa-lcd w-4 h-4"
               />
               Dar acceso a todas las personas de la lista
             </label>
             <button
               type="submit"
               disabled={loading}
-              className="bg-culpa-blue text-culpa-cream font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-culpa-blue-dark disabled:opacity-50"
+              className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-xs px-4 py-2 hover:bg-culpa-body-dark disabled:opacity-50"
             >
               {loading ? "Agregando..." : "Agregar Tipo de Ticket"}
             </button>

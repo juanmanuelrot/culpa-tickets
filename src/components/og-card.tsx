@@ -1,21 +1,25 @@
 /*
  * La tarjeta que se ve cuando alguien comparte el link: el celular de Culpa,
- * pantalla lima con la marca adentro.
+ * pantalla LCD con la marca adentro, en la paleta del tema vigente.
  *
  * Ojo: esto lo renderiza Satori (next/og), que solo dibuja con las fuentes que
  * se le pasan. Como no cargamos ninguna, el texto va en la fuente por defecto
- * y en tinta sobre lima, el par de mayor contraste de la paleta. El logo entra
- * como imagen, así que no depende de fuentes.
+ * y en tinta sobre el LCD, el par de mayor contraste de la paleta. El logo
+ * entra como imagen, así que no depende de fuentes.
  */
+
+import type { Theme } from "@/lib/theme";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
-const NIGHT = "#080808";
-const BLUE = "#2b3ad8";
-const LIME = "#c9d92c";
-const INK = "#0d0d0d";
-
-export function OgCard({ wordmarkSrc }: { wordmarkSrc: string }) {
+export function OgCard({
+  wordmarkSrc,
+  theme,
+}: {
+  wordmarkSrc: string;
+  theme: Theme;
+}) {
+  const { night: NIGHT, body: BODY, lcd: LCD, ink: INK } = theme.palette;
   return (
     <div
       style={{
@@ -32,7 +36,7 @@ export function OgCard({ wordmarkSrc }: { wordmarkSrc: string }) {
         style={{
           display: "flex",
           flexDirection: "column",
-          background: BLUE,
+          background: BODY,
           borderRadius: 56,
           padding: 36,
         }}
@@ -45,7 +49,7 @@ export function OgCard({ wordmarkSrc }: { wordmarkSrc: string }) {
             justifyContent: "space-between",
             width: 760,
             height: 470,
-            background: LIME,
+            background: LCD,
             borderRadius: 28,
             padding: "24px 32px",
           }}
@@ -110,7 +114,7 @@ export function OgCard({ wordmarkSrc }: { wordmarkSrc: string }) {
                 marginTop: 14,
               }}
             >
-              REGGAETON NOSTALGICO
+              {theme.copy.ogSubtitle}
             </div>
           </div>
 

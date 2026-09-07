@@ -2,9 +2,13 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
 import { OgCard, OG_SIZE } from "@/components/og-card";
+import { THEMES } from "@/lib/theme";
+import { getSiteTheme } from "@/lib/theme-store";
 
 // Ver la nota en opengraph-image.tsx sobre por qué corre en Node.
 export const runtime = "nodejs";
+// La paleta sale de la DB, así que la imagen se genera por request.
+export const dynamic = "force-dynamic";
 
 export const alt = "Culpa";
 export const size = OG_SIZE;
@@ -18,7 +22,9 @@ async function wordmarkDataUri() {
 }
 
 export default async function Image() {
-  return new ImageResponse(<OgCard wordmarkSrc={await wordmarkDataUri()} />, {
-    ...size,
-  });
+  const theme = THEMES[await getSiteTheme()];
+  return new ImageResponse(
+    <OgCard wordmarkSrc={await wordmarkDataUri()} theme={theme} />,
+    { ...size, headers: { "cache-control": "public, max-age=300, s-maxage=300" } }
+  );
 }

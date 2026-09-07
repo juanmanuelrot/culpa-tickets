@@ -91,7 +91,7 @@ export default function InvitePage() {
 
       {inviteInfo?.eventName && (
         <ScreenPad className="pt-2">
-          <LcdBox className="bg-culpa-ink text-culpa-lime border-culpa-ink">
+          <LcdBox className="bg-culpa-ink text-culpa-lcd border-culpa-ink">
             {inviteInfo.eventDate && (
               <p className="font-pixel text-2xl leading-none">
                 {formatDayDot(inviteInfo.eventDate)}

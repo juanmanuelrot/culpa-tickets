@@ -35,7 +35,7 @@ export default function ValidatorScansPage() {
             key={scan.id}
             className={`border p-4 ${
               scan.wasValid
-                ? "bg-culpa-lime/10 border-culpa-lime/50"
+                ? "bg-culpa-lcd/10 border-culpa-lcd/50"
                 : "bg-culpa-alert/10 border-culpa-alert/50"
             }`}
           >
@@ -51,7 +51,7 @@ export default function ValidatorScansPage() {
               <div className="text-right">
                 <span
                   className={`font-pixel text-[0.65rem] uppercase tracking-[0.1em] ${
-                    scan.wasValid ? "text-culpa-lime" : "text-culpa-alert"
+                    scan.wasValid ? "text-culpa-lcd" : "text-culpa-alert"
                   }`}
                 >
                   {scan.wasValid ? "Válido" : "Inválido"}

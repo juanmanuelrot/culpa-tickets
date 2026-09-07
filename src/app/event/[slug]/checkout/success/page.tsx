@@ -63,7 +63,7 @@ function SuccessContent() {
 
       {(eventName || eventDate) && (
         <ScreenPad className="pt-4">
-          <LcdBox className="bg-culpa-ink text-culpa-lime border-culpa-ink text-left">
+          <LcdBox className="bg-culpa-ink text-culpa-lcd border-culpa-ink text-left">
             {eventDate && (
               <p className="font-pixel text-2xl leading-none">
                 {formatDayDot(eventDate)}

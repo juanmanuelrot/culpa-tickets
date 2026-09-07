@@ -14,7 +14,7 @@ export default function ValidatorLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-culpa-night">
-      <nav className="bg-culpa-blue border-b border-culpa-cream/10">
+      <nav className="bg-culpa-body border-b border-culpa-cream/10">
         <div className="max-w-md mx-auto px-4 flex items-center justify-between h-14">
           <span className="font-pixel text-sm text-culpa-cream tracking-[0.15em]">
             CULPA PUERTA

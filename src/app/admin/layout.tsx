@@ -26,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-culpa-night">
       {/* Top nav */}
-      <nav className="bg-culpa-blue border-b border-culpa-cream/10">
+      <nav className="bg-culpa-body border-b border-culpa-cream/10">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
           <Link
             href="/admin"

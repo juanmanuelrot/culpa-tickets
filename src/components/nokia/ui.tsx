@@ -1,14 +1,17 @@
+"use client";
+
 import Image from "next/image";
 import wordmark from "../../../public/culpa-wordmark.png";
+import { useTheme } from "@/components/theme-provider";
 
 /*
- * Piezas chicas y repetidas de la pantalla LCD. Todo acá asume fondo lima y
+ * Piezas chicas y repetidas de la pantalla LCD. Todo acá asume fondo LCD y
  * texto tinta: bordes duros de 2px, sombras sin blur, cero gradientes.
  */
 
 /*
  * El logo, tal cual la gráfica: amarillo con la extrusión negra. El keyline
- * negro es lo que lo hace legible contra el lima, así que no se recolorea ni
+ * negro es lo que lo hace legible contra el LCD, así que no se recolorea ni
  * se le agrega sombra encima.
  *
  * `className` controla el ancho (el logo ocupa el 100% de su contenedor), no
@@ -75,7 +78,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "ghost";
 };
 
-/** El botón de acción: azul, borde duro y sombra desplazada que se hunde. */
+/** El botón de acción: color del cuerpo, borde duro y sombra desplazada que se hunde. */
 export function LcdButton({
   variant = "primary",
   className = "",
@@ -85,7 +88,7 @@ export function LcdButton({
     "font-pixel text-xs uppercase tracking-[0.1em] border-2 border-culpa-ink px-4 py-3 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0";
   const skin =
     variant === "primary"
-      ? "bg-culpa-blue text-culpa-cream shadow-[3px_3px_0_var(--culpa-ink)] enabled:hover:shadow-[1px_1px_0_var(--culpa-ink)] enabled:hover:translate-x-0.5 enabled:hover:translate-y-0.5"
+      ? "bg-culpa-body text-culpa-cream shadow-[3px_3px_0_var(--culpa-ink)] enabled:hover:shadow-[1px_1px_0_var(--culpa-ink)] enabled:hover:translate-x-0.5 enabled:hover:translate-y-0.5"
       : "bg-transparent text-culpa-ink hover:bg-culpa-ink/10";
 
   return <button className={`${base} ${skin} ${className}`} {...props} />;
@@ -98,7 +101,7 @@ export function LcdInput({
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={`w-full bg-culpa-lime/40 border-2 border-culpa-ink text-culpa-ink font-ui text-base px-3 py-3 placeholder:text-culpa-ink/40 focus:outline-none focus:bg-culpa-lime/80 focus:shadow-[3px_3px_0_var(--culpa-ink)] transition-shadow ${className}`}
+      className={`w-full bg-culpa-lcd/40 border-2 border-culpa-ink text-culpa-ink font-ui text-base px-3 py-3 placeholder:text-culpa-ink/40 focus:outline-none focus:bg-culpa-lcd/80 focus:shadow-[3px_3px_0_var(--culpa-ink)] transition-shadow ${className}`}
       {...props}
     />
   );
@@ -113,11 +116,13 @@ export function LcdError({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** «CARGANDO» con el bloque parpadeando, como un teléfono pensando. */
-export function LcdLoading({ label = "Cargando" }: { label?: string }) {
+/** «CARGANDO» con el bloque parpadeando, como un teléfono pensando. El texto
+    por defecto lo pone el tema. */
+export function LcdLoading({ label }: { label?: string }) {
+  const { copy } = useTheme();
   return (
     <p className="font-pixel text-xs uppercase tracking-[0.15em] text-culpa-ink/70 flex items-center gap-1">
-      {label}
+      {label ?? copy.loadingLabel}
       <span className="blink" aria-hidden="true">
         _
       </span>
