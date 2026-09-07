@@ -11,7 +11,7 @@ describe("buildMessages", () => {
 
   it("sin fecha habla del finde", () => {
     const messages = buildMessages(null, THEMES.halloween.copy.messages);
-    expect(messages.find((m) => m.from === "MATI")?.body).toContain("el finde");
+    expect(messages.find((m) => m.from === "FREDDY K.")?.body).toContain("el finde");
   });
 
   it("usa el guion que le pasan", () => {

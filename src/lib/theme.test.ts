@@ -39,10 +39,18 @@ describe("THEMES", () => {
     expect(THEMES[name].name).toBe(name);
   });
 
-  it("los guiones del inbox comparten remitentes y horas", () => {
-    const shape = (name: "classic" | "halloween") =>
-      THEMES[name].copy.messages.map((m) => `${m.from}@${m.time}`);
-    expect(shape("halloween")).toEqual(shape("classic"));
+  it("los guiones del inbox comparten las horas", () => {
+    const times = (name: "classic" | "halloween") =>
+      THEMES[name].copy.messages.map((m) => m.time);
+    expect(times("halloween")).toEqual(times("classic"));
+  });
+
+  it("halloween mete personajes de terror en la bandeja", () => {
+    const from = THEMES.halloween.copy.messages.map((m) => m.from);
+    expect(from).toContain("FREDDY K.");
+    expect(from).toContain("GHOSTFACE");
+    expect(from).not.toContain("MATI");
+    expect(from).not.toContain("NICO (?)");
   });
 
   it("el clásico conserva los colores de siempre", () => {

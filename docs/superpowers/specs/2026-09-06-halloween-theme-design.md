@@ -140,12 +140,13 @@ Halloween:
 - `emptyDates`: "No hay fechas abiertas ahora. Volvé antes de medianoche."
 - `loadingLabel`: "Invocando"
 - `footerBrand`: "CULPA · NOCHE DE BRUJAS"
-- `messages` (mismos remitentes y horas que el clásico):
+- `messages` (mismas horas que el clásico; MATI y NICO ceden su lugar a
+  dos personajes de terror):
   - SOFI 21:04 — "ya tengo el disfraz, vos?? no me dejes sola eh"
-  - MATI 20:51 — "boludo {dia} va a estar demasiado. voy de vampiro, otra
-    vez"
-  - NICO (?) 19:32 — "hola! vas a culpa {dia}? de que te disfrazas?
-    preguntaba por preguntar"
+  - FREDDY K. 20:51 — "uno, dos, culpa viene por vos. {dia} no te duermas
+    que te lo perdés"
+  - GHOSTFACE 19:32 — "hola. que estas haciendo {dia}? ... no cortes. vas
+    a culpa o te cuelgo yo?"
   - MAMA 18:10 — "hija a que hora volves? no comas tantos caramelos"
   - CULPA 17:00 — "quedan pocas. despues no digas que no te asustamos."
 

@@ -194,14 +194,14 @@ const halloween: Theme = {
         body: "ya tengo el disfraz, vos?? no me dejes sola eh",
       },
       {
-        from: "MATI",
+        from: "FREDDY K.",
         time: "20:51",
-        body: "boludo {dia} va a estar demasiado. voy de vampiro, otra vez",
+        body: "uno, dos, culpa viene por vos. {dia} no te duermas que te lo perdés",
       },
       {
-        from: "NICO (?)",
+        from: "GHOSTFACE",
         time: "19:32",
-        body: "hola! vas a culpa {dia}? de que te disfrazas? preguntaba por preguntar",
+        body: "hola. que estas haciendo {dia}? ... no cortes. vas a culpa o te cuelgo yo?",
       },
       {
         from: "MAMA",
