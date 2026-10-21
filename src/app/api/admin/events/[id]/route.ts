@@ -23,7 +23,7 @@ export async function GET(
       where: { id },
       include: {
         ticketTypes: {
-          orderBy: { sortOrder: "asc" },
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
           include: {
             _count: { select: { tickets: { where: soldTicketsWhere } } },
           },

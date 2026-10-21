@@ -40,6 +40,7 @@ export default function AdminEventDetailPage() {
   const [showTtForm, setShowTtForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
 
   const loadEvent = useCallback(async () => {
     const res = await fetch(`/api/admin/events/${id}`);
@@ -106,6 +107,28 @@ export default function AdminEventDetailPage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isOffered: !isOffered }),
+    });
+    loadEvent();
+  }
+
+  // Reorders locally while dragging; the new order is saved on drop.
+  function handleDragOver(e: React.DragEvent, overId: string) {
+    e.preventDefault();
+    if (!event || !draggingId || draggingId === overId) return;
+    const list = [...event.ticketTypes];
+    const from = list.findIndex((tt) => tt.id === draggingId);
+    const to = list.findIndex((tt) => tt.id === overId);
+    list.splice(to, 0, list.splice(from, 1)[0]);
+    setEvent({ ...event, ticketTypes: list });
+  }
+
+  async function handleDragEnd() {
+    if (!event || !draggingId) return;
+    setDraggingId(null);
+    await fetch(`/api/admin/events/${id}/ticket-types`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: event.ticketTypes.map((tt) => tt.id) }),
     });
     loadEvent();
   }
@@ -307,9 +330,18 @@ export default function AdminEventDetailPage() {
           {event.ticketTypes.map((tt) => (
             <div
               key={tt.id}
-              className="bg-culpa-cream/5 border border-culpa-cream/10 p-4 flex items-center justify-between"
+              draggable
+              onDragStart={() => setDraggingId(tt.id)}
+              onDragOver={(e) => handleDragOver(e, tt.id)}
+              onDragEnd={handleDragEnd}
+              className={`bg-culpa-cream/5 border border-culpa-cream/10 p-4 flex items-center justify-between ${
+                draggingId === tt.id ? "opacity-40" : ""
+              }`}
             >
               <div>
+                <span className="text-culpa-cream/30 mr-3 cursor-grab select-none" title="Arrastrar para reordenar">
+                  ⋮⋮
+                </span>
                 <span className="text-culpa-cream font-bold uppercase tracking-wider">
                   {tt.name}
                 </span>

@@ -12,7 +12,7 @@ export async function GET(
 
   const event = await prisma.event.findUnique({
     where: { slug, isActive: true },
-    include: { ticketTypes: { orderBy: { sortOrder: "asc" } } },
+    include: { ticketTypes: { orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] } },
   });
 
   if (!event) {

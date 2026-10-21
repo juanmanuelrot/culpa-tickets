@@ -10,7 +10,7 @@ export async function POST(
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id: eventId } = await params;
-  const { name, price, currency, capacity, validUntil, sortOrder, autoApproveWhitelist } = await request.json();
+  const { name, price, currency, capacity, validUntil, autoApproveWhitelist } = await request.json();
 
   if (!name || price === undefined) {
     return NextResponse.json(
@@ -18,6 +18,12 @@ export async function POST(
       { status: 400 }
     );
   }
+
+  // New types go last so they don't jump ahead of the order set in the admin.
+  const { _max } = await prisma.ticketType.aggregate({
+    where: { eventId },
+    _max: { sortOrder: true },
+  });
 
   const ticketType = await prisma.ticketType.create({
     data: {
@@ -27,7 +33,7 @@ export async function POST(
       currency: currency || "UYU",
       capacity: capacity || null,
       validUntil: validUntil ? new Date(validUntil) : null,
-      sortOrder: sortOrder || 0,
+      sortOrder: (_max.sortOrder ?? -1) + 1,
     },
   });
 
@@ -47,4 +53,31 @@ export async function POST(
   }
 
   return NextResponse.json(ticketType, { status: 201 });
+}
+
+// Body: { ids: string[] } with the event's ticket type ids in display order.
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const admin = await requireAdmin(request);
+  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const { id: eventId } = await params;
+  const { ids } = await request.json();
+
+  if (!Array.isArray(ids) || !ids.every((x) => typeof x === "string")) {
+    return NextResponse.json({ error: "ids must be an array of strings" }, { status: 400 });
+  }
+
+  await prisma.$transaction(
+    ids.map((ticketTypeId, index) =>
+      prisma.ticketType.updateMany({
+        where: { id: ticketTypeId, eventId },
+        data: { sortOrder: index },
+      })
+    )
+  );
+
+  return NextResponse.json({ success: true });
 }

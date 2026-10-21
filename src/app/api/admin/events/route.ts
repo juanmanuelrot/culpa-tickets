@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
   const events = await prisma.event.findMany({
     include: {
-      ticketTypes: { orderBy: { sortOrder: "asc" } },
+      ticketTypes: { orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] },
       _count: { select: { tickets: { where: confirmedTicketsWhere } } },
     },
     orderBy: { date: "desc" },
