@@ -70,6 +70,10 @@ export async function createCheckoutPreference(params: {
         name: params.payerName,
       },
       external_reference: params.ticketId,
+      // Lets us reconcile MercadoPago payments against events.
+      metadata: {
+        event: `Culpa - ${params.eventName}`,
+      },
       back_urls: {
         success: successUrl,
         failure: `${process.env.NEXT_PUBLIC_APP_URL}/event/${params.eventSlug}/checkout/failure`,
