@@ -2,12 +2,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // vi.mock se hoistea sobre este archivo, así que los mocks van adentro de
 // vi.hoisted para poder referenciarlos desde el factory de abajo.
-const { findUnique, upsert } = vi.hoisted(() => ({
+const { findUnique, upsert, revalidateTag } = vi.hoisted(() => ({
   findUnique: vi.fn(),
   upsert: vi.fn(),
+  revalidateTag: vi.fn(),
 }));
 // db.ts arma un pool de pg al importarse; acá no hay base de datos.
 vi.mock("@/lib/db", () => ({ prisma: { setting: { findUnique, upsert } } }));
+// Fuera de Next no hay caché: unstable_cache llama directo a la función.
+vi.mock("next/cache", () => ({
+  unstable_cache: <T>(fn: T) => fn,
+  revalidateTag,
+}));
 
 import { getSiteTheme, setSiteTheme } from "@/lib/theme-store";
 
@@ -48,5 +54,11 @@ describe("setSiteTheme", () => {
       update: { value: "halloween" },
       create: { key: "theme", value: "halloween" },
     });
+  });
+
+  it("invalida el tema cacheado", async () => {
+    upsert.mockResolvedValue({});
+    await setSiteTheme("classic");
+    expect(revalidateTag).toHaveBeenCalledWith("site-theme", { expire: 0 });
   });
 });
