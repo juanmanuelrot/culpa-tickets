@@ -3,7 +3,8 @@ import { EventScreen } from "./event-screen";
 
 /*
  * El evento se lee acá, al renderizar, y llega en el HTML: la pantalla no
- * espera al JS para pedirlo a la API, que era una vuelta más al servidor.
+ * espera al JS para mostrarlo. Como la CDN guarda el HTML hasta una hora, la
+ * pantalla igual lo refresca contra la API al cargar.
  */
 
 export default async function EventPage({

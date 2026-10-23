@@ -13,5 +13,7 @@ export async function GET(
     return NextResponse.json({ error: "Event not found" }, { status: 404 });
   }
 
-  return NextResponse.json(data);
+  // The event page refreshes from here because its HTML is cached at the CDN,
+  // so this must always reach the origin.
+  return NextResponse.json(data, { headers: { "cache-control": "no-store" } });
 }

@@ -4,13 +4,14 @@ import { jwtVerify } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-// La página de un evento es igual para todos, así que Cloudflare puede servirla
-// unos segundos sin llegar al origen. El agotado puede verse hasta ~10s tarde
-// (más mientras revalida), pero el checkout igual valida el cupo. El navegador
-// no la guarda (max-age=0). Los payloads RSC no se pisan con el HTML aunque
-// Cloudflare ignore Vary: Next solo los sirve con un ?_rsc= propio.
+// La página de un evento es igual para todos, así que la CDN de DigitalOcean
+// (Cloudflare por debajo) la sirve hasta una hora sin llegar al origen. Puede
+// llegar vieja: la pantalla pide los datos frescos a la API apenas carga, y el
+// checkout igual valida cupo y precio. El navegador no la guarda (max-age=0).
+// Los payloads RSC no se pisan con el HTML aunque la CDN ignore Vary: Next
+// solo los sirve con un ?_rsc= propio.
 const EVENT_PAGE = /^\/event\/[^/]+$/;
-const EVENT_PAGE_CACHE = "public, max-age=0, s-maxage=10, stale-while-revalidate=30";
+const EVENT_PAGE_CACHE = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

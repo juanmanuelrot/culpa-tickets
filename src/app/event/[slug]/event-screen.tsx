@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell } from "@/components/nokia/phone-shell";
 import { NokiaMenu, type MenuItem } from "@/components/nokia/menu-list";
@@ -91,8 +91,29 @@ export function EventScreen({
 }) {
   const router = useRouter();
 
-  // Shared
+  // Shared. The page comes in from the CDN and may be up to an hour old, so
+  // it shows what it has right away and swaps in fresh data from the API.
+  const [data, setData] = useState(initialData);
   const [error, setError] = useState(initialData ? "" : "Evento no encontrado");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/public/events/${slug}`, { cache: "no-store" });
+        if (!res.ok || cancelled) return;
+        const fresh: InitialEventData = await res.json();
+        if (cancelled) return;
+        setData(fresh);
+        setError((prev) => (prev === "Evento no encontrado" ? "" : prev));
+      } catch {
+        // Keep what came with the page; checkout validates anyway.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
 
   // Private (whitelist) flow
   const [govId, setGovId] = useState("");
@@ -100,9 +121,9 @@ export function EventScreen({
   const [loading, setLoading] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
-  // Public flow: the event and its tickets come in with the page.
-  const publicData: PublicEventData | null = initialData?.event.isPublic
-    ? { event: initialData.event, ticketTypes: initialData.ticketTypes ?? [] }
+  // Public flow
+  const publicData: PublicEventData | null = data?.event.isPublic
+    ? { event: data.event, ticketTypes: data.ticketTypes ?? [] }
     : null;
   const [buyingTicket, setBuyingTicket] = useState<PublicTicketType | null>(null);
   const [form, setForm] = useState({ firstName: "", lastName: "", govId: "", email: "" });
