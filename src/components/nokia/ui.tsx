@@ -15,16 +15,23 @@ import { useTheme } from "@/components/theme-provider";
  * se le agrega sombra encima.
  *
  * `className` controla el ancho (el logo ocupa el 100% de su contenedor), no
- * el tamaño de fuente.
+ * el tamaño de fuente. `sizes` es el ancho máximo que le da ese className:
+ * con eso el navegador baja la imagen justa y no una pensada para 100vw.
  */
-export function Wordmark({ className = "" }: { className?: string }) {
+export function Wordmark({
+  className = "",
+  sizes = "200px",
+}: {
+  className?: string;
+  sizes?: string;
+}) {
   return (
     <span className={`block select-none ${className}`}>
       <Image
         src={wordmark}
         alt="Culpa"
         priority
-        sizes="(min-width: 768px) 400px, 100vw"
+        sizes={sizes}
         className="w-full h-auto"
       />
     </span>
