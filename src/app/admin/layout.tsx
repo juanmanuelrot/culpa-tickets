@@ -10,6 +10,7 @@ const navItems = [
   { href: "/admin/whitelist", label: "Lista" },
   { href: "/admin/invite-links", label: "Invitaciones" },
   { href: "/admin/tickets", label: "Tickets" },
+  { href: "/admin/rrpp", label: "RRPP" },
   { href: "/admin/users", label: "Usuarios" },
 ];
 

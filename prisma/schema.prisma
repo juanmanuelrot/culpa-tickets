@@ -108,6 +108,8 @@ model Ticket {
   whitelistedPerson   WhitelistedPerson? @relation(fields: [whitelistedPersonId], references: [id])
   freeInviteLinkId    String?
   freeInviteLink      FreeInviteLink?    @relation(fields: [freeInviteLinkId], references: [id])
+  promoterId          String?
+  promoter            Promoter?          @relation(fields: [promoterId], references: [id])
 
   qrCodeToken   String?  @unique // UUID v4, set only after payment confirmed
   qrSignedJwt   String?           // Signed JWT for QR payload
@@ -151,6 +153,18 @@ model FreeInviteLink {
   usedCount    Int      @default(0)
   createdBy    String
   createdAt    DateTime @default(now())
+
+  tickets Ticket[]
+}
+
+// RRPP: cada uno comparte /event/<slug>?rrpp=<code> y las ventas que entran por ahí quedan a su nombre.
+model Promoter {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   tickets Ticket[]
 }

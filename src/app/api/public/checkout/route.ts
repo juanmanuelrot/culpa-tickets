@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { createQRSignedToken, generateQRCodeBuffer } from "@/lib/qr";
 import { sendTicketEmail } from "@/lib/email";
 import { formatDate } from "@/lib/utils";
+import { normalizePromoterCode } from "@/lib/promoters";
 
 interface Purchaser {
   name: string;
@@ -142,6 +143,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // RRPP that brought the buyer, if the link carried a valid, active code.
+    // An unknown or disabled code never blocks the sale.
+    const promoterCode = normalizePromoterCode(body.promoterCode);
+    const promoter = promoterCode
+      ? await prisma.promoter.findFirst({
+          where: { code: promoterCode, isActive: true },
+          select: { id: true },
+        })
+      : null;
+    const promoterId = promoter?.id ?? null;
+
     // Free tickets (price = 0): create ticket directly as PAID.
     if (ticketType.price === 0) {
       const qrCodeToken = uuidv4();
@@ -156,6 +168,7 @@ export async function POST(request: NextRequest) {
           eventId,
           ticketTypeId,
           whitelistedPersonId: purchaser.whitelistedPersonId,
+          promoterId,
           qrCodeToken,
           qrSignedJwt,
           validUntil: ticketType.validUntil,
@@ -199,6 +212,7 @@ export async function POST(request: NextRequest) {
         eventId,
         ticketTypeId,
         whitelistedPersonId: purchaser.whitelistedPersonId,
+        promoterId,
         validUntil: ticketType.validUntil,
         status: "PENDING_PAYMENT",
         purchaserName: purchaser.name,

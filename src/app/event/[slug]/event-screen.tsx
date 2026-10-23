@@ -54,6 +54,23 @@ interface PublicEventData {
   ticketTypes: PublicTicketType[];
 }
 
+// El código de RRPP llega en el link (?rrpp=<code>). Se guarda para que la
+// venta le quede atribuida aunque el comprador recargue o vuelva más tarde.
+const PROMOTER_STORAGE_KEY = "culpa-rrpp";
+
+function readPromoterCode(): string | null {
+  try {
+    const fromUrl = new URLSearchParams(window.location.search).get("rrpp");
+    if (fromUrl) {
+      localStorage.setItem(PROMOTER_STORAGE_KEY, fromUrl);
+      return fromUrl;
+    }
+    return localStorage.getItem(PROMOTER_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
 function formatPrice(cents: number, currency: string) {
   if (cents === 0) return "GRATIS";
   return new Intl.NumberFormat("es-UY", {
@@ -115,6 +132,11 @@ export function EventScreen({
     };
   }, [slug]);
 
+  // Store the RRPP code as soon as the link is opened; checkout reads it back.
+  useEffect(() => {
+    readPromoterCode();
+  }, []);
+
   // Private (whitelist) flow
   const [govId, setGovId] = useState("");
   const [lookupResult, setLookupResult] = useState<LookupResult | null>(null);
@@ -170,6 +192,7 @@ export function EventScreen({
           govIdNumber: govId,
           eventId: lookupResult.event.id,
           ticketTypeId,
+          promoterCode: readPromoterCode(),
         }),
       });
 
@@ -218,6 +241,7 @@ export function EventScreen({
           lastName: form.lastName,
           govIdNumber: form.govId,
           email: form.email,
+          promoterCode: readPromoterCode(),
         }),
       });
 
