@@ -62,7 +62,7 @@ export default function HomePage() {
     >
       {/* ── Pantalla de inicio ─────────────────────────────────── */}
       <ScreenPad className="text-center pt-8 pb-6">
-        <Wordmark className="w-[78%] max-w-[290px] mx-auto" />
+        <Wordmark className="w-[78%] max-w-[290px] mx-auto" sizes="290px" />
         <p className="font-pixel text-[0.7rem] tracking-[0.1em] text-culpa-ink mt-3">
           {copy.tagline}
         </p>
