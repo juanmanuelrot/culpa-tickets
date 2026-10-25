@@ -11,7 +11,11 @@ vi.mock("@/lib/theme-store", () => ({
   getSiteTheme: vi.fn(async () => "classic"),
 }));
 
-import { buildTicketEmail, buildWelcomeEmail } from "@/lib/email";
+import {
+  buildCartReminderEmail,
+  buildTicketEmail,
+  buildWelcomeEmail,
+} from "@/lib/email";
 import { THEMES } from "@/lib/theme";
 
 const ticketParams = {
@@ -59,5 +63,39 @@ describe("buildWelcomeEmail", () => {
     expect(buildWelcomeEmail(params, THEMES.halloween).html).toContain(
       "Reggaeton de ultratumba"
     );
+  });
+});
+
+const reminderParams = {
+  to: "a@b.c",
+  stage: 1,
+  purchaserName: "Sofi",
+  eventName: "Culpa Halloween",
+  eventDate: new Date("2026-10-31T01:00:00Z"),
+  eventSlug: "culpa-halloween",
+  ticketType: "General",
+  promoterCode: null,
+};
+
+describe("buildCartReminderEmail", () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_APP_URL = "https://culpa.test";
+  });
+
+  it("el mail 1 lleva a la página del evento", () => {
+    const { subject, html } = buildCartReminderEmail(reminderParams);
+    expect(subject).toBe("Te quedó tu entrada para Culpa Halloween");
+    expect(html).toContain('href="https://culpa.test/event/culpa-halloween"');
+    expect(html).toContain("General");
+  });
+
+  it("el mail 2 es la última llamada", () => {
+    const { subject } = buildCartReminderEmail({ ...reminderParams, stage: 2 });
+    expect(subject).toBe("Última llamada para Culpa Halloween");
+  });
+
+  it("conserva el RRPP del intento en el link", () => {
+    const { html } = buildCartReminderEmail({ ...reminderParams, promoterCode: "juli" });
+    expect(html).toContain('href="https://culpa.test/event/culpa-halloween?rrpp=juli"');
   });
 });

@@ -61,8 +61,9 @@ model Event {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  ticketTypes TicketType[]
-  tickets     Ticket[]
+  ticketTypes   TicketType[]
+  tickets       Ticket[]
+  cartReminders CartReminder[]
 }
 
 // Ticket types per event
@@ -167,6 +168,20 @@ model Promoter {
   updatedAt DateTime @updatedAt
 
   tickets Ticket[]
+}
+
+// Mails de carrito abandonado: a quien empezó a pagar y no terminó. Uno por
+// persona (email en minúsculas), evento y etapa (1 = a la hora, 2 = a las 24h),
+// sin importar cuántos intentos haya hecho; el unique lo garantiza.
+model CartReminder {
+  id      String   @id @default(cuid())
+  email   String
+  eventId String
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  stage   Int
+  sentAt  DateTime @default(now())
+
+  @@unique([email, eventId, stage])
 }
 
 // Configuración global del sitio, clave/valor. Hoy solo guarda `theme`.

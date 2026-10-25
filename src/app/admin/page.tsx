@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
 import { THEMES, THEME_NAMES, type ThemeName } from "@/lib/theme";
 import { summarizeStats, type DashboardStats } from "@/lib/dashboard-stats";
+import type { ReminderStats } from "@/lib/cart-reminders";
 
 /*
  * El switch de tema. Cambia el sitio público, los mails y el link compartido,
@@ -81,18 +82,21 @@ function ThemeSwitch() {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [reminders, setReminders] = useState<ReminderStats | null>(null);
 
   useEffect(() => {
     async function loadStats() {
-      const [eventsRes, whitelistRes, ticketsRes] = await Promise.all([
+      const [eventsRes, whitelistRes, ticketsRes, remindersRes] = await Promise.all([
         fetch("/api/admin/events"),
         fetch("/api/admin/whitelist?limit=1"),
         fetch("/api/admin/tickets"),
+        fetch("/api/admin/cart-reminders"),
       ]);
 
       const events = await eventsRes.json();
       const whitelist = await whitelistRes.json();
       const tickets = await ticketsRes.json();
+      if (remindersRes.ok) setReminders(await remindersRes.json());
 
       setStats(
         summarizeStats({
@@ -113,6 +117,9 @@ export default function AdminDashboard() {
     { label: "Tickets Confirmados", value: stats?.tickets ?? "...", href: "/admin/tickets", color: "bg-culpa-body", ink: false },
     { label: "Tickets Pagados", value: stats?.paidTickets ?? "...", href: "/admin/tickets?status=PAID", color: "bg-culpa-lcd", ink: true },
     { label: "Tickets Usados", value: stats?.usedTickets ?? "...", href: "/admin/tickets?status=USED", color: "bg-culpa-cream", ink: true },
+    // Carrito abandonado: mails mandados y personas que compraron después.
+    { label: "Recordatorios Enviados", value: reminders?.sent ?? "...", href: "/admin/tickets?status=PENDING_PAYMENT", color: "bg-culpa-body-dark", ink: false },
+    { label: "Ventas Recuperadas", value: reminders?.recovered ?? "...", href: "/admin/tickets?status=PAID", color: "bg-culpa-lcd", ink: true },
   ];
 
   return (
