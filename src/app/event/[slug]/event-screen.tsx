@@ -15,6 +15,7 @@ import {
 } from "@/components/nokia/ui";
 import { formatClock, formatDayDot, formatEventDateTime } from "@/lib/date";
 import type { PublicEventData as InitialEventData } from "@/lib/public-event";
+import { applyDiscount } from "@/lib/promoters";
 
 interface TicketTypeInfo {
   id: string;
@@ -133,9 +134,21 @@ export function EventScreen({
   }, [slug]);
 
   // Store the RRPP code as soon as the link is opened; checkout reads it back.
+  // If the link carries a discount, prices on screen show it too.
+  const [discountPercent, setDiscountPercent] = useState(0);
   useEffect(() => {
-    readPromoterCode();
+    const code = readPromoterCode();
+    if (!code) return;
+    fetch(`/api/public/promoters/${encodeURIComponent(code)}`, { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setDiscountPercent(data?.discountPercent ?? 0))
+      .catch(() => {});
   }, []);
+
+  function ticketPrice(tt: { price: number; currency: string }) {
+    const price = formatPrice(applyDiscount(tt.price, discountPercent), tt.currency);
+    return discountPercent > 0 && tt.price > 0 ? `${price} (-${discountPercent}%)` : price;
+  }
 
   // Private (whitelist) flow
   const [govId, setGovId] = useState("");
@@ -282,7 +295,7 @@ export function EventScreen({
   const publicTicketItems: MenuItem[] = (publicData?.ticketTypes ?? []).map(
     (tt) => ({
       label: tt.name,
-      meta: formatPrice(tt.price, tt.currency),
+      meta: ticketPrice(tt),
       sub: tt.soldOut ? "Agotado" : undefined,
       disabled: tt.soldOut,
       onSelect: () => {
@@ -296,7 +309,7 @@ export function EventScreen({
     lookupResult?.availableTicketTypes ?? []
   ).map((tt) => ({
     label: tt.name,
-    meta: formatPrice(tt.price, tt.currency),
+    meta: ticketPrice(tt),
     sub: tt.alreadyPurchased
       ? "Ya lo tenés"
       : tt.soldOut
@@ -360,7 +373,7 @@ export function EventScreen({
                       {buyingTicket.name}
                     </p>
                     <p className="font-pixel text-sm mt-1">
-                      {formatPrice(buyingTicket.price, buyingTicket.currency)}
+                      {ticketPrice(buyingTicket)}
                     </p>
                   </div>
                   <button
@@ -413,7 +426,7 @@ export function EventScreen({
                 <LcdButton type="submit" disabled={submitting} className="w-full">
                   {submitting
                     ? "Procesando..."
-                    : buyingTicket.price === 0
+                    : applyDiscount(buyingTicket.price, discountPercent) === 0
                     ? "Reclamar entrada"
                     : "Ir al pago"}
                 </LcdButton>

@@ -15,3 +15,18 @@ export function normalizePromoterCode(raw: unknown): string | null {
     .slice(0, 32);
   return code || null;
 }
+
+// Acepta un % de descuento entero entre 0 y 100; cualquier otra cosa es 0.
+export function normalizeDiscountPercent(raw: unknown): number {
+  const n = typeof raw === "string" ? Number(raw) : raw;
+  if (typeof n !== "number" || !Number.isFinite(n)) return 0;
+  return Math.min(100, Math.max(0, Math.round(n)));
+}
+
+// Precio en centavos con el descuento del RRPP aplicado, redondeado al peso
+// para que MercadoPago no muestre centavos sueltos.
+export function applyDiscount(priceInCents: number, discountPercent: number): number {
+  if (discountPercent <= 0) return priceInCents;
+  const discounted = (priceInCents * (100 - discountPercent)) / 100;
+  return Math.round(discounted / 100) * 100;
+}

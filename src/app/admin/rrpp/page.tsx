@@ -7,7 +7,20 @@ interface Promoter {
   name: string;
   code: string;
   isActive: boolean;
+  discountPercent: number;
   ticketCount: number;
+  // Total descontado en centavos, por moneda.
+  discountTotals: Record<string, number>;
+}
+
+function formatDiscountTotals(totals: Record<string, number>) {
+  const entries = Object.entries(totals);
+  if (entries.length === 0) return "—";
+  return entries
+    .map(([currency, cents]) =>
+      new Intl.NumberFormat("es-UY", { style: "currency", currency, minimumFractionDigits: 0 }).format(cents / 100)
+    )
+    .join(" · ");
 }
 
 interface EventOption {
@@ -29,7 +42,7 @@ export default function PromotersPage() {
   const [eventId, setEventId] = useState("");
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: "", code: "" });
+  const [form, setForm] = useState({ name: "", code: "", discountPercent: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -74,7 +87,7 @@ export default function PromotersPage() {
     });
 
     if (res.ok) {
-      setForm({ name: "", code: "" });
+      setForm({ name: "", code: "", discountPercent: "" });
       setShowForm(false);
       loadPromoters();
     } else {
@@ -89,6 +102,20 @@ export default function PromotersPage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isActive: !promoter.isActive }),
+    });
+    loadPromoters();
+  }
+
+  async function editDiscount(promoter: Promoter) {
+    const input = prompt(
+      `% de descuento para ${promoter.name} (0 = sin descuento)`,
+      String(promoter.discountPercent)
+    );
+    if (input === null) return;
+    await fetch(`/api/admin/promoters/${promoter.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ discountPercent: input }),
     });
     loadPromoters();
   }
@@ -128,7 +155,7 @@ export default function PromotersPage() {
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">Nombre</label>
               <input
@@ -146,6 +173,18 @@ export default function PromotersPage() {
                 value={form.code}
                 onChange={(e) => setForm({ ...form, code: e.target.value })}
                 placeholder="Si lo dejás vacío, sale del nombre"
+                className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm placeholder:text-culpa-cream/30 focus:outline-none focus:border-culpa-lcd"
+              />
+            </div>
+            <div>
+              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">% descuento</label>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={form.discountPercent}
+                onChange={(e) => setForm({ ...form, discountPercent: e.target.value })}
+                placeholder="0"
                 className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 text-sm placeholder:text-culpa-cream/30 focus:outline-none focus:border-culpa-lcd"
               />
             </div>
@@ -191,7 +230,9 @@ export default function PromotersPage() {
               <tr className="border-b border-culpa-cream/10">
                 <th className="text-culpa-cream/60 text-xs uppercase tracking-widest py-3 pr-4">Nombre</th>
                 <th className="text-culpa-cream/60 text-xs uppercase tracking-widest py-3 pr-4">Código</th>
+                <th className="text-culpa-cream/60 text-xs uppercase tracking-widest py-3 pr-4">Descuento</th>
                 <th className="text-culpa-cream/60 text-xs uppercase tracking-widest py-3 pr-4">Entradas</th>
+                <th className="text-culpa-cream/60 text-xs uppercase tracking-widest py-3 pr-4">Descontado</th>
                 <th className="text-culpa-cream/60 text-xs uppercase tracking-widest py-3 pr-4">Link</th>
                 <th className="text-culpa-cream/60 text-xs uppercase tracking-widest py-3"></th>
               </tr>
@@ -204,7 +245,17 @@ export default function PromotersPage() {
                 >
                   <td className="text-culpa-cream py-3 pr-4 text-sm">{promoter.name}</td>
                   <td className="text-culpa-cream/70 py-3 pr-4 text-sm font-mono">{promoter.code}</td>
+                  <td className="py-3 pr-4 text-sm">
+                    <button
+                      onClick={() => editDiscount(promoter)}
+                      title="Cambiar descuento"
+                      className="text-culpa-cream/70 hover:text-culpa-cream transition-colors"
+                    >
+                      {promoter.discountPercent > 0 ? `${promoter.discountPercent}%` : "—"}
+                    </button>
+                  </td>
                   <td className="text-culpa-cream py-3 pr-4 text-sm font-bold">{promoter.ticketCount}</td>
+                  <td className="text-culpa-cream/70 py-3 pr-4 text-sm">{formatDiscountTotals(promoter.discountTotals)}</td>
                   <td className="py-3 pr-4">
                     {selectedEvent && promoter.isActive ? (
                       <button

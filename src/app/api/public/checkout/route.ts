@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { createQRSignedToken, generateQRCodeBuffer } from "@/lib/qr";
 import { sendTicketEmail } from "@/lib/email";
 import { formatDate } from "@/lib/utils";
-import { normalizePromoterCode } from "@/lib/promoters";
+import { applyDiscount, normalizePromoterCode } from "@/lib/promoters";
 
 interface Purchaser {
   name: string;
@@ -149,13 +149,15 @@ export async function POST(request: NextRequest) {
     const promoter = promoterCode
       ? await prisma.promoter.findFirst({
           where: { code: promoterCode, isActive: true },
-          select: { id: true },
+          select: { id: true, discountPercent: true },
         })
       : null;
     const promoterId = promoter?.id ?? null;
+    const price = applyDiscount(ticketType.price, promoter?.discountPercent ?? 0);
+    const discountInCents = ticketType.price - price;
 
-    // Free tickets (price = 0): create ticket directly as PAID.
-    if (ticketType.price === 0) {
+    // Free tickets (price = 0, or 100% off): create ticket directly as PAID.
+    if (price === 0) {
       const qrCodeToken = uuidv4();
       const qrSignedJwt = await createQRSignedToken({
         ticketId: "", // Will be set after creation
@@ -169,6 +171,7 @@ export async function POST(request: NextRequest) {
           ticketTypeId,
           whitelistedPersonId: purchaser.whitelistedPersonId,
           promoterId,
+          discountInCents,
           qrCodeToken,
           qrSignedJwt,
           validUntil: ticketType.validUntil,
@@ -213,6 +216,7 @@ export async function POST(request: NextRequest) {
         ticketTypeId,
         whitelistedPersonId: purchaser.whitelistedPersonId,
         promoterId,
+        discountInCents,
         validUntil: ticketType.validUntil,
         status: "PENDING_PAYMENT",
         purchaserName: purchaser.name,
@@ -225,7 +229,7 @@ export async function POST(request: NextRequest) {
       ticketId: ticket.id,
       title: `${ticketType.event.name} - ${ticketType.name}`,
       description: `Ticket for ${ticketType.event.name}`,
-      priceInCents: ticketType.price,
+      priceInCents: price,
       currency: ticketType.currency,
       payerEmail: purchaser.email,
       payerName: purchaser.name,

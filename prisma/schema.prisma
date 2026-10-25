@@ -111,6 +111,7 @@ model Ticket {
   freeInviteLink      FreeInviteLink?    @relation(fields: [freeInviteLinkId], references: [id])
   promoterId          String?
   promoter            Promoter?          @relation(fields: [promoterId], references: [id])
+  discountInCents     Int                @default(0) // lo que se le descontó por el link del RRPP
 
   qrCodeToken   String?  @unique // UUID v4, set only after payment confirmed
   qrSignedJwt   String?           // Signed JWT for QR payload
@@ -164,6 +165,9 @@ model Promoter {
   name      String
   code      String   @unique
   isActive  Boolean  @default(true)
+  // % que se descuenta del precio de la entrada a quien compra por su link.
+  // Sirve para campañas (ej. un RRPP "mail" con 10% para los mails de Resend).
+  discountPercent Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
