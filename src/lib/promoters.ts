@@ -30,3 +30,33 @@ export function applyDiscount(priceInCents: number, discountPercent: number): nu
   const discounted = (priceInCents * (100 - discountPercent)) / 100;
   return Math.round(discounted / 100) * 100;
 }
+
+// El código guardado en el navegador vale solo para el evento cuyo link se
+// abrió y vence a las 48 h, para que el descuento de un mail o de un RRPP no
+// quede pegado para eventos siguientes. 48 h cubre el recordatorio de carrito
+// de las 24 h.
+export const PROMOTER_CODE_TTL_MS = 48 * 60 * 60 * 1000;
+
+export interface StoredPromoterCode {
+  code: string;
+  slug: string;
+  savedAt: number;
+}
+
+export function storedPromoterCodeFor(
+  raw: string | null,
+  slug: string,
+  now: number
+): string | null {
+  if (!raw) return null;
+  try {
+    const stored = JSON.parse(raw) as Partial<StoredPromoterCode>;
+    if (typeof stored.code !== "string" || stored.slug !== slug) return null;
+    if (typeof stored.savedAt !== "number" || now - stored.savedAt > PROMOTER_CODE_TTL_MS) {
+      return null;
+    }
+    return stored.code;
+  } catch {
+    return null;
+  }
+}

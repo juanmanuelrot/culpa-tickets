@@ -3,6 +3,8 @@ import {
   applyDiscount,
   normalizeDiscountPercent,
   normalizePromoterCode,
+  PROMOTER_CODE_TTL_MS,
+  storedPromoterCodeFor,
 } from "@/lib/promoters";
 
 describe("normalizePromoterCode", () => {
@@ -64,5 +66,26 @@ describe("applyDiscount", () => {
 
   it("100% deja la entrada en 0", () => {
     expect(applyDiscount(100000, 100)).toBe(0);
+  });
+});
+
+describe("storedPromoterCodeFor", () => {
+  const saved = JSON.stringify({ code: "mail", slug: "fiesta", savedAt: 1000 });
+
+  it("devuelve el código para el mismo evento dentro de las 48 h", () => {
+    expect(storedPromoterCodeFor(saved, "fiesta", 1000 + PROMOTER_CODE_TTL_MS)).toBe("mail");
+  });
+
+  it("no lo aplica a otro evento", () => {
+    expect(storedPromoterCodeFor(saved, "otra-fiesta", 2000)).toBeNull();
+  });
+
+  it("vence después de 48 h", () => {
+    expect(storedPromoterCodeFor(saved, "fiesta", 1001 + PROMOTER_CODE_TTL_MS)).toBeNull();
+  });
+
+  it("ignora el formato viejo (código suelto) y basura", () => {
+    expect(storedPromoterCodeFor("mail", "fiesta", 2000)).toBeNull();
+    expect(storedPromoterCodeFor(null, "fiesta", 2000)).toBeNull();
   });
 });

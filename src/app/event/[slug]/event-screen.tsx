@@ -15,7 +15,11 @@ import {
 } from "@/components/nokia/ui";
 import { formatClock, formatDayDot, formatEventDateTime } from "@/lib/date";
 import type { PublicEventData as InitialEventData } from "@/lib/public-event";
-import { applyDiscount } from "@/lib/promoters";
+import {
+  applyDiscount,
+  storedPromoterCodeFor,
+  type StoredPromoterCode,
+} from "@/lib/promoters";
 
 interface TicketTypeInfo {
   id: string;
@@ -56,17 +60,22 @@ interface PublicEventData {
 }
 
 // El código de RRPP llega en el link (?rrpp=<code>). Se guarda para que la
-// venta le quede atribuida aunque el comprador recargue o vuelva más tarde.
+// venta le quede atribuida aunque el comprador recargue o vuelva más tarde,
+// pero solo para este evento y por 48 h (ver storedPromoterCodeFor).
 const PROMOTER_STORAGE_KEY = "culpa-rrpp";
 
-function readPromoterCode(): string | null {
+function readPromoterCode(slug: string): string | null {
   try {
     const fromUrl = new URLSearchParams(window.location.search).get("rrpp");
     if (fromUrl) {
-      localStorage.setItem(PROMOTER_STORAGE_KEY, fromUrl);
+      const stored: StoredPromoterCode = { code: fromUrl, slug, savedAt: Date.now() };
+      localStorage.setItem(PROMOTER_STORAGE_KEY, JSON.stringify(stored));
       return fromUrl;
     }
-    return localStorage.getItem(PROMOTER_STORAGE_KEY);
+    const raw = localStorage.getItem(PROMOTER_STORAGE_KEY);
+    const code = storedPromoterCodeFor(raw, slug, Date.now());
+    if (!code && raw) localStorage.removeItem(PROMOTER_STORAGE_KEY);
+    return code;
   } catch {
     return null;
   }
@@ -137,13 +146,13 @@ export function EventScreen({
   // If the link carries a discount, prices on screen show it too.
   const [discountPercent, setDiscountPercent] = useState(0);
   useEffect(() => {
-    const code = readPromoterCode();
+    const code = readPromoterCode(slug);
     if (!code) return;
     fetch(`/api/public/promoters/${encodeURIComponent(code)}`, { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => setDiscountPercent(data?.discountPercent ?? 0))
       .catch(() => {});
-  }, []);
+  }, [slug]);
 
   function ticketPrice(tt: { price: number; currency: string }) {
     const price = formatPrice(applyDiscount(tt.price, discountPercent), tt.currency);
@@ -205,7 +214,7 @@ export function EventScreen({
           govIdNumber: govId,
           eventId: lookupResult.event.id,
           ticketTypeId,
-          promoterCode: readPromoterCode(),
+          promoterCode: readPromoterCode(slug),
         }),
       });
 
@@ -254,7 +263,7 @@ export function EventScreen({
           lastName: form.lastName,
           govIdNumber: form.govId,
           email: form.email,
-          promoterCode: readPromoterCode(),
+          promoterCode: readPromoterCode(slug),
         }),
       });
 
