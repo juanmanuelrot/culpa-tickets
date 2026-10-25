@@ -291,3 +291,94 @@ export async function sendTicketEmail(params: TicketEmailParams) {
     attachments,
   });
 }
+
+export interface CartReminderEmailParams {
+  to: string;
+  stage: number;
+  purchaserName: string;
+  eventName: string;
+  eventDate: Date;
+  eventSlug: string;
+  ticketType: string;
+  // Si el intento vino por un link de RRPP, el botón lo conserva para que la
+  // venta recuperada siga sumándole.
+  promoterCode: string | null;
+}
+
+/* Carrito abandonado: el mail 1 sale a la hora del último intento, el 2 a las
+   24h. El botón lleva a la página del evento, que muestra las entradas que hay
+   en ese momento. */
+export function buildCartReminderEmail(
+  params: CartReminderEmailParams,
+  theme: Theme = THEMES.classic
+): { subject: string; html: string } {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const { ink, body, cream } = theme.palette;
+  const { soft, muted, rule } = theme.emailInks;
+  const last = params.stage >= 2;
+
+  const href =
+    `${appUrl}/event/${params.eventSlug}` +
+    (params.promoterCode ? `?rrpp=${encodeURIComponent(params.promoterCode)}` : "");
+
+  const label = (text: string) =>
+    `<span class="culpa-ink-muted" style="color:${muted};">${text}</span>`;
+
+  const copy = last
+    ? "Última llamada: todavía no terminaste de sacar tu entrada. Si querés estar, este es el momento."
+    : "Arrancaste a sacar tu entrada pero el pago no se completó. Podés terminarla cuando quieras:";
+
+  const inner = `
+    ${wordmark(theme, appUrl, last ? "Última llamada" : "Tu entrada te espera")}
+
+    <div style="padding:16px 4px 4px 4px;">
+      <p class="culpa-ink" style="font-family:${PIXEL_FONT};font-size:12px;color:${ink};margin:0 0 10px 0;text-transform:uppercase;">
+        Hola ${params.purchaserName}
+      </p>
+      <p class="culpa-ink" style="font-family:${UI_FONT};font-size:14px;color:${ink};margin:0;line-height:1.6;">
+        ${copy}
+      </p>
+    </div>
+
+    <div style="padding:14px 4px;">
+      <div class="culpa-ink" style="border:2px solid ${ink};padding:12px;font-family:${PIXEL_FONT};font-size:11px;color:${ink};text-transform:uppercase;line-height:2;">
+        <div>${label("Evento:")} ${params.eventName}</div>
+        <div>${label("Fecha:")} ${formatEventDateTime(params.eventDate)}</div>
+        <div>${label("Tipo:")} ${params.ticketType}</div>
+      </div>
+    </div>
+
+    <div style="padding:6px 4px 16px 4px;text-align:center;">
+      <a href="${href}" class="culpa-body culpa-cream" style="display:inline-block;background-color:${body};color:${cream};border:2px solid ${ink};font-family:${PIXEL_FONT};font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;padding:14px 28px;text-decoration:none;">
+        Sacar mi entrada
+      </a>
+    </div>
+
+    <div style="border-top:2px solid ${rule};margin:6px 4px;"></div>
+
+    <p class="culpa-ink-soft" style="font-family:${PIXEL_FONT};font-size:10px;color:${soft};margin:10px 4px 4px 4px;text-transform:uppercase;text-align:center;">
+      Si ya la sacaste, ignorá este mail
+    </p>`;
+
+  return {
+    subject: last
+      ? `Última llamada para ${params.eventName}`
+      : `Te quedó tu entrada para ${params.eventName}`,
+    html: shell(theme, inner),
+  };
+}
+
+export async function sendCartReminderEmail(params: CartReminderEmailParams) {
+  const theme = THEMES[await getSiteTheme()];
+  const { subject, html } = buildCartReminderEmail(params, theme);
+
+  const { error } = await resend.emails.send({
+    from: process.env.EMAIL_FROM || "Culpa <tickets@yourdomain.com>",
+    to: params.to,
+    subject,
+    html,
+  });
+  // Resend no tira: devuelve el error. El job lo necesita para liberar la
+  // etapa y reintentar en la próxima vuelta.
+  if (error) throw new Error(`Resend: ${error.message}`);
+}
