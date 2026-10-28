@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
     include: {
       event: true,
       ticketType: true,
+      issuedBy: { select: { id: true, name: true } },
       scans: { orderBy: { scannedAt: "desc" }, take: 1 },
     },
     orderBy: { createdAt: "desc" },

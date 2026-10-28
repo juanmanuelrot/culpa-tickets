@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-import {
-  confirmedInvitationsWhere,
-  confirmedTicketsWhere,
-  soldTicketsWhere,
-} from "@/lib/tickets";
+import { confirmedTicketsWhere } from "@/lib/tickets";
 
 export async function GET(
   request: NextRequest,
@@ -16,24 +12,20 @@ export async function GET(
 
   const { id } = await params;
 
-  // Prisma allows a single filter per counted relation, so the invitation
-  // tally needs its own pass alongside the sold-only _count.
-  const [event, invitationCounts] = await Promise.all([
+  // Online, offline-paid and courtesy tickets per type, in one pass.
+  const [event, originCounts] = await Promise.all([
     prisma.event.findUnique({
       where: { id },
       include: {
         ticketTypes: {
           orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-          include: {
-            _count: { select: { tickets: { where: soldTicketsWhere } } },
-          },
         },
         _count: { select: { tickets: { where: confirmedTicketsWhere } } },
       },
     }),
     prisma.ticket.groupBy({
-      by: ["ticketTypeId"],
-      where: { eventId: id, ...confirmedInvitationsWhere },
+      by: ["ticketTypeId", "origin"],
+      where: { eventId: id, ...confirmedTicketsWhere },
       _count: { _all: true },
     }),
   ]);
@@ -42,15 +34,18 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const invitationsByType = new Map(
-    invitationCounts.map((row) => [row.ticketTypeId, row._count._all])
-  );
+  const countFor = (ticketTypeId: string, origin: string) =>
+    originCounts.find(
+      (row) => row.ticketTypeId === ticketTypeId && row.origin === origin
+    )?._count._all ?? 0;
 
   return NextResponse.json({
     ...event,
     ticketTypes: event.ticketTypes.map((tt) => ({
       ...tt,
-      invitationCount: invitationsByType.get(tt.id) ?? 0,
+      onlineCount: countFor(tt.id, "ONLINE"),
+      offlinePaidCount: countFor(tt.id, "OFFLINE_PAID"),
+      courtesyCount: countFor(tt.id, "COURTESY"),
     })),
   });
 }

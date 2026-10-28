@@ -13,8 +13,9 @@ interface TicketType {
   validUntil: string | null;
   isOffered: boolean;
   sortOrder: number;
-  _count: { tickets: number };
-  invitationCount: number;
+  onlineCount: number;
+  offlinePaidCount: number;
+  courtesyCount: number;
 }
 
 interface Event {
@@ -372,10 +373,12 @@ export default function AdminEventDetailPage() {
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-culpa-cream/40 text-sm">
-                  {tt._count.tickets} vendidos
+                  {tt.onlineCount} online
                   <span className="text-culpa-cream/25">
                     {" · "}
-                    {tt.invitationCount} invitaciones
+                    {tt.offlinePaidCount} por fuera
+                    {" · "}
+                    {tt.courtesyCount} cortesías
                   </span>
                 </span>
                 <button

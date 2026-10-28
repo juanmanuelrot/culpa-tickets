@@ -283,7 +283,8 @@ export async function sendTicketEmail(params: TicketEmailParams) {
   const theme = THEMES[await getSiteTheme()];
   const { subject, html, attachments } = buildTicketEmail(params, theme);
 
-  await resend.emails.send({
+  // Resend no tira: devuelve el error. Quien necesite saber si salió lo mira.
+  return resend.emails.send({
     from: process.env.EMAIL_FROM || "Culpa <tickets@yourdomain.com>",
     to: params.to,
     subject,

@@ -5,7 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
 import { THEMES, THEME_NAMES, type ThemeName } from "@/lib/theme";
-import { summarizeStats, type DashboardStats } from "@/lib/dashboard-stats";
+import {
+  summarizeStats,
+  type DashboardStats,
+  type Tally,
+} from "@/lib/dashboard-stats";
+import { formatCurrency } from "@/lib/utils";
 import type { ReminderStats } from "@/lib/cart-reminders";
 
 /*
@@ -75,6 +80,78 @@ function ThemeSwitch() {
       </p>
       {error && (
         <p className="font-ui text-xs text-culpa-alert mt-2">{error}</p>
+      )}
+    </section>
+  );
+}
+
+function TallyText({ tally }: { tally: Tally }) {
+  return (
+    <>
+      {tally.count}
+      <span className="text-culpa-cream/40"> · {formatCurrency(tally.amountInCents)}</span>
+    </>
+  );
+}
+
+// Entradas separadas por de dónde salieron, para conciliar la plata que entró
+// por fuera y ver cuánto se regaló.
+function EntradasPorOrigen({ stats }: { stats: DashboardStats | null }) {
+  const blocks = [
+    { label: "Online", hint: "cobrado en el sitio", tally: stats?.online },
+    { label: "Pago por fuera", hint: "transferencia o efectivo", tally: stats?.offlinePaid },
+    { label: "Cortesías", hint: "regalado, a precio de entrada", tally: stats?.courtesy },
+  ];
+
+  return (
+    <section className="mt-10">
+      <h2 className="culpa-heading text-sm text-culpa-cream mb-3">Entradas</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {blocks.map((block) => (
+          <div key={block.label} className="bg-culpa-body-dark p-6">
+            <p className="font-pixel text-[0.6rem] uppercase tracking-[0.12em] text-culpa-cream/70">
+              {block.label}
+            </p>
+            <p className="font-pixel text-2xl mt-3 text-culpa-cream">
+              {block.tally?.count ?? "..."}
+            </p>
+            <p className="font-pixel text-sm mt-2 text-culpa-lcd">
+              {block.tally ? formatCurrency(block.tally.amountInCents) : "..."}
+            </p>
+            <p className="font-ui text-xs text-culpa-cream/50 mt-2">{block.hint}</p>
+          </div>
+        ))}
+      </div>
+
+      {stats && stats.byIssuer.length > 0 && (
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full font-ui text-sm text-culpa-cream">
+            <thead>
+              <tr className="text-left text-xs uppercase tracking-widest text-culpa-cream/50">
+                <th className="py-2 pr-4 font-normal">Generado por</th>
+                <th className="py-2 pr-4 font-normal">Pago por fuera</th>
+                <th className="py-2 font-normal">Cortesías</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stats.byIssuer.map((issuer) => (
+                <tr key={issuer.name ?? ""} className="border-t border-culpa-cream/10">
+                  <td className="py-2 pr-4">
+                    {issuer.name ?? (
+                      <span className="text-culpa-cream/40">Sin asignar</span>
+                    )}
+                  </td>
+                  <td className="py-2 pr-4 whitespace-nowrap">
+                    <TallyText tally={issuer.offlinePaid} />
+                  </td>
+                  <td className="py-2 whitespace-nowrap">
+                    <TallyText tally={issuer.courtesy} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );
@@ -152,6 +229,8 @@ export default function AdminDashboard() {
           </Link>
         ))}
       </div>
+
+      <EntradasPorOrigen stats={stats} />
 
       <ThemeSwitch />
     </div>

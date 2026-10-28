@@ -8,7 +8,7 @@ const navItems = [
   { href: "/admin", label: "Panel" },
   { href: "/admin/events", label: "Eventos" },
   { href: "/admin/whitelist", label: "Lista" },
-  { href: "/admin/invite-links", label: "Invitaciones" },
+  { href: "/admin/generar-qr", label: "Generar QR" },
   { href: "/admin/tickets", label: "Tickets" },
   { href: "/admin/rrpp", label: "RRPP" },
   { href: "/admin/users", label: "Usuarios" },

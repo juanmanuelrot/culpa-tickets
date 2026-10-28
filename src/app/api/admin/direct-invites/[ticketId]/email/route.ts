@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-import { generateQRCodeBuffer } from "@/lib/qr";
-import { sendTicketEmail } from "@/lib/email";
-import { formatDate } from "@/lib/utils";
+import { emailQrTicket } from "@/lib/qr-tickets";
 
-// Opt-in only: emails an already-issued ticket's QR to its holder. Issuing a
-// direct invite never sends mail on its own.
+// Re-sends an already-issued ticket's QR to its holder, for when the automatic
+// send on issue failed.
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ ticketId: string }> }
@@ -40,14 +38,7 @@ export async function POST(
       );
     }
 
-    await sendTicketEmail({
-      to: ticket.purchaserEmail,
-      eventName: ticket.event.name,
-      ticketType: ticket.ticketType.name,
-      date: formatDate(ticket.event.date),
-      purchaserName: ticket.purchaserName,
-      qrCodeBuffer: await generateQRCodeBuffer(ticket.qrSignedJwt),
-    });
+    await emailQrTicket(ticket);
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { formatEventDateTime, formatDateTime, localInputToUtc } from "@/lib/date";
-import { slugify } from "@/lib/utils";
+import { formatCurrency, slugify } from "@/lib/utils";
+import type { QrOrigin } from "@/lib/qr-tickets";
 import type { EventWithTypes } from "./types";
+
+type EmailStatus = "idle" | "sending" | "sent" | "error";
 
 interface DirectInvite {
   ticketId: string;
@@ -14,26 +17,42 @@ interface DirectInvite {
   eventDate: string;
   ticketTypeName: string;
   validUntil: string | null;
+  origin: QrOrigin;
+  emailStatus: "none" | "sent" | "error";
 }
 
 const EMPTY_FORM = {
   eventId: "",
   ticketTypeId: "",
+  origin: "" as QrOrigin | "",
+  charged: "",
   name: "",
   email: "",
   ticketValidUntil: "",
 };
+
+const ORIGIN_OPTIONS: Array<{ value: QrOrigin; label: string }> = [
+  { value: "COURTESY", label: "Cortesía" },
+  { value: "OFFLINE_PAID", label: "Pago por fuera" },
+];
+
+// El monto se escribe en pesos; vacío deja que el servidor use el precio.
+function pesosToCents(value: string): number | null {
+  if (!value.trim()) return null;
+  return Math.round(parseFloat(value.replace(",", ".")) * 100);
+}
 
 export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [invite, setInvite] = useState<DirectInvite | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [emailStatus, setEmailStatus] = useState<
-    "idle" | "sending" | "sent" | "error"
-  >("idle");
+  const [emailStatus, setEmailStatus] = useState<EmailStatus>("idle");
 
   const selectedEvent = events.find((e) => e.id === form.eventId);
+  const selectedType = selectedEvent?.ticketTypes.find(
+    (tt) => tt.id === form.ticketTypeId
+  );
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
@@ -47,6 +66,9 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
         body: JSON.stringify({
           eventId: form.eventId,
           ticketTypeId: form.ticketTypeId,
+          origin: form.origin,
+          chargedInCents:
+            form.origin === "OFFLINE_PAID" ? pesosToCents(form.charged) : null,
           name: form.name,
           email: form.email || null,
           ticketValidUntil: form.ticketValidUntil
@@ -61,7 +83,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
         return;
       }
 
-      setEmailStatus("idle");
+      setEmailStatus(data.emailStatus === "none" ? "idle" : data.emailStatus);
       setInvite(data);
     } catch {
       setError("Algo salió mal");
@@ -70,11 +92,11 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
     }
   }
 
-  // Keep event, ticket type and expiry so a run of guests goes quickly.
+  // Keep event, ticket type, kind and expiry so a run of guests goes quickly.
   function handleGenerateAnother() {
     setInvite(null);
     setError("");
-    setForm({ ...form, name: "", email: "" });
+    setForm({ ...form, name: "", email: "", charged: "" });
   }
 
   async function handleSendEmail() {
@@ -93,12 +115,9 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
 
   return (
     <section>
-      <h2 className="culpa-heading text-base text-culpa-cream mb-1">
-        QR Directo
-      </h2>
       <p className="text-culpa-cream/40 text-sm mb-6">
-        Emite el ticket al instante y te muestra el QR para sacarle captura. No
-        genera link ni manda correo.
+        Emite el ticket al instante y te muestra el QR para sacarle captura. Si
+        cargás el correo, también se lo manda.
       </p>
 
       {invite ? (
@@ -107,10 +126,10 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
               of this card is already a usable ticket. */}
           <div className="bg-culpa-cream p-8 max-w-sm mx-auto text-center">
             <p className="text-culpa-lcd text-3xl font-black tracking-wider">
-              F&amp;F
+              CULPA
             </p>
             <p className="text-black/50 text-[0.6rem] uppercase tracking-[0.3em] mt-1">
-              Invitación
+              {invite.origin === "COURTESY" ? "Invitación" : "Entrada"}
             </p>
 
             {/* eslint-disable-next-line @next/next/no-img-element -- data URL from the API, not a static asset */}
@@ -169,7 +188,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
                   : emailStatus === "sent"
                   ? `Enviado a ${invite.guestEmail}`
                   : emailStatus === "error"
-                  ? "Reintentar envío"
+                  ? "No se pudo enviar — reintentar"
                   : "Enviar por correo"}
               </button>
             )}
@@ -228,6 +247,54 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
             </div>
             <div>
               <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">
+                Tipo de entrega <span className="text-culpa-lcd">*</span>
+              </label>
+              <div className="flex gap-2">
+                {ORIGIN_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setForm({ ...form, origin: option.value })}
+                    aria-pressed={form.origin === option.value}
+                    className={`flex-1 border px-3 py-2 text-sm font-bold uppercase tracking-wider transition-colors ${
+                      form.origin === option.value
+                        ? "bg-culpa-lcd text-culpa-ink border-culpa-lcd"
+                        : "bg-culpa-cream/10 border-culpa-cream/20 text-culpa-cream hover:bg-culpa-cream/20"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {form.origin === "OFFLINE_PAID" && (
+              <div>
+                <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">
+                  Monto cobrado
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputMode="decimal"
+                  value={form.charged}
+                  onChange={(e) => setForm({ ...form, charged: e.target.value })}
+                  placeholder={
+                    selectedType
+                      ? String(selectedType.price / 100)
+                      : undefined
+                  }
+                  className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
+                />
+                <p className="text-culpa-cream/30 text-xs mt-1">
+                  {selectedType
+                    ? `Si lo dejás vacío se toma el precio: ${formatCurrency(selectedType.price, selectedType.currency)}`
+                    : "Si lo dejás vacío se toma el precio de la entrada"}
+                </p>
+              </div>
+            )}
+            <div>
+              <label className="block text-culpa-cream/60 text-xs uppercase tracking-widest mb-1">
                 Nombre del invitado <span className="text-culpa-lcd">*</span>
               </label>
               <input
@@ -253,7 +320,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
                 className="w-full bg-culpa-cream/10 border border-culpa-cream/20 text-culpa-cream px-3 py-2 focus:outline-none focus:border-culpa-lcd"
               />
               <p className="text-culpa-cream/30 text-xs mt-1">
-                No se envía nada solo, pero te habilita el botón de enviar
+                Si lo cargás, la entrada se manda sola al generarla
               </p>
             </div>
             <div>
@@ -280,7 +347,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !form.origin}
             className="bg-culpa-body text-culpa-cream font-bold uppercase tracking-wider text-sm px-6 py-3 hover:bg-culpa-body-dark transition-colors disabled:opacity-50"
           >
             {loading ? "Generando..." : "Generar QR"}
