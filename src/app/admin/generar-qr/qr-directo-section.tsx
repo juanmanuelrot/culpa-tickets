@@ -104,7 +104,7 @@ export function QrDirectoSection({ events }: { events: EventWithTypes[] }) {
     setEmailStatus("sending");
     try {
       const res = await fetch(
-        `/api/admin/direct-invites/${invite.ticketId}/email`,
+        `/api/admin/tickets/${invite.ticketId}/email`,
         { method: "POST" }
       );
       setEmailStatus(res.ok ? "sent" : "error");
