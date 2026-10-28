@@ -49,6 +49,22 @@ describe("summarizeStats", () => {
     expect(stats.tickets).toBe(1);
   });
 
+  it("no cuenta las cortesías como tickets pagados", () => {
+    const stats = summarizeStats({
+      events: [activo],
+      tickets: [
+        { status: "PAID", event: activo, origin: "ONLINE" },
+        { status: "PAID", event: activo, origin: "OFFLINE_PAID" },
+        { status: "PAID", event: activo, origin: "COURTESY" },
+      ],
+      whitelistTotal: 0,
+    });
+
+    expect(stats.paidTickets).toBe(2);
+    // Confirmados sigue contando a todos los que entran.
+    expect(stats.tickets).toBe(3);
+  });
+
   it("pasa el total de la lista sin filtrar", () => {
     const stats = summarizeStats({
       events: [inactivo],

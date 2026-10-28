@@ -68,7 +68,10 @@ export function summarizeStats({
     (ticket) => ticket.event?.isActive && CONFIRMED.includes(ticket.status)
   );
 
-  const paidTickets = confirmed.filter((t) => t.status === "PAID").length;
+  // Las cortesías quedan PAID para poder entrar, pero nadie las pagó.
+  const paidTickets = confirmed.filter(
+    (t) => t.status === "PAID" && t.origin !== "COURTESY"
+  ).length;
   const usedTickets = confirmed.filter((t) => t.status === "USED").length;
 
   const emptyTally = (): Tally => ({ count: 0, amountInCents: 0 });
@@ -125,7 +128,7 @@ export function summarizeStats({
   return {
     events: activeEvents.length,
     whitelisted: whitelistTotal || 0,
-    tickets: paidTickets + usedTickets,
+    tickets: confirmed.length,
     paidTickets,
     usedTickets,
     online,
