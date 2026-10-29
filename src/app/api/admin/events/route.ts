@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
-    const { name, description, date, location, coverImageUrl, isPublic } = await request.json();
+    const { name, description, date, location, coverImageUrl } = await request.json();
 
     if (!name || !date) {
       return NextResponse.json(
@@ -47,7 +47,6 @@ export async function POST(request: NextRequest) {
         date: new Date(date),
         location: location || null,
         coverImageUrl: coverImageUrl || null,
-        isPublic: isPublic ?? false,
       },
       include: { ticketTypes: true },
     });

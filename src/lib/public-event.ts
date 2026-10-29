@@ -2,9 +2,8 @@ import { prisma } from "@/lib/db";
 
 /*
  * Lo que ve cualquiera de un evento: la página del evento lo lee al renderizar
- * y /api/public/events/[slug] lo devuelve tal cual. Para un evento público
- * incluye sus entradas activas (con agotado); para uno privado, solo lo justo
- * para caer al lookup por documento.
+ * y /api/public/events/[slug] lo devuelve tal cual, con sus entradas activas
+ * (con agotado).
  */
 
 export interface PublicEventInfo {
@@ -15,7 +14,6 @@ export interface PublicEventInfo {
   date: string;
   location: string | null;
   coverImageUrl: string | null;
-  isPublic: boolean;
 }
 
 export interface PublicEventTicketType {
@@ -28,7 +26,7 @@ export interface PublicEventTicketType {
 
 export interface PublicEventData {
   event: PublicEventInfo;
-  ticketTypes?: PublicEventTicketType[];
+  ticketTypes: PublicEventTicketType[];
 }
 
 export async function getPublicEvent(
@@ -40,22 +38,6 @@ export async function getPublicEvent(
   });
 
   if (!event) return null;
-
-  const base = {
-    event: {
-      id: event.id,
-      name: event.name,
-      slug: event.slug,
-      description: event.description,
-      date: event.date.toISOString(),
-      location: event.locationRevealed ? event.location : null,
-      coverImageUrl: event.coverImageUrl,
-      isPublic: event.isPublic,
-    },
-  };
-
-  // Private events keep the gov-ID lookup flow; don't leak ticket types here.
-  if (!event.isPublic) return base;
 
   // Count confirmed sales per ticket type in one query.
   const soldCounts = await prisma.ticket.groupBy({
@@ -71,7 +53,15 @@ export async function getPublicEvent(
   );
 
   return {
-    ...base,
+    event: {
+      id: event.id,
+      name: event.name,
+      slug: event.slug,
+      description: event.description,
+      date: event.date.toISOString(),
+      location: event.locationRevealed ? event.location : null,
+      coverImageUrl: event.coverImageUrl,
+    },
     ticketTypes: event.ticketTypes.map((tt) => ({
       id: tt.id,
       name: tt.name,
