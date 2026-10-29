@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
 import { THEMES, THEME_NAMES, type ThemeName } from "@/lib/theme";
 import {
+  salesByDay,
   summarizeStats,
   type DashboardStats,
+  type DaySales,
   type Tally,
 } from "@/lib/dashboard-stats";
 import { formatCurrency } from "@/lib/utils";
@@ -157,9 +159,93 @@ function EntradasPorOrigen({ stats }: { stats: DashboardStats | null }) {
   );
 }
 
+// Una gráfica por medida (cantidad y plata), con los días alineados: tienen
+// escalas distintas y no comparten eje. Al pasar por un día se marca en las dos
+// y arriba se lee el detalle; sin hover, el total de la semana.
+function VentasSemana({ days }: { days: DaySales[] | null }) {
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  const total = (days ?? []).reduce(
+    (sum, day) => ({ count: sum.count + day.count, amountInCents: sum.amountInCents + day.amountInCents }),
+    { count: 0, amountInCents: 0 }
+  );
+  const focus = hovered !== null && days ? days[hovered] : null;
+
+  const series = [
+    { label: "Entradas", value: (d: DaySales) => d.count, bar: "bg-culpa-cream" },
+    { label: "Plata", value: (d: DaySales) => d.amountInCents, bar: "bg-culpa-lcd" },
+  ];
+
+  return (
+    <section className="mt-10">
+      <h2 className="culpa-heading text-sm text-culpa-cream mb-1">
+        Ventas de la semana
+      </h2>
+      <p className="font-ui text-xs text-culpa-cream/50 mb-4">
+        Online y pago por fuera, sin cortesías.
+      </p>
+
+      <p className="font-pixel text-xs text-culpa-cream mb-4" aria-live="polite">
+        <span className="text-culpa-cream/60">{focus ? focus.label : "Total"} · </span>
+        {days ? (
+          <>
+            {(focus ?? total).count} entradas
+            <span className="text-culpa-lcd"> · {formatCurrency((focus ?? total).amountInCents)}</span>
+          </>
+        ) : (
+          "..."
+        )}
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4" onMouseLeave={() => setHovered(null)}>
+        {series.map((serie) => {
+          const max = Math.max(1, ...(days ?? []).map(serie.value));
+          return (
+            <div key={serie.label} className="bg-culpa-body-dark p-6">
+              <p className="font-pixel text-[0.6rem] uppercase tracking-[0.12em] text-culpa-cream/70 mb-2">
+                {serie.label}
+              </p>
+              <div className="flex items-end gap-2 h-32 border-b border-culpa-cream/20">
+                {(days ?? []).map((day, i) => (
+                  <div
+                    key={day.day}
+                    className="flex-1 h-full flex items-end cursor-default"
+                    onMouseEnter={() => setHovered(i)}
+                    onClick={() => setHovered(i)}
+                  >
+                    <div
+                      className={`w-full rounded-t ${serie.bar} transition-opacity ${
+                        hovered === null || hovered === i ? "opacity-100" : "opacity-40"
+                      }`}
+                      style={{ height: `${(serie.value(day) / max) * 100}%` }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2 mt-2">
+                {(days ?? []).map((day, i) => (
+                  <p
+                    key={day.day}
+                    className={`flex-1 text-center font-ui text-[0.65rem] whitespace-nowrap ${
+                      hovered === i ? "text-culpa-cream" : "text-culpa-cream/50"
+                    }`}
+                  >
+                    {day.label}
+                  </p>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [reminders, setReminders] = useState<ReminderStats | null>(null);
+  const [week, setWeek] = useState<DaySales[] | null>(null);
 
   useEffect(() => {
     async function loadStats() {
@@ -182,6 +268,7 @@ export default function AdminDashboard() {
           whitelistTotal: whitelist.total,
         })
       );
+      setWeek(salesByDay(tickets));
     }
     loadStats();
   }, []);
@@ -229,6 +316,8 @@ export default function AdminDashboard() {
           </Link>
         ))}
       </div>
+
+      <VentasSemana days={week} />
 
       <EntradasPorOrigen stats={stats} />
 

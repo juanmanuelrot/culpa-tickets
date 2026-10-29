@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { summarizeStats } from "@/lib/dashboard-stats";
+import { salesByDay, summarizeStats } from "@/lib/dashboard-stats";
 
 const activo = { isActive: true };
 const inactivo = { isActive: false };
@@ -158,5 +158,48 @@ describe("summarizeStats", () => {
         courtesy: { count: 1, amountInCents: 50000 },
       },
     ]);
+  });
+});
+
+describe("salesByDay", () => {
+  // 28/10 a las 12:00 en Montevideo (-03:00).
+  const now = new Date("2026-10-28T15:00:00Z");
+  const general = { price: 50000 };
+
+  it("da los últimos 7 días en cero, de más viejo a hoy", () => {
+    const days = salesByDay([], now);
+
+    expect(days.map((d) => d.day)).toEqual([
+      "2026-10-22",
+      "2026-10-23",
+      "2026-10-24",
+      "2026-10-25",
+      "2026-10-26",
+      "2026-10-27",
+      "2026-10-28",
+    ]);
+    expect(days.every((d) => d.count === 0 && d.amountInCents === 0)).toBe(true);
+    expect(days[6].label).toMatch(/28/);
+  });
+
+  it("suma online y pago por fuera por día de Montevideo, sin cortesías", () => {
+    const days = salesByDay(
+      [
+        // 23:30 del 27 en Montevideo, aunque en UTC ya es 28.
+        { status: "PAID", event: activo, origin: "ONLINE", ticketType: general, discountInCents: 10000, createdAt: "2026-10-28T02:30:00Z" },
+        { status: "USED", event: activo, origin: "ONLINE", ticketType: general, createdAt: "2026-10-27T15:00:00Z" },
+        { status: "PAID", event: activo, origin: "OFFLINE_PAID", chargedInCents: 30000, createdAt: "2026-10-28T13:00:00Z" },
+        { status: "PAID", event: activo, origin: "COURTESY", faceValueInCents: 50000, createdAt: "2026-10-28T13:00:00Z" },
+        { status: "PENDING_PAYMENT", event: activo, origin: "ONLINE", ticketType: general, createdAt: "2026-10-28T13:00:00Z" },
+        { status: "PAID", event: inactivo, origin: "ONLINE", ticketType: general, createdAt: "2026-10-28T13:00:00Z" },
+        // Hace más de una semana.
+        { status: "PAID", event: activo, origin: "ONLINE", ticketType: general, createdAt: "2026-10-21T15:00:00Z" },
+      ],
+      now
+    );
+
+    expect(days[5]).toMatchObject({ day: "2026-10-27", count: 2, amountInCents: 90000 });
+    expect(days[6]).toMatchObject({ day: "2026-10-28", count: 1, amountInCents: 30000 });
+    expect(days.slice(0, 5).every((d) => d.count === 0)).toBe(true);
   });
 });

@@ -1,4 +1,5 @@
 import { CONFIRMED_TICKET_STATUSES } from "@/lib/tickets";
+import { utcToLocalInput } from "@/lib/date";
 
 // Las métricas del panel miran solo lo que está en la calle hoy: un evento
 // apagado (isActive false) no suma ni en el conteo de eventos ni con sus
@@ -45,6 +46,7 @@ interface TicketRow {
   faceValueInCents?: number | null;
   ticketType?: { price: number };
   issuedBy?: { id: string; name: string } | null;
+  createdAt?: string;
 }
 
 interface StatsInput {
@@ -54,6 +56,10 @@ interface StatsInput {
 }
 
 const CONFIRMED: string[] = CONFIRMED_TICKET_STATUSES;
+
+function onlineAmount(ticket: TicketRow): number {
+  return (ticket.ticketType?.price ?? 0) - (ticket.discountInCents ?? 0);
+}
 
 export function summarizeStats({
   events,
@@ -108,10 +114,7 @@ export function summarizeStats({
         add(issuer.courtesy, amount);
       }
     } else {
-      add(
-        online,
-        (ticket.ticketType?.price ?? 0) - (ticket.discountInCents ?? 0)
-      );
+      add(online, onlineAmount(ticket));
     }
   }
 
@@ -136,4 +139,53 @@ export function summarizeStats({
     courtesy,
     byIssuer,
   };
+}
+
+export interface DaySales extends Tally {
+  day: string; // "2026-10-28", en hora de Montevideo
+  label: string; // "mié 28"
+}
+
+// Ventas de los últimos 7 días (hoy incluido), día por día en hora de
+// Montevideo. Cuenta lo online y lo pago por fuera; las cortesías no son
+// ventas. El día es el de creación del ticket: online es cuando arrancó el
+// checkout, que en la práctica es el mismo día que pagó.
+export function salesByDay(
+  tickets: TicketRow[] | undefined,
+  now: Date = new Date()
+): DaySales[] {
+  const [y, m, d] = utcToLocalInput(now).slice(0, 10).split("-").map(Number);
+  const labelFormat = new Intl.DateTimeFormat("es-UY", {
+    timeZone: "UTC",
+    weekday: "short",
+    day: "numeric",
+  });
+
+  const days: DaySales[] = [];
+  for (let offset = 6; offset >= 0; offset--) {
+    const date = new Date(Date.UTC(y, m - 1, d - offset, 12));
+    days.push({
+      day: date.toISOString().slice(0, 10),
+      label: labelFormat.format(date).replace(".", ""),
+      count: 0,
+      amountInCents: 0,
+    });
+  }
+  const byKey = new Map(days.map((day) => [day.day, day]));
+
+  for (const ticket of Array.isArray(tickets) ? tickets : []) {
+    if (!ticket.createdAt || !ticket.event?.isActive) continue;
+    if (!CONFIRMED.includes(ticket.status) || ticket.origin === "COURTESY") continue;
+
+    const day = byKey.get(utcToLocalInput(ticket.createdAt).slice(0, 10));
+    if (!day) continue;
+
+    day.count += 1;
+    day.amountInCents +=
+      ticket.origin === "OFFLINE_PAID"
+        ? ticket.chargedInCents ?? 0
+        : onlineAmount(ticket);
+  }
+
+  return days;
 }
