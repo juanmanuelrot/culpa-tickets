@@ -43,7 +43,6 @@ async function main() {
       description: "Reggaeton nostalgico. Open bar.",
       date: localInputToUtc("2026-08-24T00:00"),
       location: "Parada 10 de La Brava",
-      isPublic: true,
       isActive: true,
     },
   });

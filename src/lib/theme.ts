@@ -52,8 +52,6 @@ export interface ThemeCopy {
   tagline: string;
   /** En la OG card, en mayúsculas. */
   ogSubtitle: string;
-  /** Subtítulo del wordmark en el mail de bienvenida. */
-  welcomeSubtitle: string;
   steps: { n: string; title: string; body: string }[];
   /** Cuando no hay fechas abiertas. */
   emptyDates: string;
@@ -92,7 +90,6 @@ const classic: Theme = {
   copy: {
     tagline: "reggaeton nostalgico",
     ogSubtitle: "REGGAETON NOSTALGICO",
-    welcomeSubtitle: "Reggaeton nostalgico",
     steps: [
       {
         n: "01",
@@ -166,7 +163,6 @@ const halloween: Theme = {
   copy: {
     tagline: "reggaeton de ultratumba",
     ogSubtitle: "REGGAETON DE ULTRATUMBA",
-    welcomeSubtitle: "Reggaeton de ultratumba",
     steps: [
       {
         n: "01",

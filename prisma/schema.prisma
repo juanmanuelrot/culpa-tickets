@@ -41,20 +41,6 @@ model User {
   issuedTickets Ticket[]
 }
 
-// Whitelisted people (public purchasers)
-model WhitelistedPerson {
-  id              String   @id @default(cuid())
-  govIdNumber     String   @unique
-  name            String
-  email           String
-  instagramHandle String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  allowedTicketTypes WhitelistedPersonTicketType[]
-  tickets            Ticket[]
-}
-
 // Events (parties)
 model Event {
   id               String   @id @default(cuid())
@@ -66,7 +52,6 @@ model Event {
   locationRevealed Boolean  @default(false)
   coverImageUrl    String?
   isActive         Boolean  @default(true)
-  isPublic         Boolean  @default(false)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -90,21 +75,9 @@ model TicketType {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tickets               Ticket[]
-  allowedForWhitelisted WhitelistedPersonTicketType[]
+  tickets Ticket[]
 
   @@unique([eventId, name])
-}
-
-// Join table: which whitelisted person can buy which ticket type
-model WhitelistedPersonTicketType {
-  id                  String            @id @default(cuid())
-  whitelistedPersonId String
-  ticketTypeId        String
-  whitelistedPerson   WhitelistedPerson @relation(fields: [whitelistedPersonId], references: [id], onDelete: Cascade)
-  ticketType          TicketType        @relation(fields: [ticketTypeId], references: [id], onDelete: Cascade)
-
-  @@unique([whitelistedPersonId, ticketTypeId])
 }
 
 // Purchased/issued tickets
@@ -114,8 +87,6 @@ model Ticket {
   event               Event              @relation(fields: [eventId], references: [id])
   ticketTypeId        String
   ticketType          TicketType         @relation(fields: [ticketTypeId], references: [id])
-  whitelistedPersonId String?
-  whitelistedPerson   WhitelistedPerson? @relation(fields: [whitelistedPersonId], references: [id])
   promoterId          String?
   promoter            Promoter?          @relation(fields: [promoterId], references: [id])
   discountInCents     Int                @default(0) // lo que se le descontó por el link del RRPP

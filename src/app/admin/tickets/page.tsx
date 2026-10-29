@@ -9,7 +9,6 @@ interface Ticket {
   purchaserName: string;
   purchaserEmail: string | null;
   purchaserGovId: string | null;
-  whitelistedPersonId: string | null;
   qrSignedJwt: string | null;
   createdAt: string;
   event: { name: string };
@@ -20,7 +19,6 @@ export default function AdminTicketsPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [promotingId, setPromotingId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const [resendId, setResendId] = useState<string | null>(null);
   const [resendEmail, setResendEmail] = useState("");
@@ -38,25 +36,6 @@ export default function AdminTicketsPage() {
   useEffect(() => {
     loadTickets();
   }, [loadTickets]);
-
-  async function handlePromote(ticketId: string) {
-    setPromotingId(ticketId);
-    setNotice("");
-    try {
-      const res = await fetch("/api/admin/whitelist/from-ticket", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticketId }),
-      });
-      const data = await res.json();
-      setNotice(res.ok ? "Agregado a la lista" : data.error || "No se pudo agregar");
-      await loadTickets();
-    } catch {
-      setNotice("Algo salió mal");
-    } finally {
-      setPromotingId(null);
-    }
-  }
 
   function openResend(ticket: Ticket) {
     setResendId(ticket.id);
@@ -180,17 +159,6 @@ export default function AdminTicketsPage() {
                   Reenviar QR
                 </button>
               )}
-              {ticket.whitelistedPersonId ? (
-                <span className="text-blue-300/70 text-xs uppercase tracking-wider">En la lista</span>
-              ) : ticket.purchaserGovId ? (
-                <button
-                  onClick={() => handlePromote(ticket.id)}
-                  disabled={promotingId === ticket.id}
-                  className="bg-blue-700 text-culpa-cream text-xs uppercase tracking-wider font-bold px-3 py-1 hover:bg-blue-600 transition-colors disabled:opacity-50"
-                >
-                  {promotingId === ticket.id ? "..." : "Agregar a la lista"}
-                </button>
-              ) : null}
             </div>
           </div>
         ))}

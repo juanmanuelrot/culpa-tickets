@@ -14,7 +14,6 @@ vi.mock("@/lib/theme-store", () => ({
 import {
   buildCartReminderEmail,
   buildTicketEmail,
-  buildWelcomeEmail,
 } from "@/lib/email";
 import { THEMES } from "@/lib/theme";
 
@@ -53,16 +52,6 @@ describe("buildTicketEmail", () => {
     const { html, attachments } = buildTicketEmail(ticketParams);
     expect(attachments[0].contentId).toBe("culpa-qr");
     expect(html).toContain("cid:culpa-qr");
-  });
-});
-
-describe("buildWelcomeEmail", () => {
-  it("usa el subtítulo del tema", () => {
-    const params = { to: "a@b.c", name: "Sofi", events: [] };
-    expect(buildWelcomeEmail(params).html).toContain("Reggaeton nostalgico");
-    expect(buildWelcomeEmail(params, THEMES.halloween).html).toContain(
-      "Reggaeton de ultratumba"
-    );
   });
 });
 

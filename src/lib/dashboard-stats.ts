@@ -3,7 +3,7 @@ import { utcToLocalInput } from "@/lib/date";
 
 // Las métricas del panel miran solo lo que está en la calle hoy: un evento
 // apagado (isActive false) no suma ni en el conteo de eventos ni con sus
-// tickets. La lista de espera queda aparte, es global y no cuelga de un evento.
+// tickets.
 //
 // La plata va en centavos: lo online a precio de entrada menos el descuento del
 // RRPP, lo pago por fuera por lo que se cobró, y las cortesías por lo que
@@ -23,7 +23,6 @@ export interface IssuerStats {
 
 export interface DashboardStats {
   events: number;
-  whitelisted: number;
   tickets: number;
   paidTickets: number;
   usedTickets: number;
@@ -52,7 +51,6 @@ interface TicketRow {
 interface StatsInput {
   events: EventFlag[] | undefined;
   tickets: TicketRow[] | undefined;
-  whitelistTotal: number | undefined;
 }
 
 const CONFIRMED: string[] = CONFIRMED_TICKET_STATUSES;
@@ -64,7 +62,6 @@ function onlineAmount(ticket: TicketRow): number {
 export function summarizeStats({
   events,
   tickets,
-  whitelistTotal,
 }: StatsInput): DashboardStats {
   const activeEvents = (Array.isArray(events) ? events : []).filter(
     (event) => event.isActive
@@ -130,7 +127,6 @@ export function summarizeStats({
 
   return {
     events: activeEvents.length,
-    whitelisted: whitelistTotal || 0,
     tickets: confirmed.length,
     paidTickets,
     usedTickets,

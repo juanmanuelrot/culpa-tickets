@@ -27,7 +27,6 @@ interface Event {
   location: string | null;
   locationRevealed: boolean;
   isActive: boolean;
-  isPublic: boolean;
   ticketTypes: TicketType[];
 }
 
@@ -37,10 +36,9 @@ export default function AdminEventDetailPage() {
   const id = params.id as string;
 
   const [event, setEvent] = useState<Event | null>(null);
-  const [ttForm, setTtForm] = useState({ name: "", price: "", currency: "UYU", capacity: "", validUntil: "", autoApproveWhitelist: true });
+  const [ttForm, setTtForm] = useState({ name: "", price: "", currency: "UYU", capacity: "", validUntil: "" });
   const [showTtForm, setShowTtForm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [approvingId, setApprovingId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
 
   const loadEvent = useCallback(async () => {
@@ -72,16 +70,6 @@ export default function AdminEventDetailPage() {
     loadEvent();
   }
 
-  async function handleTogglePublic() {
-    if (!event) return;
-    await fetch(`/api/admin/events/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isPublic: !event.isPublic }),
-    });
-    loadEvent();
-  }
-
   async function handleAddTicketType(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -94,10 +82,9 @@ export default function AdminEventDetailPage() {
         currency: ttForm.currency,
         capacity: ttForm.capacity ? parseInt(ttForm.capacity) : null,
         validUntil: ttForm.validUntil ? localInputToUtc(ttForm.validUntil).toISOString() : null,
-        autoApproveWhitelist: ttForm.autoApproveWhitelist,
       }),
     });
-    setTtForm({ name: "", price: "", currency: "UYU", capacity: "", validUntil: "", autoApproveWhitelist: true });
+    setTtForm({ name: "", price: "", currency: "UYU", capacity: "", validUntil: "" });
     setShowTtForm(false);
     setLoading(false);
     loadEvent();
@@ -142,19 +129,6 @@ export default function AdminEventDetailPage() {
     loadEvent();
   }
 
-  async function handleApproveAll(ticketTypeId: string) {
-    if (!confirm("¿Dar acceso a todas las personas de la lista para este tipo de ticket?")) return;
-    setApprovingId(ticketTypeId);
-    const res = await fetch(`/api/admin/events/${id}/ticket-types/${ticketTypeId}/approve-all`, {
-      method: "POST",
-    });
-    if (res.ok) {
-      const { approved } = await res.json();
-      alert(`Se otorgó acceso a ${approved} ${approved === 1 ? "persona" : "personas"} de la lista.`);
-    }
-    setApprovingId(null);
-  }
-
   async function handleDeleteEvent() {
     if (!confirm("¿Eliminar este evento? Esta acción no se puede deshacer.")) return;
     await fetch(`/api/admin/events/${id}`, { method: "DELETE" });
@@ -186,17 +160,6 @@ export default function AdminEventDetailPage() {
             }`}
           >
             {event.isActive ? "Activo" : "Inactivo"}
-          </button>
-          <button
-            onClick={handleTogglePublic}
-            title={event.isPublic ? "Cualquiera puede comprar" : "Solo lista de invitados"}
-            className={`text-sm uppercase tracking-wider font-bold px-4 py-2 ${
-              event.isPublic
-                ? "bg-blue-700 text-culpa-cream"
-                : "bg-culpa-cream/10 text-culpa-cream/50"
-            }`}
-          >
-            {event.isPublic ? "Público" : "Privado"}
           </button>
           <button
             onClick={handleDeleteEvent}
@@ -308,15 +271,6 @@ export default function AdminEventDetailPage() {
                 <p className="text-culpa-cream/30 text-xs mt-1">Hora de Montevideo — hasta cuándo se puede escanear el ticket</p>
               </div>
             </div>
-            <label className="flex items-center gap-2 text-culpa-cream/70 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={ttForm.autoApproveWhitelist}
-                onChange={(e) => setTtForm({ ...ttForm, autoApproveWhitelist: e.target.checked })}
-                className="accent-culpa-lcd w-4 h-4"
-              />
-              Dar acceso a todas las personas de la lista
-            </label>
             <button
               type="submit"
               disabled={loading}
@@ -391,13 +345,6 @@ export default function AdminEventDetailPage() {
                   }`}
                 >
                   {tt.isOffered ? "En venta" : "Agotado"}
-                </button>
-                <button
-                  onClick={() => handleApproveAll(tt.id)}
-                  disabled={approvingId === tt.id}
-                  className="text-green-400 text-xs uppercase tracking-wider hover:text-green-300 disabled:opacity-50"
-                >
-                  {approvingId === tt.id ? "Otorgando..." : "Otorgar a Todos"}
                 </button>
                 <button
                   onClick={() => handleDeleteTicketType(tt.id)}

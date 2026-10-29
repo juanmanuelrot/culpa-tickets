@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { formatDayDot, formatEventDateTime } from "@/lib/date";
+import { formatEventDateTime } from "@/lib/date";
 import { THEMES, type Theme } from "@/lib/theme";
 import { getSiteTheme } from "@/lib/theme-store";
 
@@ -133,88 +133,6 @@ function shell(theme: Theme, inner: string): string {
     </html>`;
 }
 
-export interface WelcomeEmailParams {
-  to: string;
-  name: string;
-  events: { name: string; date: Date; slug: string }[];
-}
-
-/* El armado del mail va separado del envío: así se puede inspeccionar el HTML
-   resultante sin llamar a Resend ni a la DB. */
-export function buildWelcomeEmail(
-  params: WelcomeEmailParams,
-  theme: Theme = THEMES.classic
-): {
-  subject: string;
-  html: string;
-} {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const { ink, body, cream } = theme.palette;
-  const { soft, rule } = theme.emailInks;
-
-  const eventListHtml =
-    params.events.length > 0
-      ? params.events
-          .map(
-            (e) => `
-          <a href="${appUrl}/event/${e.slug}" style="display:block;text-decoration:none;border:2px solid ${ink};padding:12px;margin:0 0 8px 0;">
-            <span class="culpa-ink" style="font-family:${PIXEL_FONT};font-size:12px;font-weight:bold;color:${ink};text-transform:uppercase;">
-              ${formatDayDot(e.date)} &nbsp;&gt;&nbsp; ${e.name}
-            </span>
-            <br/>
-            <span class="culpa-ink-soft" style="font-family:${UI_FONT};font-size:11px;color:${soft};">
-              ${formatEventDateTime(e.date)}
-            </span>
-          </a>`
-          )
-          .join("")
-      : `<p class="culpa-ink-soft" style="font-family:${UI_FONT};font-size:13px;color:${soft};margin:0;">
-           Te avisamos cuando abramos la próxima fecha.
-         </p>`;
-
-  const inner = `
-    ${wordmark(theme, appUrl, theme.copy.welcomeSubtitle)}
-
-    <div style="padding:16px 4px 4px 4px;">
-      <p class="culpa-ink" style="font-family:${PIXEL_FONT};font-size:12px;color:${ink};margin:0 0 10px 0;text-transform:uppercase;">
-        Hola ${params.name}
-      </p>
-      <p class="culpa-ink" style="font-family:${UI_FONT};font-size:14px;color:${ink};margin:0;line-height:1.6;">
-        Te agregamos a la lista de Culpa. Ya podés sacar tu entrada para estas fechas:
-      </p>
-    </div>
-
-    <div style="padding:14px 4px;">
-      ${eventListHtml}
-    </div>
-
-    <div style="padding:6px 4px 16px 4px;text-align:center;">
-      <a href="${appUrl}" class="culpa-body culpa-cream" style="display:inline-block;background-color:${body};color:${cream};border:2px solid ${ink};font-family:${PIXEL_FONT};font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;padding:14px 28px;text-decoration:none;">
-        Ver fechas
-      </a>
-    </div>
-
-    <div style="border-top:2px solid ${rule};margin:6px 4px;"></div>
-
-    <p class="culpa-ink-soft" style="font-family:${PIXEL_FONT};font-size:10px;color:${soft};margin:10px 4px 4px 4px;text-transform:uppercase;text-align:center;">
-      Cualquier duda, escribinos por Instagram
-    </p>`;
-
-  return { subject: "Estás en la lista de Culpa", html: shell(theme, inner) };
-}
-
-export async function sendWelcomeEmail(params: WelcomeEmailParams) {
-  const theme = THEMES[await getSiteTheme()];
-  const { subject, html } = buildWelcomeEmail(params, theme);
-
-  await resend.emails.send({
-    from: process.env.EMAIL_FROM || "Culpa <tickets@yourdomain.com>",
-    to: params.to,
-    subject,
-    html,
-  });
-}
-
 export interface TicketEmailParams {
   to: string;
   eventName: string;
@@ -224,6 +142,8 @@ export interface TicketEmailParams {
   qrCodeBuffer: Buffer;
 }
 
+/* El armado del mail va separado del envío: así se puede inspeccionar el HTML
+   resultante sin llamar a Resend ni a la DB. */
 export function buildTicketEmail(
   params: TicketEmailParams,
   theme: Theme = THEMES.classic

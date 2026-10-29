@@ -249,25 +249,17 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     async function loadStats() {
-      const [eventsRes, whitelistRes, ticketsRes, remindersRes] = await Promise.all([
+      const [eventsRes, ticketsRes, remindersRes] = await Promise.all([
         fetch("/api/admin/events"),
-        fetch("/api/admin/whitelist?limit=1"),
         fetch("/api/admin/tickets"),
         fetch("/api/admin/cart-reminders"),
       ]);
 
       const events = await eventsRes.json();
-      const whitelist = await whitelistRes.json();
       const tickets = await ticketsRes.json();
       if (remindersRes.ok) setReminders(await remindersRes.json());
 
-      setStats(
-        summarizeStats({
-          events,
-          tickets,
-          whitelistTotal: whitelist.total,
-        })
-      );
+      setStats(summarizeStats({ events, tickets }));
       setWeek(salesByDay(tickets));
     }
     loadStats();
@@ -277,7 +269,6 @@ export default function AdminDashboard() {
   // contraste más alto de la paleta); el resto en la familia del cuerpo.
   const cards = [
     { label: "Eventos", value: stats?.events ?? "...", href: "/admin/events", color: "bg-culpa-body", ink: false },
-    { label: "En Lista", value: stats?.whitelisted ?? "...", href: "/admin/whitelist", color: "bg-culpa-body-dark", ink: false },
     { label: "Tickets Confirmados", value: stats?.tickets ?? "...", href: "/admin/tickets", color: "bg-culpa-body", ink: false },
     { label: "Tickets Pagados", value: stats?.paidTickets ?? "...", href: "/admin/tickets?status=PAID", color: "bg-culpa-lcd", ink: true },
     { label: "Tickets Usados", value: stats?.usedTickets ?? "...", href: "/admin/tickets?status=USED", color: "bg-culpa-cream", ink: true },

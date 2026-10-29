@@ -10,7 +10,6 @@ describe("summarizeStats", () => {
     const stats = summarizeStats({
       events: [activo, activo, inactivo],
       tickets: [],
-      whitelistTotal: 0,
     });
 
     expect(stats.events).toBe(2);
@@ -25,7 +24,6 @@ describe("summarizeStats", () => {
         { status: "PAID", event: inactivo },
         { status: "USED", event: inactivo },
       ],
-      whitelistTotal: 0,
     });
 
     expect(stats.paidTickets).toBe(1);
@@ -41,7 +39,6 @@ describe("summarizeStats", () => {
         { status: "PENDING_PAYMENT", event: activo },
         { status: "CANCELLED", event: activo },
       ],
-      whitelistTotal: 0,
     });
 
     expect(stats.paidTickets).toBe(1);
@@ -57,7 +54,6 @@ describe("summarizeStats", () => {
         { status: "PAID", event: activo, origin: "OFFLINE_PAID" },
         { status: "PAID", event: activo, origin: "COURTESY" },
       ],
-      whitelistTotal: 0,
     });
 
     expect(stats.paidTickets).toBe(2);
@@ -65,27 +61,15 @@ describe("summarizeStats", () => {
     expect(stats.tickets).toBe(3);
   });
 
-  it("pasa el total de la lista sin filtrar", () => {
-    const stats = summarizeStats({
-      events: [inactivo],
-      tickets: [],
-      whitelistTotal: 42,
-    });
-
-    expect(stats.whitelisted).toBe(42);
-  });
-
   it("da todo en cero cuando las respuestas no son listas", () => {
     // Los endpoints devuelven `{ error }` si la sesión se venció.
     const stats = summarizeStats({
       events: undefined,
       tickets: undefined,
-      whitelistTotal: undefined,
     });
 
     expect(stats).toEqual({
       events: 0,
-      whitelisted: 0,
       tickets: 0,
       paidTickets: 0,
       usedTickets: 0,
@@ -108,7 +92,6 @@ describe("summarizeStats", () => {
         { status: "PENDING_PAYMENT", event: activo, origin: "ONLINE", ticketType: general },
         { status: "PAID", event: inactivo, origin: "COURTESY", ticketType: general, faceValueInCents: 50000 },
       ],
-      whitelistTotal: 0,
     });
 
     expect(stats.online).toEqual({ count: 2, amountInCents: 90000 });
@@ -138,7 +121,6 @@ describe("summarizeStats", () => {
         qr("OFFLINE_PAID", beto, 50000),
         qr("COURTESY", beto, 50000),
       ],
-      whitelistTotal: 0,
     });
 
     expect(stats.byIssuer).toEqual([

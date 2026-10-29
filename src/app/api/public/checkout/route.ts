@@ -11,7 +11,6 @@ interface Purchaser {
   name: string;
   email: string;
   govId: string;
-  whitelistedPersonId: string | null;
 }
 
 export async function POST(request: NextRequest) {
@@ -46,89 +45,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Resolve the purchaser differently for public vs. whitelist events.
-    let purchaser: Purchaser;
+    // Buyer identity comes with the request; no per-person limit.
+    const firstName = (body.firstName || "").trim();
+    const lastName = (body.lastName || "").trim();
+    const email = (body.email || "").trim().toLowerCase();
+    const govId = (body.govIdNumber || "").trim().toUpperCase();
 
-    if (ticketType.event.isPublic) {
-      // Public event: collect buyer identity, no whitelist gate, no per-person limit.
-      const firstName = (body.firstName || "").trim();
-      const lastName = (body.lastName || "").trim();
-      const email = (body.email || "").trim().toLowerCase();
-      const govId = (body.govIdNumber || "").trim().toUpperCase();
-
-      if (!firstName || !lastName || !email || !govId) {
-        return NextResponse.json(
-          { error: "First name, last name, ID and email are required" },
-          { status: 400 }
-        );
-      }
-
-      purchaser = {
-        name: `${firstName} ${lastName}`,
-        email,
-        govId,
-        whitelistedPersonId: null,
-      };
-    } else {
-      // Private event: re-verify whitelist status (don't trust client state).
-      const govIdNumber = body.govIdNumber;
-      if (!govIdNumber) {
-        return NextResponse.json(
-          { error: "govIdNumber is required" },
-          { status: 400 }
-        );
-      }
-
-      const person = await prisma.whitelistedPerson.findUnique({
-        where: { govIdNumber: govIdNumber.trim().toUpperCase() },
-        include: {
-          allowedTicketTypes: true,
-          tickets: {
-            where: { eventId, ticketTypeId, status: { in: ["PAID", "USED"] } },
-          },
-        },
-      });
-
-      if (!person) {
-        return NextResponse.json({ error: "Not on the guest list" }, { status: 403 });
-      }
-
-      const isAllowed = person.allowedTicketTypes.some(
-        (att) => att.ticketTypeId === ticketTypeId
+    if (!firstName || !lastName || !email || !govId) {
+      return NextResponse.json(
+        { error: "First name, last name, ID and email are required" },
+        { status: 400 }
       );
-      if (!isAllowed) {
-        return NextResponse.json(
-          { error: "You are not authorized for this ticket type" },
-          { status: 403 }
-        );
-      }
-
-      // One ticket of each type per person on private events.
-      if (person.tickets.length > 0) {
-        return NextResponse.json(
-          { error: "You already have a ticket of this type for this event" },
-          { status: 409 }
-        );
-      }
-
-      // Cancel any stale PENDING_PAYMENT tickets so the user can retry.
-      await prisma.ticket.updateMany({
-        where: {
-          whitelistedPersonId: person.id,
-          eventId,
-          ticketTypeId,
-          status: "PENDING_PAYMENT",
-        },
-        data: { status: "CANCELLED" },
-      });
-
-      purchaser = {
-        name: person.name,
-        email: person.email,
-        govId: person.govIdNumber,
-        whitelistedPersonId: person.id,
-      };
     }
+
+    const purchaser: Purchaser = {
+      name: `${firstName} ${lastName}`,
+      email,
+      govId,
+    };
 
     // Capacity check (only confirmed tickets, not abandoned PENDING_PAYMENT).
     if (ticketType.capacity !== null) {
@@ -169,7 +103,6 @@ export async function POST(request: NextRequest) {
         data: {
           eventId,
           ticketTypeId,
-          whitelistedPersonId: purchaser.whitelistedPersonId,
           promoterId,
           discountInCents,
           qrCodeToken,
@@ -214,7 +147,6 @@ export async function POST(request: NextRequest) {
       data: {
         eventId,
         ticketTypeId,
-        whitelistedPersonId: purchaser.whitelistedPersonId,
         promoterId,
         discountInCents,
         validUntil: ticketType.validUntil,

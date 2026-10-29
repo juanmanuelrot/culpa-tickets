@@ -12,7 +12,7 @@ const PALETTE_KEYS = [
 ] as const;
 
 const COPY_KEYS = [
-  "tagline", "ogSubtitle", "welcomeSubtitle", "steps", "emptyDates",
+  "tagline", "ogSubtitle", "steps", "emptyDates",
   "loadingLabel", "footerBrand", "messages",
 ] as const;
 
